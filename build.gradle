@@ -17,9 +17,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
-//    compile files('libcsecorec.so')
-
+    
     def junit_version = '5.3.2'
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit_version")
