@@ -1,14 +1,13 @@
 package org.osp.cse.jni
 
-import org.osp.currentOS
 import org.osp.libExtension
 import org.osp.libPrefix
 import java.io.File
-import java.io.FileOutputStream
 import java.lang.Exception
 
 typealias cse_execution = Long
 typealias cse_slave = Long
+typealias cse_observer = Long
 
 class CseLibrary {
 
@@ -108,12 +107,12 @@ class CseLibrary {
     /**
      * Enables real time simulation for an execution.
      */
-    external fun enableRealTimeSimulation(execution: cse_execution): Int
+    external fun enableRealTimeSimulation(execution: cse_execution): Boolean
 
     /**
      * Disables real time simulation for an execution.
      */
-    external fun disableRealTimeSimulation(execution: cse_execution): Int
+    external fun disableRealTimeSimulation(execution: cse_execution): Boolean
 
 
     /**
@@ -123,6 +122,54 @@ class CseLibrary {
      */
     external fun getNumSlaves(execution: cse_execution): Long
 
+    /**
+     * Retrieves the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+
+    /**
+     * Retrieves the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
+
+    /**
+     *  Sets the values of integer variables for one slave.
+     *
+     *  @return  0 on success and -1 on error.
+     */
+    external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+
+    /**
+     * Sets the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+    /**
+     * Creates an observer which buffers variable values in memory.
+     *
+     * @return  The created observer.
+     */
+    external fun createMembufferObserver(): cse_observer
+
+    /**
+     * Creates an observer which logs variable values to file in csv format.
+     *
+     * @param logDir The directory where log files will be created.
+     *
+     * @return  The created observer.
+     */
+    external fun createFileObserver(logDir: File): cse_observer
+
+    /**
+     * Destroys an observer
+     */
+    external fun destroyObserver(observer: cse_observer): Boolean
 
 
     private companion object {
