@@ -55,7 +55,7 @@ class CseLibrary {
      *
      * @return The slave's unique index in the execution, or -1 on error.
      */
-    external fun addSlave(execution: cse_execution, slave: cse_slave): Boolean
+    external fun addSlave(execution: cse_execution, slave: cse_slave): Int
 
     /**
      * Advances an execution a number of time steps.
