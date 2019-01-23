@@ -12,26 +12,44 @@ typealias cse_slave = Long
 
 class CseLibrary {
 
-//    external fun cse_last_error_message(): String
+    /**
+     *  Returns a textual description of the last reported error.
+     *
+     *  Most functions in this library will indicate that an error occurred by
+     *  returning -1 or `NULL`, after which this function can be called to
+     *  obtain more detailed information about the problem.
+     *
+     *  This function must be called from the thread in which the error occurred,
+     *  and before any new calls to functions in this library (with the exception
+     *  of `cse_last_error_code()`).
+     *
+     * @return A textual description of the last reported error.
+     * The pointer is only guaranteed to remain valid until the next time a function
+     * in this library is called (with the exception of `cse_last_error_code()`).
+     */
+    external fun getLastErrorMessage(): String
 
     /**
      * Creates a new execution.
      *
-     * A pointer to an object which holds the execution state, or NULL on error.
+     * @param startTime  The (logical) time point at which the simulation should start.
+     * @param stepSize The execution step size.
+     *
+     * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createExecution(startTime: Long, stepSize: Long): cse_execution
+    external fun createExecution(startTime: Double, stepSize: Double): cse_execution
 
-//    /**
-//     * Creates a new execution based on a SystemStructure.ssd file.
-//     *
-//     * @return A pointer to an object which holds the execution state, or NULL on error.
-//     */
-//    external fun cse_ssp_execution_create(sspDir: String, startTime: Long): cse_execution
+    /**
+     * Creates a new execution based on a SystemStructure.ssd file.
+     *
+     * @return A pointer to an object which holds the execution state, or NULL on error.
+     */
+    external fun createExecution(sspDir: String, startTime: Long): cse_execution
 
     /**
      * Destroys an execution.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun destroyExecution(execution: cse_execution): Boolean
 
