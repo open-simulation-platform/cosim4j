@@ -67,6 +67,9 @@ class CseExecution(
     }
 
     override fun close() {
+        observer?.apply {
+            cse.destroyObserver(this)
+        }
         cse.destroyExecution(execution)
     }
 
