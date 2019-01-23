@@ -2,7 +2,7 @@ package org.osp.cse.jni
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.time.Duration
+
 
 class CseLibraryTest {
 
@@ -15,9 +15,8 @@ class CseLibraryTest {
     fun testLibrary1() {
 
         CseLibrary().apply {
-            val execution = createExecution(0, Duration.ofSeconds(1/100).toNanos())
+            val execution = createExecution(0.0, 1.0/100)
             Assertions.assertTrue(destroyExecution(execution))
-
         }
 
     }
@@ -26,13 +25,13 @@ class CseLibraryTest {
     fun testLibrary2() {
 
         CseLibrary().apply {
-            val execution = createExecution(0, Duration.ofSeconds(1/100).toNanos())
+            val execution = createExecution(0.0, 1.0/100)
 
             val slave = createLocalSlave(test_fmu)
             val index = addSlave(execution, slave)
+            Assertions.assertEquals(0, index)
 
             Assertions.assertTrue(step(execution, 1))
-
             Assertions.assertTrue(destroyExecution(execution))
 
         }
