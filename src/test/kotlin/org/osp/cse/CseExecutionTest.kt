@@ -23,7 +23,7 @@ class CseExecutionTest {
             Assertions.assertTrue(execution.start())
             Assertions.assertTrue(execution.step(1))
 
-            println(slave.getReal(47))
+            Assertions.assertEquals(298.15, slave.getReal(46))
 
             Assertions.assertTrue(execution.stop())
 
