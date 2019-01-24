@@ -12,12 +12,6 @@ interface CseExecutionStatus {
 
 class CseExecutionStatusImpl: CseExecutionStatus {
 
-    private var errorCodeId: Int = -1
-
-    override val errorCode: CseErrorCode by lazy {
-        CseErrorCode.valueOf(errorCodeId)
-    }
-
     override var currentTime: Double = -1.0
 
     override var realTimeFactor: Double = 0.0
@@ -28,6 +22,12 @@ class CseExecutionStatusImpl: CseExecutionStatus {
 
     override val state: CseExecutionState by lazy {
         CseExecutionState.valueOf(stateId)
+    }
+
+    private var errorCodeId: Int = -1
+
+    override val errorCode: CseErrorCode by lazy {
+        CseErrorCode.valueOf(errorCodeId)
     }
 
     override fun toString(): String {
