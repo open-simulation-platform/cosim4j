@@ -16,11 +16,10 @@ JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JN
     return env->NewStringUTF(msg);
 }
 
-
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *env, jobject obj, jdouble startTime, jdouble stepSize) {
-    auto execution = cse_execution_create((cse_time_point) (1000000000.0 * startTime), (cse_duration) (1000000000.0 * stepSize));
+    cse_execution* execution = cse_execution_create((cse_time_point) (1000000000.0 * startTime), (cse_duration) (1000000000.0 * stepSize));
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper]" << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper]" << "Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) execution;
@@ -256,7 +255,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createMembufferObserver(JNIEnv *env, jobject obj) {
     auto observer = cse_membuffer_observer_create();
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper]" << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper]" << "Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) observer;
@@ -264,10 +263,10 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createMembufferObserver(
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEnv *env, jobject obj, jstring logDir) {
     const char* _logDir = env->GetStringUTFChars(logDir, 0);
-    auto observer = cse_file_observer_create(_logDir);
+    cse_observer* observer = cse_file_observer_create(_logDir);
     env->ReleaseStringUTFChars(logDir, _logDir);
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper]" << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper]" << "Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) observer;
