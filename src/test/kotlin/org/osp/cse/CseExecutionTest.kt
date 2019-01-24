@@ -25,7 +25,6 @@ class CseExecutionTest {
 
             val slave = execution.addSlave(test_fmu)
 
-            Assertions.assertTrue(execution.start())
             Assertions.assertTrue(execution.step(1))
 
             LOG.info("${execution.getStatus()}")
