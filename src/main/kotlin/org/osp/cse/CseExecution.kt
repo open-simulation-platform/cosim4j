@@ -132,6 +132,13 @@ class CseExecution(
 
         protected val observer: cse_observer = observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
 
+        fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
+            val steps = LongArray(2)
+            return cse.getStepNumbersForDuration(observer, slave.index, duration, steps).let {
+                steps[0] to steps[1]
+            }
+        }
+
         fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
             val steps = LongArray(2)
             return cse.getStepNumbers(observer, slave.index, begin, end, steps).let {
