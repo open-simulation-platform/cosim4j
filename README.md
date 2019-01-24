@@ -11,8 +11,8 @@ class Demo {
         
         try(CseExecution execution = new CseExecution(1.0/100)) {
             
-            MembufferObserver observer = execution.addMembufferObserver();
-            //FileObserver observer = addFileObserver(File("results"));
+            CseMembufferObserver membufferObserver = execution.addMembufferObserver();
+            CseFileObserver fileObserver = execution.addFileObserver(File("results"));
                     
             CseSlave slave1 = execution.addSlave("path/to/fmu1.fmu");
             CseSlave slave2 = execution.addSlave("path/to/fmu2.fmu");
@@ -23,7 +23,7 @@ class Demo {
             execution.step(1);
             //execution.stop();
             
-            double value = observer.getReal(slave1, 46 /*vr*/);
+            double value = membufferObserver.getReal(slave1, 46 /*vr*/);
             
         } // try with resources (calls destroy internally)
   
