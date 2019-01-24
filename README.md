@@ -9,10 +9,10 @@ class Demo {
     
     public static void main(String[] args) {
         
-        try(CseExecution execution = new CseExecution(1.0/100)) {
+        try(CseExecution execution = CseExecution.create(1.0/100)) {
             
             CseMembufferObserver membufferObserver = execution.addMembufferObserver();
-            CseFileObserver fileObserver = execution.addFileObserver(File("results"));
+            CseFileObserver fileObserver = execution.addFileObserver(new File("results"));
                     
             CseSlave slave1 = execution.addSlave("path/to/fmu1.fmu");
             CseSlave slave2 = execution.addSlave("path/to/fmu2.fmu");
