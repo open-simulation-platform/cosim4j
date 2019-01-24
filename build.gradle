@@ -135,5 +135,7 @@ model {
             into "$projectDir/src/main/resources/native/cse"
             dependsOn buildAllExecutables
         }
+        assemble.dependsOn(copyNativeLibs)
     }
 }
+
