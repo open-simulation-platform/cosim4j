@@ -8,6 +8,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
+import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
 
@@ -34,24 +35,23 @@ class CseExecution(
         return status
     }
 
-    fun setMemBufferObserver() {
+    fun useMemBufferObserver() {
         observer?.apply {
             cse.destroyObserver(this)
         }
         observer = cse.createMembufferObserver().also {
             cse.addObserver(execution, it)
         }
-
     }
 
-    fun setFileObserver(logDir: File) {
+    fun useFileObserver(logDir: File) {
         observer?.apply {
             cse.destroyObserver(this)
         }
-        if (logDir.exists()) {
+        if (!logDir.exists()) {
             logDir.mkdirs()
         }
-        observer = cse.createFileObserver(logDir.absoluteFile).also {
+        observer = cse.createFileObserver(logDir.absolutePath).also {
             cse.addObserver(execution, it)
         }
     }
