@@ -55,12 +55,12 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv *env, job
     return (jint) cse_execution_add_slave((cse_execution*) execution, (cse_slave*) slave);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_step(JNIEnv *env, jobject obj, jlong execution, jlong numSteps) {
-    return cse_execution_step((cse_execution*) execution, numSteps) == 0;
-}
-
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_start(JNIEnv *env, jobject obj, jlong execution) {
     return cse_execution_start((cse_execution*) execution) == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_step(JNIEnv *env, jobject obj, jlong execution, jlong numSteps) {
+    return cse_execution_step((cse_execution*) execution, numSteps) == 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stop(JNIEnv *env, jobject obj, jlong execution) {
@@ -81,6 +81,38 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_disableRealTimeSimula
         return false;
     }
     return cse_execution_disable_real_time_simulation((cse_execution*) execution) == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env, jobject obj, jlong execution, jobject status) {
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        return false;
+    }
+
+    const char* className = "org/osp/cse/CseExecutionStatusImpl";
+    jclass cls = env->FindClass(className);
+
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        return false;
+    }
+
+    jfieldID currentTimeId = env->GetFieldID(cls, "currentTime", "D");
+    jfieldID stateId = env->GetFieldID(cls, "stateId", "I");
+    jfieldID errorId = env->GetFieldID(cls, "errorCodeId", "I");
+    jfieldID realTimeFactorId = env->GetFieldID(cls, "realTimeFactor", "D");
+    jfieldID realTimeSimulationId = env->GetFieldID(cls, "realTimeSimulation", "Z");
+
+    cse_execution_status _status;
+    jboolean success = cse_execution_get_status((cse_execution*) execution, &_status);
+
+    env->SetDoubleField(status, currentTimeId, ((double) _status.current_time) / 1000000000.0);
+    env->SetDoubleField(status, realTimeFactorId, _status.real_time_factor);
+    env->SetIntField(status, stateId, _status.state);
+    env->SetIntField(status, errorId, _status.error_code);
+    env->SetBooleanField(status, realTimeSimulationId, _status.is_real_time_simulation == 0);
+
+    return success;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
@@ -180,6 +212,43 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseDoubleArrayElements(values, _values, 0);
+
+    return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectIntegers(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       return false;
+    }
+    return cse_execution_connect_integer_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       return false;
+    }
+    return cse_execution_connect_real_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       return false;
+    }
+
+    const size_t size = 2;
+    cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
+
+    jboolean status = cse_observer_get_step_numbers((cse_observer*) observer, slaveIndex, (cse_time_point) (1000000000.0 * begin), (cse_time_point) (1000000000.0 * end), _steps);
+
+    for (int i = 0; i < size; i++) {
+        jlong step = (jlong) _steps[i];
+        env->SetLongArrayRegion(steps, i, 1, &step);
+    }
+
+    free(_steps);
 
     return status;
 }

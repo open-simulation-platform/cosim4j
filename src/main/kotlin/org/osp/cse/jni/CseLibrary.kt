@@ -1,5 +1,6 @@
 package org.osp.cse.jni
 
+import org.osp.cse.CseExecutionStatusImpl
 import org.osp.libExtension
 import org.osp.libPrefix
 import java.io.File
@@ -114,6 +115,15 @@ class CseLibrary {
      */
     external fun disableRealTimeSimulation(execution: cse_execution): Boolean
 
+    /**
+     * Returns execution status.
+     *
+     * @param execution The execution to get status from.
+     * @param status A pointer to a cse_execution_status that will be filled with actual execution status.
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getStatus(execution: cse_execution, status: CseExecutionStatusImpl): Boolean
 
     /**
      * Returns the number of slaves which have been added to an execution.
@@ -149,6 +159,50 @@ class CseLibrary {
      * @return  0 on success and -1 on error.
      */
     external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+    /**
+     * Connects one real output variable to one real input variable.
+     *
+     * @param execution The execution.
+     * @param outputSlaveIndex The source slave.
+     * @param outputVariableIndex The source variable.
+     * @param inputSlaveIndex The destination slave.
+     * @param inputVariableIndex The destination variable.
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun connectIntegers(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
+
+    /**
+     * Retrieves the step numbers for a range given by two points in time.
+     *
+     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
+     * when it is desired to retrieve samples between two points in time.
+     *
+     * Note: It is assumed that `steps` has a length of 2.
+     *
+     * @param observer the observer
+     * @param slaveIndex index of the simulator
+     * @param begin the start of the range
+     * @param end the end of the range
+     * @param steps the corresponding step numbers
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
+
+    /**
+     * Connects one real output variable to one real input variable.
+     *
+     * @param execution The execution.
+     * @param outputSlaveIndex The source slave.
+     * @param outputVariableIndex The source variable.
+     * @param inputSlaveIndex The destination slave.
+     * @param inputVariableIndex The destination variable.
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
     /**
      * Creates an observer which buffers variable values in memory.

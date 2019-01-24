@@ -4,6 +4,8 @@ import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
 import org.osp.cse.jni.cse_observer
 import org.osp.cse.jni.cse_slave
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
 import java.lang.IllegalStateException
@@ -18,12 +20,19 @@ class CseExecution(
     private val execution: cse_execution
     private var observer: cse_observer? = null
 
+    private val status = CseExecutionStatusImpl()
+
     init {
         cse = CseLibrary()
         execution = cse.createExecution(startTime, stepSize)
     }
 
     constructor(stepSize: Double): this(0.0, stepSize)
+
+    fun getStatus(): CseExecutionStatus {
+        cse.getStatus(execution, status)
+        return status
+    }
 
     fun setMemBufferObserver() {
         observer?.apply {
@@ -71,22 +80,44 @@ class CseExecution(
         return cse.disableRealTimeSimulation(execution)
     }
 
+    fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
+        return cse.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+    }
+
+    fun connectReals(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
+        return cse.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+    }
+
+    fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
+        if (observer == null) {
+            throw IllegalStateException("No observer has been set!")
+        }
+        val steps = LongArray(2)
+        return cse.getStepNumbers(observer!!, slave.index, begin, end, steps).let {
+            steps[0] to steps[1]
+        }
+    }
+
     override fun close() {
         observer?.apply {
-            cse.destroyObserver(this)
+            cse.destroyObserver(this).also {
+                LOG.debug("Destroyed observer successfully: $it")
+            }
         }
-        cse.destroyExecution(execution)
+        cse.destroyExecution(execution).also {
+            LOG.debug("Destroyed execution successfully: $it")
+        }
     }
 
     inner class CseSlave (
         fmuPath: File
     ) {
         private val slave: cse_slave
-        private val slaveIndex: Int
+        val index: Int
 
         init {
             slave = cse.createLocalSlave(fmuPath.absolutePath)
-            slaveIndex = cse.addSlave(execution, slave)
+            index = cse.addSlave(execution, slave)
         }
 
         fun getInteger(vr: Long): Int {
@@ -98,7 +129,7 @@ class CseExecution(
             if (observer == null) {
                 throw IllegalStateException("No observer has been set!")
             }
-            return cse.getInteger(observer!!, slaveIndex, vr, ref)
+            return cse.getInteger(observer!!, index, vr, ref)
         }
 
         fun getReal(vr: Long): Double {
@@ -110,7 +141,7 @@ class CseExecution(
             if (observer == null) {
                 throw IllegalStateException("No observer has been set!")
             }
-            return cse.getReal(observer!!, slaveIndex, vr, ref)
+            return cse.getReal(observer!!, index, vr, ref)
         }
 
         fun setInteger(vr: Long, value: Int): Boolean {
@@ -118,7 +149,7 @@ class CseExecution(
         }
 
         fun setInteger(vr: LongArray, values: IntArray): Boolean {
-            return cse.setInteger(execution, slaveIndex, vr, values)
+            return cse.setInteger(execution, index, vr, values)
         }
 
         fun setReal(vr: Long, value: Double): Boolean {
@@ -126,9 +157,14 @@ class CseExecution(
         }
 
         fun setReal(vr: LongArray, values: DoubleArray): Boolean {
-            return cse.setReal(execution, slaveIndex, vr, values)
+            return cse.setReal(execution, index, vr, values)
         }
 
+    }
+
+    companion object {
+
+        private val LOG: Logger = LoggerFactory.getLogger(CseExecution::class.java)
 
     }
 
