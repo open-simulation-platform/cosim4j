@@ -16,12 +16,12 @@ class Demo {
             
             execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
             
-            execution.start();
+            //execution.start();
             execution.step(10);
+            //execution.stop();
             
             double value = slave1.getReal(46 /*vr*/);
             
-            execution.stop();
         }
   
     }
