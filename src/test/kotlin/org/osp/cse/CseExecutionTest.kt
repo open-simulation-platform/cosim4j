@@ -19,7 +19,7 @@ class CseExecutionTest {
     @Test
     fun test1() {
 
-        CseExecution(1.0/100).use { execution ->
+        CseExecution.create(1.0/100).use { execution ->
 
             val observer = execution.addMemBufferObserver()
 
@@ -36,7 +36,7 @@ class CseExecutionTest {
     @Test
     fun test2() {
 
-        CseExecution(1.0/100).use { execution ->
+        CseExecution.create(1.0/100).use { execution ->
 
             val logDir = File("build/results");
             execution.addFileObserver(logDir)

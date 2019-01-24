@@ -14,27 +14,22 @@ class CseLibraryTest {
     @Test
     fun testLibrary1() {
 
-        CseLibrary().apply {
-            val execution = createExecution(0.0, 1.0/100)
-            Assertions.assertTrue(destroyExecution(execution))
-        }
+        val execution = CseLibrary.createExecution(0.0, 1.0/100)
+        Assertions.assertTrue(CseLibrary.destroyExecution(execution))
 
     }
 
     @Test
     fun testLibrary2() {
 
-        CseLibrary().apply {
-            val execution = createExecution(0.0, 1.0/100)
+        val execution = CseLibrary.createExecution(0.0, 1.0/100)
 
-            val slave = createLocalSlave(test_fmu)
-            val index = addSlave(execution, slave)
-            Assertions.assertEquals(0, index)
+        val slave = CseLibrary.createLocalSlave(test_fmu)
+        val index = CseLibrary.addSlave(execution, slave)
+        Assertions.assertEquals(0, index)
 
-            Assertions.assertTrue(step(execution, 1))
-            Assertions.assertTrue(destroyExecution(execution))
-
-        }
+        Assertions.assertTrue(CseLibrary.step(execution, 1))
+        Assertions.assertTrue(CseLibrary.destroyExecution(execution))
 
     }
 

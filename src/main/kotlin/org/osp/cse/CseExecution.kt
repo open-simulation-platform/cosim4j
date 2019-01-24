@@ -10,32 +10,23 @@ import java.io.Closeable
 import java.io.File
 
 
-class CseExecution(
-    startTime: Double,
-    stepSize: Double
-): Closeable {
-
-    private val cse: CseLibrary
+class CseExecution private constructor (
     private val execution: cse_execution
-    private val observers = mutableListOf<CseObserver>()
+): Closeable {
+    
+    private val observers: MutableList<CseObserver> = mutableListOf()
 
     private val status = CseExecutionStatusImpl()
-
-    init {
-        cse = CseLibrary()
-        execution = cse.createExecution(startTime, stepSize)
-    }
-
-    constructor(stepSize: Double): this(0.0, stepSize)
+    
 
     fun getStatus(): CseExecutionStatus {
-        cse.getStatus(execution, status)
+        CseLibrary.getStatus(execution, status)
         return status
     }
 
     fun addMemBufferObserver(): CseMembufferObserver {
-        return cse.createMembufferObserver().let {
-            cse.addObserver(execution, it)
+        return CseLibrary.createMembufferObserver().let {
+            CseLibrary.addObserver(execution, it)
             CseMembufferObserver(it)
         }.also {
             observers.add(it)
@@ -46,8 +37,8 @@ class CseExecution(
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
-        return cse.createFileObserver(logDir.absolutePath).let {
-            cse.addObserver(execution, it)
+        return CseLibrary.createFileObserver(logDir.absolutePath).let {
+            CseLibrary.addObserver(execution, it)
             CseFileObserver(it)
         }.also {
             observers.add(it)
@@ -59,31 +50,31 @@ class CseExecution(
     }
 
     fun start(): Boolean {
-        return cse.start(execution)
+        return CseLibrary.start(execution)
     }
 
     fun step(numSteps: Long): Boolean {
-        return cse.step(execution, numSteps)
+        return CseLibrary.step(execution, numSteps)
     }
 
     fun stop(): Boolean {
-        return cse.stop(execution)
+        return CseLibrary.stop(execution)
     }
 
     fun enableRealTimeSimulation(): Boolean {
-        return cse.enableRealTimeSimulation(execution)
+        return CseLibrary.enableRealTimeSimulation(execution)
     }
 
     fun disableRealTimeSimulation(): Boolean {
-        return cse.disableRealTimeSimulation(execution)
+        return CseLibrary.disableRealTimeSimulation(execution)
     }
 
     fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return cse.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+        return CseLibrary.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
     fun connectReals(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return cse.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+        return CseLibrary.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
 
@@ -92,7 +83,7 @@ class CseExecution(
         observers.forEach {
             it.close()
         }
-        cse.destroyExecution(execution).also {
+        CseLibrary.destroyExecution(execution).also {
             LOG.debug("Destroyed execution successfully: $it")
         }
     }
@@ -104,8 +95,8 @@ class CseExecution(
         val index: Int
 
         init {
-            slave = cse.createLocalSlave(fmuPath.absolutePath)
-            index = cse.addSlave(execution, slave)
+            slave = CseLibrary.createLocalSlave(fmuPath.absolutePath)
+            index = CseLibrary.addSlave(execution, slave)
         }
 
         fun setInteger(vr: Long, value: Int): Boolean {
@@ -113,7 +104,7 @@ class CseExecution(
         }
 
         fun setInteger(vr: LongArray, values: IntArray): Boolean {
-            return cse.setInteger(execution, index, vr, values)
+            return CseLibrary.setInteger(execution, index, vr, values)
         }
 
         fun setReal(vr: Long, value: Double): Boolean {
@@ -121,7 +112,7 @@ class CseExecution(
         }
 
         fun setReal(vr: LongArray, values: DoubleArray): Boolean {
-            return cse.setReal(execution, index, vr, values)
+            return CseLibrary.setReal(execution, index, vr, values)
         }
 
     }
@@ -134,21 +125,21 @@ class CseExecution(
 
         fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
             val steps = LongArray(2)
-            return cse.getStepNumbersForDuration(observer, slave.index, duration, steps).let {
+            return CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps).let {
                 steps[0] to steps[1]
             }
         }
 
         fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
             val steps = LongArray(2)
-            return cse.getStepNumbers(observer, slave.index, begin, end, steps).let {
+            return CseLibrary.getStepNumbers(observer, slave.index, begin, end, steps).let {
                 steps[0] to steps[1]
             }
         }
 
         override fun close() {
             observer_?.also {
-                cse.destroyObserver(it).also { success ->
+                CseLibrary.destroyObserver(it).also { success ->
                     observer_ = null
                     LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
                 }
@@ -170,7 +161,7 @@ class CseExecution(
         }
 
         fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-            return cse.getInteger(observer, slave.index, vr, ref)
+            return CseLibrary.getInteger(observer, slave.index, vr, ref)
         }
 
         fun getReal(slave: CseSlave, vr: Long): Double {
@@ -179,7 +170,7 @@ class CseExecution(
         }
 
         fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-            return cse.getReal(observer, slave.index, vr, ref)
+            return CseLibrary.getReal(observer, slave.index, vr, ref)
         }
 
     }
@@ -187,6 +178,27 @@ class CseExecution(
     companion object {
 
         private val LOG: Logger = LoggerFactory.getLogger(CseExecution::class.java)
+
+        @JvmStatic
+        fun create(stepSize: Double): CseExecution {
+            return CseLibrary.createExecution(0.0, stepSize).let {
+                CseExecution(it)
+            }
+        }
+
+        @JvmStatic
+        fun create(startTime: Double, stepSize: Double): CseExecution {
+            return CseLibrary.createExecution(startTime, stepSize).let {
+                CseExecution(it)
+            }
+        }
+
+        @JvmStatic
+        fun create(sspDir: File, stepSize: Double): CseExecution {
+            return CseLibrary.createExecution(sspDir.absolutePath, stepSize).let {
+                CseExecution((it))
+            }
+        }
 
     }
 
