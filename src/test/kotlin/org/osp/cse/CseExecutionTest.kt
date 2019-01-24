@@ -21,13 +21,13 @@ class CseExecutionTest {
 
         CseExecution(1.0/100).use { execution ->
 
-            execution.useMemBufferObserver()
+            val observer = execution.addMemBufferObserver()
 
             val slave = execution.addSlave(test_fmu)
             Assertions.assertTrue(execution.step(10))
 
             LOG.info("${execution.getStatus()}")
-            Assertions.assertEquals(298.15, slave.getReal(46))
+            Assertions.assertEquals(298.15, observer.getReal(slave, 46))
 
         }
 
@@ -39,13 +39,17 @@ class CseExecutionTest {
         CseExecution(1.0/100).use { execution ->
 
             val logDir = File("build/results");
-            execution.useFileObserver(logDir)
+            execution.addFileObserver(logDir)
+
+            val observer = execution.addMemBufferObserver()
 
             val slave = execution.addSlave(test_fmu)
             Assertions.assertTrue(execution.step(10))
 
+            Assertions.assertEquals(298.15, observer.getReal(slave, 46))
+
             LOG.info("${execution.getStatus()}")
-            Assertions.assertTrue(logDir.listFiles().size > 0)
+            Assertions.assertTrue(logDir.listFiles().isNotEmpty())
 
         }
 

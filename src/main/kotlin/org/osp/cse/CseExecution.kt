@@ -8,8 +8,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 
 
 class CseExecution(
@@ -19,7 +17,7 @@ class CseExecution(
 
     private val cse: CseLibrary
     private val execution: cse_execution
-    private var observer: cse_observer? = null
+    private val observers = mutableListOf<CseObserver>()
 
     private val status = CseExecutionStatusImpl()
 
@@ -35,24 +33,24 @@ class CseExecution(
         return status
     }
 
-    fun useMemBufferObserver() {
-        observer?.apply {
-            cse.destroyObserver(this)
-        }
-        observer = cse.createMembufferObserver().also {
+    fun addMemBufferObserver(): MembufferObserver {
+        return cse.createMembufferObserver().let {
             cse.addObserver(execution, it)
+            MembufferObserver(it)
+        }.also {
+            observers.add(it)
         }
     }
 
-    fun useFileObserver(logDir: File) {
-        observer?.apply {
-            cse.destroyObserver(this)
-        }
+    fun addFileObserver(logDir: File): FileObserver {
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
-        observer = cse.createFileObserver(logDir.absolutePath).also {
+        return cse.createFileObserver(logDir.absolutePath).let {
             cse.addObserver(execution, it)
+            FileObserver(it)
+        }.also {
+            observers.add(it)
         }
     }
 
@@ -88,21 +86,11 @@ class CseExecution(
         return cse.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
-    fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
-        if (observer == null) {
-            throw IllegalStateException("No observer has been set!")
-        }
-        val steps = LongArray(2)
-        return cse.getStepNumbers(observer!!, slave.index, begin, end, steps).let {
-            steps[0] to steps[1]
-        }
-    }
+
 
     override fun close() {
-        observer?.apply {
-            cse.destroyObserver(this).also {
-                LOG.debug("Destroyed observer successfully: $it")
-            }
+        observers.forEach {
+            it.close()
         }
         cse.destroyExecution(execution).also {
             LOG.debug("Destroyed execution successfully: $it")
@@ -118,30 +106,6 @@ class CseExecution(
         init {
             slave = cse.createLocalSlave(fmuPath.absolutePath)
             index = cse.addSlave(execution, slave)
-        }
-
-        fun getInteger(vr: Long): Int {
-            val ref = IntArray(1)
-            return getInteger(longArrayOf(vr), ref).let { ref[0] }
-        }
-
-        fun getInteger(vr: LongArray, ref: IntArray): Boolean {
-            if (observer == null) {
-                throw IllegalStateException("No observer has been set!")
-            }
-            return cse.getInteger(observer!!, index, vr, ref)
-        }
-
-        fun getReal(vr: Long): Double {
-            val ref = DoubleArray(1)
-            return getReal(longArrayOf(vr), ref).let { ref[0] }
-        }
-
-        fun getReal(vr: LongArray, ref: DoubleArray): Boolean {
-            if (observer == null) {
-                throw IllegalStateException("No observer has been set!")
-            }
-            return cse.getReal(observer!!, index, vr, ref)
         }
 
         fun setInteger(vr: Long, value: Int): Boolean {
@@ -162,6 +126,57 @@ class CseExecution(
 
     }
 
+    open inner class CseObserver protected constructor(
+        private var observer_: cse_observer?
+    ): Closeable {
+
+        protected val observer: cse_observer = observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
+
+        fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
+            val steps = LongArray(2)
+            return cse.getStepNumbers(observer, slave.index, begin, end, steps).let {
+                steps[0] to steps[1]
+            }
+        }
+
+        override fun close() {
+            observer_?.also {
+                cse.destroyObserver(it).also { success ->
+                    observer_ = null
+                    LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
+                }
+            }
+        }
+    }
+
+    inner class FileObserver(
+        observer: cse_observer
+    ): CseObserver(observer)
+
+    inner class MembufferObserver(
+        observer: cse_observer
+    ): CseObserver(observer) {
+
+        fun getInteger(slave: CseSlave, vr: Long): Int {
+            val ref = IntArray(1)
+            return getInteger(slave, longArrayOf(vr), ref).let { ref[0] }
+        }
+
+        fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
+            return cse.getInteger(observer, slave.index, vr, ref)
+        }
+
+        fun getReal(slave: CseSlave, vr: Long): Double {
+            val ref = DoubleArray(1)
+            return getReal(slave, longArrayOf(vr), ref).let { ref[0] }
+        }
+
+        fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
+            return cse.getReal(observer, slave.index, vr, ref)
+        }
+
+    }
+
     companion object {
 
         private val LOG: Logger = LoggerFactory.getLogger(CseExecution::class.java)
@@ -169,3 +184,4 @@ class CseExecution(
     }
 
 }
+
