@@ -4,6 +4,7 @@ plugins {
     id 'cpp'
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.20'
+    id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
 group 'org.osp'
@@ -39,6 +40,10 @@ compileKotlin {
 
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+shadowJar {
+    baseName += "-shadow"
 }
 
 model {
