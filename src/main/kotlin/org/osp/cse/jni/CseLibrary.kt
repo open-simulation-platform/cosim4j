@@ -167,6 +167,17 @@ class CseLibrary {
     external fun createFileObserver(logDir: File): cse_observer
 
     /**
+     * Add an observer to an execution.
+     *
+     * @param execution The execution.
+     * @param observer A pointer to an observer, which may not be null.
+     * The observer may not previously have been added to any execution.
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
+
+    /**
      * Destroys an observer
      */
     external fun destroyObserver(observer: cse_observer): Boolean

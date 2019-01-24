@@ -29,7 +29,10 @@ class CseExecution(
         observer?.apply {
             cse.destroyObserver(this)
         }
-        observer = cse.createMembufferObserver()
+        observer = cse.createMembufferObserver().also {
+            cse.addObserver(execution, it)
+        }
+
     }
 
     fun setFileObserver(logDir: File) {
@@ -39,7 +42,9 @@ class CseExecution(
         if (logDir.exists()) {
             logDir.mkdirs()
         }
-        observer = cse.createFileObserver(logDir.absoluteFile)
+        observer = cse.createFileObserver(logDir.absoluteFile).also {
+            cse.addObserver(execution, it)
+        }
     }
 
     fun addSlave(fmuPath: File): CseSlave {

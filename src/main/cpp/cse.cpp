@@ -204,6 +204,19 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
     return (jlong) observer;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv *env, jobject obj, jlong execution, jlong observer) {
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        return false;
+    }
+
+    if (observer == 0) {
+        std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+        return false;
+    }
+    return cse_execution_add_observer((cse_execution*) execution, (cse_observer*) observer) == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv *env, jobject obj, jlong observer) {
     if (observer == 0) {
         std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
