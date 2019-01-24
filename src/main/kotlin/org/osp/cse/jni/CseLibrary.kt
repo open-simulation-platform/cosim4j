@@ -133,25 +133,6 @@ class CseLibrary {
     external fun getNumSlaves(execution: cse_execution): Long
 
     /**
-     * Retrieves the step numbers for a range given by two points in time.
-     *
-     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
-     * when it is desired to retrieve samples between two points in time.
-     *
-     * Note: It is assumed that `steps` has a length of 2.
-     *
-     * @param observer the observer
-     * @param slaveIndex index of the simulator
-     * @param begin the start of the range
-     * @param end the end of the range
-     * @param steps the corresponding step numbers
-     *
-     * @return 0 on success and -1 on error.
-     */
-    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
-
-
-    /**
      * Retrieves the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
@@ -178,6 +159,42 @@ class CseLibrary {
      * @return  0 on success and -1 on error.
      */
     external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+    /**
+     * Retrieves the step numbers for a range given by a duration.
+     *
+     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
+     * when it is desired to retrieve the latest available samples given a certain duration.
+     *
+     * Note: It is assumed that `steps` has a length of 2.
+     *
+     * @param observer the observer
+     * @param slaveIndex index of the simulator
+     * @param duration duration the duration to get step numbers for
+     * @param steps the corresponding step numbers
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getStepNumbersForDuration(observer: cse_observer, slaveIndex: Int, duration: Double, steps: LongArray): Boolean
+
+    /**
+     * Retrieves the step numbers for a range given by two points in time.
+     *
+     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
+     * when it is desired to retrieve samples between two points in time.
+     *
+     * Note: It is assumed that `steps` has a length of 2.
+     *
+     * @param observer the observer
+     * @param slaveIndex index of the simulator
+     * @param begin the start of the range
+     * @param end the end of the range
+     * @param steps the corresponding step numbers
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
+
 
     /**
      * Connects one real output variable to one real input variable.
