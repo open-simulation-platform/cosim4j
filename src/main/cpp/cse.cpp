@@ -39,6 +39,17 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *
     return (jlong) execution;
 }
 
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecutionFromSsp(JNIEnv *env, jobject obj, jstring sspDir, jdouble startTime) {
+    const char* _sspDir = env->GetStringUTFChars(sspDir, 0);
+    cse_execution* execution = cse_ssp_execution_create(_sspDir, to_cse_time_point(startTime));
+    env->ReleaseStringUTFChars(sspDir, _sspDir);
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper]" << "Failed to create execution: " << cse_last_error_message() << std::endl;
+        return 0;
+    }
+    return (jlong) execution;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyExecution(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
