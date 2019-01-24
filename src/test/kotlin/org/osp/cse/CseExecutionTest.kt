@@ -24,12 +24,28 @@ class CseExecutionTest {
             execution.useMemBufferObserver()
 
             val slave = execution.addSlave(test_fmu)
-
-            Assertions.assertTrue(execution.step(1))
+            Assertions.assertTrue(execution.step(10))
 
             LOG.info("${execution.getStatus()}")
-
             Assertions.assertEquals(298.15, slave.getReal(46))
+
+        }
+
+    }
+
+    @Test
+    fun test2() {
+
+        CseExecution(1.0/100).use { execution ->
+
+            val logDir = File("build/results");
+            execution.useFileObserver(logDir)
+
+            val slave = execution.addSlave(test_fmu)
+            Assertions.assertTrue(execution.step(10))
+
+            LOG.info("${execution.getStatus()}")
+            Assertions.assertTrue(logDir.listFiles().size > 0)
 
         }
 
