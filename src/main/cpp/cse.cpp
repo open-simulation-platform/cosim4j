@@ -132,7 +132,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 
     jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr.data(), size, _ref) == 0;
 
-    env->SetIntArrayRegion(ref, 0, size, _ref);
+    env->SetIntArrayRegion(ref, 0, size, (jint*)_ref);
 
     free(_ref);
     env->ReleaseLongArrayElements(vr, _vr, 0);
@@ -183,7 +183,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
         __vr[i] = (cse_variable_index) _vr[i];
     }
 
-    jboolean status = cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, __vr.data(), size, _values) == 0;
+    jboolean status = cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, __vr.data(), size, (int*)_values) == 0;
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseIntArrayElements(values, _values, 0);
