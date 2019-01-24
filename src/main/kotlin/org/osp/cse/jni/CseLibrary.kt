@@ -133,6 +133,25 @@ class CseLibrary {
     external fun getNumSlaves(execution: cse_execution): Long
 
     /**
+     * Retrieves the step numbers for a range given by two points in time.
+     *
+     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
+     * when it is desired to retrieve samples between two points in time.
+     *
+     * Note: It is assumed that `steps` has a length of 2.
+     *
+     * @param observer the observer
+     * @param slaveIndex index of the simulator
+     * @param begin the start of the range
+     * @param end the end of the range
+     * @param steps the corresponding step numbers
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
+
+
+    /**
      * Retrieves the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
@@ -165,40 +184,22 @@ class CseLibrary {
      *
      * @param execution The execution.
      * @param outputSlaveIndex The source slave.
-     * @param outputVariableIndex The source variable.
+     * @param outputValueRef The source variable.
      * @param inputSlaveIndex The destination slave.
-     * @param inputVariableIndex The destination variable.
+     * @param inputValueRef The destination variable.
      *
      * @return 0 on success and -1 on error.
      */
     external fun connectIntegers(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
     /**
-     * Retrieves the step numbers for a range given by two points in time.
-     *
-     * Helper function which can be used in conjunction with `cse_observer_slave_get_xxx_samples()`
-     * when it is desired to retrieve samples between two points in time.
-     *
-     * Note: It is assumed that `steps` has a length of 2.
-     *
-     * @param observer the observer
-     * @param slaveIndex index of the simulator
-     * @param begin the start of the range
-     * @param end the end of the range
-     * @param steps the corresponding step numbers
-     *
-     * @return 0 on success and -1 on error.
-     */
-    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
-
-    /**
      * Connects one real output variable to one real input variable.
      *
      * @param execution The execution.
      * @param outputSlaveIndex The source slave.
-     * @param outputVariableIndex The source variable.
+     * @param outputValueRef The source variable.
      * @param inputSlaveIndex The destination slave.
-     * @param inputVariableIndex The destination variable.
+     * @param inputValueRef The destination variable.
      *
      * @return 0 on success and -1 on error.
      */
@@ -218,7 +219,7 @@ class CseLibrary {
      *
      * @return  The created observer.
      */
-    external fun createFileObserver(logDir: File): cse_observer
+    external fun createFileObserver(logDir: String): cse_observer
 
     /**
      * Add an observer to an execution.
