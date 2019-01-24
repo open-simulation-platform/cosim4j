@@ -12,30 +12,23 @@ typealias cse_observer = Long
 
 object CseLibrary {
 
-
     init {
 
-        try {
-            CseLibrary::class.java.classLoader.apply {
+        CseLibrary::class.java.classLoader.apply {
 
-                getResource("native/cse/${libPrefix}csecorecpp.$libExtension").file.also {
-                    System.load(it)
-                }
-                getResource("native/cse/${libPrefix}csecorec.$libExtension").file.also {
-                    System.load(it)
-                }
-                getResource("native/cse/${libPrefix}csecore_jni.$libExtension").file.also {
-                    System.load(it)
-                }
-
+            getResource("native/cse/${libPrefix}csecorecpp.$libExtension").file.also {
+                System.load(it)
+            }
+            getResource("native/cse/${libPrefix}csecorec.$libExtension").file.also {
+                System.load(it)
+            }
+            getResource("native/cse/${libPrefix}csecore_jni.$libExtension").file.also {
+                System.load(it)
             }
 
-        } catch (ex: Exception) {
-            throw RuntimeException(ex)
         }
 
     }
-
 
     /**
      *  Returns a textual description of the last reported error.
