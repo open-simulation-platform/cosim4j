@@ -11,12 +11,15 @@ class Demo {
         try(CseExecution execution = new CseExecution(1.0/100)) {
             execution.setMemBufferObserver();
                     
-            CseSlave slave = execution.addSlave("path/to/fmu.fmu");
+            CseSlave slave1 = execution.addSlave("path/to/fmu1.fmu");
+            CseSlave slave2 = execution.addSlave("path/to/fmu2.fmu");
+            
+            execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
             
             execution.start();
             execution.step(10);
             
-            double value = slave.getReal(0 /*vr*/);
+            double value = slave1.getReal(46 /*vr*/);
             
             execution.stop();
         }
