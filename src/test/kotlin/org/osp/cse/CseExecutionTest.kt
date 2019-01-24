@@ -21,7 +21,7 @@ class CseExecutionTest {
 
         CseExecution(1.0/100).use { execution ->
 
-            execution.setMemBufferObserver()
+            execution.useMemBufferObserver()
 
             val slave = execution.addSlave(test_fmu)
 
@@ -30,8 +30,6 @@ class CseExecutionTest {
             LOG.info("${execution.getStatus()}")
 
             Assertions.assertEquals(298.15, slave.getReal(46))
-
-            Assertions.assertTrue(execution.stop())
 
         }
 
