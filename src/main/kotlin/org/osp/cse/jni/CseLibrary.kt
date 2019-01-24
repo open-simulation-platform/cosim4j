@@ -10,7 +10,32 @@ typealias cse_execution = Long
 typealias cse_slave = Long
 typealias cse_observer = Long
 
-class CseLibrary {
+object CseLibrary {
+
+
+    init {
+
+        try {
+            CseLibrary::class.java.classLoader.apply {
+
+                getResource("native/cse/${libPrefix}csecorecpp.$libExtension").file.also {
+                    System.load(it)
+                }
+                getResource("native/cse/${libPrefix}csecorec.$libExtension").file.also {
+                    System.load(it)
+                }
+                getResource("native/cse/${libPrefix}csecore_jni.$libExtension").file.also {
+                    System.load(it)
+                }
+
+            }
+
+        } catch (ex: Exception) {
+            throw RuntimeException(ex)
+        }
+
+    }
+
 
     /**
      *  Returns a textual description of the last reported error.
@@ -19,7 +44,7 @@ class CseLibrary {
      *  returning -1 or `NULL`, after which this function can be called to
      *  obtain more detailed information about the problem.
      *
-     *  This function must be called from the thread in which the error occurred,
+     *  This function must be called create the thread in which the error occurred,
      *  and before any new calls to functions in this library (with the exception
      *  of `cse_last_error_code()`).
      *
@@ -44,7 +69,7 @@ class CseLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createExecution(sspDir: String, startTime: Long): cse_execution
+    external fun createExecution(sspDir: String, startTime: Double): cse_execution
 
     /**
      * Destroys an execution.
@@ -118,7 +143,7 @@ class CseLibrary {
     /**
      * Returns execution status.
      *
-     * @param execution The execution to get status from.
+     * @param execution The execution to get status create.
      * @param status A pointer to a cse_execution_status that will be filled with actual execution status.
      *
      * @return 0 on success and -1 on error.
@@ -253,33 +278,5 @@ class CseLibrary {
      * Destroys an observer
      */
     external fun destroyObserver(observer: cse_observer): Boolean
-
-
-    private companion object {
-
-        init {
-
-            try {
-                CseLibrary::class.java.classLoader.apply {
-
-                    getResource("native/cse/${libPrefix}csecorecpp.$libExtension").file.also {
-                        System.load(it)
-                    }
-                    getResource("native/cse/${libPrefix}csecorec.$libExtension").file.also {
-                        System.load(it)
-                    }
-                    getResource("native/cse/${libPrefix}csecore_jni.$libExtension").file.also {
-                        System.load(it)
-                    }
-
-                }
-
-            } catch (ex: Exception) {
-                throw RuntimeException(ex)
-            }
-
-        }
-
-    }
 
 }
