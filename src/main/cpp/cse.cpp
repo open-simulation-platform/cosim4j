@@ -11,13 +11,27 @@ extern "C" {
 #endif
 
 
+namespace {
+
+    const double sec2nano = 1e9;
+
+    cse_time_point to_cse_time_point(jdouble time_point) {
+        return time_point * sec2nano;
+    }
+
+    cse_duration to_cse_duration(jdouble duration) {
+        return duration * sec2nano;
+    }
+
+}
+
 JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JNIEnv *env, jobject obj) {
     const char* msg = cse_last_error_message();
     return env->NewStringUTF(msg);
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *env, jobject obj, jdouble startTime, jdouble stepSize) {
-    cse_execution* execution = cse_execution_create((cse_time_point) (1000000000.0 * startTime), (cse_duration) (1000000000.0 * stepSize));
+    cse_execution* execution = cse_execution_create(to_cse_time_point(startTime), to_cse_duration(stepSize));
     if (execution == 0) {
         std::cerr << "[JNI-wrapper]" << "Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
@@ -105,7 +119,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
     cse_execution_status _status;
     jboolean success = cse_execution_get_status((cse_execution*) execution, &_status);
 
-    env->SetDoubleField(status, currentTimeId, ((double) _status.current_time) / 1000000000.0);
+    env->SetDoubleField(status, currentTimeId, ((double) _status.current_time) / 1e9);
     env->SetDoubleField(status, realTimeFactorId, _status.real_time_factor);
     env->SetIntField(status, stateId, _status.state);
     env->SetIntField(status, errorId, _status.error_code);
@@ -215,6 +229,48 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble duration, jlongArray steps) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       return false;
+    }
+
+     const size_t size = 2;
+     cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
+
+    jboolean status = cse_observer_get_step_numbers_for_duration((cse_observer*) observer, slaveIndex, to_cse_duration(duration), _steps);
+
+    for (int i = 0; i < size; i++) {
+        jlong step = (jlong) _steps[i];
+        env->SetLongArrayRegion(steps, i, 1, &step);
+    }
+
+    free(_steps);
+
+    return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       return false;
+    }
+
+    const size_t size = 2;
+    cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
+
+    jboolean status = cse_observer_get_step_numbers((cse_observer*) observer, slaveIndex, to_cse_time_point(begin), to_cse_time_point(end), _steps);
+
+    for (int i = 0; i < size; i++) {
+        jlong step = (jlong) _steps[i];
+        env->SetLongArrayRegion(steps, i, 1, &step);
+    }
+
+    free(_steps);
+
+    return status;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectIntegers(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
     if (execution == 0) {
        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
@@ -229,27 +285,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *
        return false;
     }
     return cse_execution_connect_real_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps) {
-    if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
-       return false;
-    }
-
-    const size_t size = 2;
-    cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
-
-    jboolean status = cse_observer_get_step_numbers((cse_observer*) observer, slaveIndex, (cse_time_point) (1000000000.0 * begin), (cse_time_point) (1000000000.0 * end), _steps);
-
-    for (int i = 0; i < size; i++) {
-        jlong step = (jlong) _steps[i];
-        env->SetLongArrayRegion(steps, i, 1, &step);
-    }
-
-    free(_steps);
-
-    return status;
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createMembufferObserver(JNIEnv *env, jobject obj) {
