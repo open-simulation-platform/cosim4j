@@ -33,22 +33,22 @@ class CseExecution(
         return status
     }
 
-    fun addMemBufferObserver(): MembufferObserver {
+    fun addMemBufferObserver(): CseMembufferObserver {
         return cse.createMembufferObserver().let {
             cse.addObserver(execution, it)
-            MembufferObserver(it)
+            CseMembufferObserver(it)
         }.also {
             observers.add(it)
         }
     }
 
-    fun addFileObserver(logDir: File): FileObserver {
+    fun addFileObserver(logDir: File): CseFileObserver {
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
         return cse.createFileObserver(logDir.absolutePath).let {
             cse.addObserver(execution, it)
-            FileObserver(it)
+            CseFileObserver(it)
         }.also {
             observers.add(it)
         }
@@ -149,11 +149,11 @@ class CseExecution(
         }
     }
 
-    inner class FileObserver(
+    inner class CseFileObserver(
         observer: cse_observer
     ): CseObserver(observer)
 
-    inner class MembufferObserver(
+    inner class CseMembufferObserver(
         observer: cse_observer
     ): CseObserver(observer) {
 
