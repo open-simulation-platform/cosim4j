@@ -24,9 +24,18 @@ class CseExecutionTest {
             val observer = execution.addMemBufferObserver()
 
             val slave = execution.addSlave(test_fmu)
-            Assertions.assertTrue(execution.step(10))
 
-            LOG.info("${execution.getStatus()}")
+            execution.getSlaveInfos().apply {
+                Assertions.assertEquals(0, this[0].index)
+                Assertions.assertEquals("ControlledTemperature", this[0].name)
+            }
+
+            Assertions.assertTrue(execution.step(1))
+
+            execution.getStatus().apply {
+                Assertions.assertEquals(0.01, this.currentTime)
+            }
+
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
 
         }
@@ -48,7 +57,10 @@ class CseExecutionTest {
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
 
-            LOG.info("${execution.getStatus()}")
+            execution.getStatus().apply {
+                Assertions.assertEquals(0.1, this.currentTime)
+            }
+
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
 
         }

@@ -139,6 +139,49 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
     return success;
 }
 
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv *env, jobject obj, jlong execution) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       return false;
+    }
+    return (jint) cse_execution_get_num_slaves((cse_execution*) execution);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv *env, jobject obj, jlong execution, jobjectArray infos) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       return false;
+    }
+
+    const jsize size = env->GetArrayLength(infos);
+
+    cse_slave_info* _infos = (cse_slave_info*) malloc(sizeof(cse_slave_info)*size);
+    jboolean status = cse_execution_get_slave_infos((cse_execution*) execution, _infos, size) == 0;
+
+    const char* className = "org/osp/cse/CseSlaveInfo";
+    jclass cls = env->FindClass(className);
+
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        return false;
+    }
+
+    jfieldID nameId = env->GetFieldID(cls, "name_", "Ljava/lang/String;");
+    jfieldID sourceId = env->GetFieldID(cls, "source_", "Ljava/lang/String;");
+    jfieldID indexId = env->GetFieldID(cls, "index", "I");
+
+    for (int i = 0; i < size; i++) {
+        jobject info = env->GetObjectArrayElement(infos, i);
+        env->SetObjectField(info, nameId, env->NewStringUTF(_infos[i].name));
+        env->SetObjectField(info, sourceId, env->NewStringUTF(_infos[i].source));
+        env->SetIntField(info, indexId, _infos[i].index);
+    }
+
+    free(_infos);
+
+    return status;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;

@@ -1,6 +1,7 @@
 package org.osp.cse.jni
 
 import org.osp.cse.CseExecutionStatusImpl
+import org.osp.cse.CseSlaveInfo
 import org.osp.libExtension
 import org.osp.libPrefix
 import java.io.File
@@ -148,8 +149,17 @@ object CseLibrary {
      *
      * @return  the number of slaves which have been added to an execution.
      */
-    external fun getNumSlaves(execution: cse_execution): Long
+    external fun getNumSlaves(execution: cse_execution): Int
 
+    /**
+     * Returns slave infos.
+     *
+     * @param execution The execution to get slave infos from.
+     * @param infos A pointer to an array of length `num_slaves` which will be filled with actual `slave_info` values.
+     *
+     * @return 0 on success and -1 on error.
+     */
+    external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
     /**
      * Retrieves the values of real variables for one slave.
      *

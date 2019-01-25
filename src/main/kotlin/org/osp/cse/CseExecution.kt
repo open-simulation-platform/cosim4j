@@ -77,7 +77,15 @@ class CseExecution private constructor (
         return CseLibrary.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
+    fun getNumSlaves(): Int {
+        return CseLibrary.getNumSlaves(execution);
+    }
 
+    fun getSlaveInfos(): Array<CseSlaveInfo> {
+        val infos = Array(getNumSlaves()) {CseSlaveInfo()}
+        CseLibrary.getSlaveInfos(execution, infos)
+        return infos
+    }
 
     override fun close() {
         observers.forEach {
