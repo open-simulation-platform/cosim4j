@@ -12,21 +12,23 @@ class CseExecutionTest {
 
         val LOG: Logger = LoggerFactory.getLogger(CseExecutionTest::class.java)
 
-        val test_fmu = File(CseExecutionTest::class.java.classLoader
-            .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file)
+        val testFmu = TestFMUs.fmi20().cs()
+            .vendor("20sim").version("4.6.4.8004")
+            .name("ControlledTemperature").file()
+
     }
 
     @Test
     fun test1() {
 
-        val stepSize = 1.0/100
+        val stepSize = 1.0 / 100
         val numSteps = 10L
 
         CseExecution.create(stepSize).use { execution ->
 
             val observer = execution.addMembufferObserver()
 
-            val slave = execution.addSlave(test_fmu)
+            val slave = execution.addSlave(testFmu)
 
             execution.getSlaveInfos().apply {
                 Assertions.assertEquals(0, this[0].index)
@@ -36,7 +38,7 @@ class CseExecutionTest {
             Assertions.assertTrue(execution.step(numSteps))
 
             execution.getStatus().apply {
-                Assertions.assertEquals(stepSize*numSteps, this.currentTime)
+                Assertions.assertEquals(stepSize * numSteps, this.currentTime)
             }
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
@@ -55,14 +57,14 @@ class CseExecutionTest {
     @Test
     fun test2() {
 
-        CseExecution.create(1.0/100).use { execution ->
+        CseExecution.create(1.0 / 100).use { execution ->
 
             val logDir = File("build/results");
             execution.addFileObserver(logDir)
 
             val observer = execution.addMembufferObserver()
 
-            val slave = execution.addSlave(test_fmu)
+            val slave = execution.addSlave(testFmu)
             Assertions.assertTrue(execution.step(10))
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
