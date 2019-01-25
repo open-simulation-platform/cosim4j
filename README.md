@@ -23,10 +23,20 @@ class Demo {
             execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
             
             //execution.start();
-            execution.step(1);
+            execution.step(10);
             //execution.stop();
             
+            CseExecutionStatus status = execution.getStatus();
+            double currentTime = status.getCurrentTime();
+            CseExecutionState state = stats.getState();
+            CseErrorCode = status.getErrorCode();
+            
             double value = membufferObserver.getReal(slave1, 46 /*vr*/);
+            
+            CseRealSamples samples = membufferObserver.getRealSamples(slave1, 46 /*vr*/, 0, 5);
+            double[] values = samples.getValues();
+            double[] times = sample.getTimes();
+            long[] steps = sample.getSteps();
             
         } // try with resources (calls destroy internally)
   
@@ -45,7 +55,7 @@ This will generate a JAR named _cse_core_shadow_\<version\>.jar into _build/libs
 
 #### Maven local
 
-If you want to generate a maven artifact and mut it into your local maven repository (`.m2`), just run:
+If you want to generate a maven artifact and put it into your local maven repository (`.m2`), just run:
 ```bash
 ./gradlew publishToMavenLocal
 ```
