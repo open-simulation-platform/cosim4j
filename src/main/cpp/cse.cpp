@@ -182,28 +182,26 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv 
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
-    if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jdoubleArray values) {
+
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
        return false;
     }
 
     const jsize size = env->GetArrayLength(vr);
     jlong *_vr = env->GetLongArrayElements(vr, 0);
-
-    int* _ref = (int*) malloc(sizeof(int) * size);
+    jdouble *_values = env->GetDoubleArrayElements(values, 0);
 
     std::vector<cse_variable_index> __vr(size);
     for (int i = 0; i < size; i++) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
 
-    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr.data(), size, _ref) == 0;
+    jboolean status = cse_execution_slave_set_real((cse_execution*) execution, slaveIndex, __vr.data(), size, _values) == 0;
 
-    env->SetIntArrayRegion(ref, 0, size, (jint*)_ref);
-
-    free(_ref);
     env->ReleaseLongArrayElements(vr, _vr, 0);
+    env->ReleaseDoubleArrayElements(values, _values, 0);
 
     return status;
 }
@@ -232,7 +230,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
     env->ReleaseLongArrayElements(vr, _vr, 0);
 
     return status;
-
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
@@ -259,26 +256,28 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jdoubleArray values) {
-
-    if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
        return false;
     }
 
     const jsize size = env->GetArrayLength(vr);
     jlong *_vr = env->GetLongArrayElements(vr, 0);
-    jdouble *_values = env->GetDoubleArrayElements(values, 0);
+
+    int* _ref = (int*) malloc(sizeof(int) * size);
 
     std::vector<cse_variable_index> __vr(size);
     for (int i = 0; i < size; i++) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
 
-    jboolean status = cse_execution_slave_set_real((cse_execution*) execution, slaveIndex, __vr.data(), size, _values) == 0;
+    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr.data(), size, _ref) == 0;
 
+    env->SetIntArrayRegion(ref, 0, size, (jint*)_ref);
+
+    free(_ref);
     env->ReleaseLongArrayElements(vr, _vr, 0);
-    env->ReleaseDoubleArrayElements(values, _values, 0);
 
     return status;
 }
