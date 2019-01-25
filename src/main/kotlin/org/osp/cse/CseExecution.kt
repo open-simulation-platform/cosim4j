@@ -27,7 +27,7 @@ class CseExecution private constructor (
         }
     }
 
-    fun addMemBufferObserver(): CseMembufferObserver {
+    fun addMembufferObserver(): CseMembufferObserver {
         return CseLibrary.createMembufferObserver().let {
             CseLibrary.addObserver(execution, it)
             CseMembufferObserver(it)
@@ -49,7 +49,7 @@ class CseExecution private constructor (
     }
 
     fun addSlave(fmuPath: File): CseSlave {
-        return CseSlave(fmuPath)
+        return CseSlave(execution, fmuPath)
     }
 
     fun start(): Boolean {
@@ -93,96 +93,6 @@ class CseExecution private constructor (
         CseLibrary.destroyExecution(execution).also {
             LOG.debug("Destroyed execution successfully: $it")
         }
-    }
-
-    inner class CseSlave (
-        fmuPath: File
-    ) {
-        private val slave: cse_slave = CseLibrary.createLocalSlave(fmuPath.absolutePath)
-        val index: Int = CseLibrary.addSlave(execution, slave)
-
-        fun setInteger(vr: Long, value: Int): Boolean {
-            return setInteger(longArrayOf(vr), intArrayOf(value))
-        }
-
-        fun setInteger(vr: LongArray, values: IntArray): Boolean {
-            return CseLibrary.setInteger(execution, index, vr, values)
-        }
-
-        fun setReal(vr: Long, value: Double): Boolean {
-            return setReal(longArrayOf(vr), doubleArrayOf(value))
-        }
-
-        fun setReal(vr: LongArray, values: DoubleArray): Boolean {
-            return CseLibrary.setReal(execution, index, vr, values)
-        }
-
-    }
-
-    open inner class CseObserver protected constructor(
-        private var observer_: cse_observer?
-    ): Closeable {
-
-        protected val observer: cse_observer = observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
-
-        fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
-            val steps = LongArray(2)
-            return CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps).let {
-                steps[0] to steps[1]
-            }
-        }
-
-        fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
-            val steps = LongArray(2)
-            return CseLibrary.getStepNumbers(observer, slave.index, begin, end, steps).let {
-                steps[0] to steps[1]
-            }
-        }
-
-        override fun close() {
-            observer_?.also {
-                CseLibrary.destroyObserver(it).also { success ->
-                    observer_ = null
-                    LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
-                }
-            }
-        }
-    }
-
-    inner class CseFileObserver(
-        observer: cse_observer
-    ): CseObserver(observer)
-
-    inner class CseMembufferObserver(
-        observer: cse_observer
-    ): CseObserver(observer) {
-
-        fun getReal(slave: CseSlave, vr: Long): Double {
-            val ref = DoubleArray(1)
-            return getReal(slave, longArrayOf(vr), ref).let { ref[0] }
-        }
-
-        fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-            return CseLibrary.getReal(observer, slave.index, vr, ref)
-        }
-
-        fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
-            return CseLibrary.getRealSamples(observer, slave.index, vr, stepNumber, nSamples)
-        }
-
-        fun getInteger(slave: CseSlave, vr: Long): Int {
-            val ref = IntArray(1)
-            return getInteger(slave, longArrayOf(vr), ref).let { ref[0] }
-        }
-
-        fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-            return CseLibrary.getInteger(observer, slave.index, vr, ref)
-        }
-
-        fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-            return CseLibrary.getIntegerSamples(observer, slave.index, vr, stepNumber, nSamples)
-        }
-
     }
 
     companion object {

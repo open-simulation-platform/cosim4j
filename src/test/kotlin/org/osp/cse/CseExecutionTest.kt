@@ -24,7 +24,7 @@ class CseExecutionTest {
 
         CseExecution.create(stepSize).use { execution ->
 
-            val observer = execution.addMemBufferObserver()
+            val observer = execution.addMembufferObserver()
 
             val slave = execution.addSlave(test_fmu)
 
@@ -60,7 +60,7 @@ class CseExecutionTest {
             val logDir = File("build/results");
             execution.addFileObserver(logDir)
 
-            val observer = execution.addMemBufferObserver()
+            val observer = execution.addMembufferObserver()
 
             val slave = execution.addSlave(test_fmu)
             Assertions.assertTrue(execution.step(10))
