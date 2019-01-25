@@ -13,15 +13,18 @@ import java.io.File
 class CseExecution private constructor (
     private val execution: cse_execution
 ): Closeable {
-    
-    private val observers: MutableList<CseObserver> = mutableListOf()
 
     private val status = CseExecutionStatusImpl()
-    
+    private val observers: MutableList<CseObserver> = mutableListOf()
+
+    val numSlaves: Int
+        get() = CseLibrary.getNumSlaves(execution)
+
 
     fun getStatus(): CseExecutionStatus {
-        CseLibrary.getStatus(execution, status)
-        return status
+        return status.also {
+            CseLibrary.getStatus(execution, status)
+        }
     }
 
     fun addMemBufferObserver(): CseMembufferObserver {
@@ -77,14 +80,10 @@ class CseExecution private constructor (
         return CseLibrary.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
-    fun getNumSlaves(): Int {
-        return CseLibrary.getNumSlaves(execution);
-    }
-
     fun getSlaveInfos(): Array<CseSlaveInfo> {
-        val infos = Array(getNumSlaves()) {CseSlaveInfo()}
-        CseLibrary.getSlaveInfos(execution, infos)
-        return infos
+        return Array(numSlaves) {CseSlaveInfo()}.also {
+            CseLibrary.getSlaveInfos(execution, it)
+        }
     }
 
     override fun close() {
@@ -99,13 +98,8 @@ class CseExecution private constructor (
     inner class CseSlave (
         fmuPath: File
     ) {
-        private val slave: cse_slave
-        val index: Int
-
-        init {
-            slave = CseLibrary.createLocalSlave(fmuPath.absolutePath)
-            index = CseLibrary.addSlave(execution, slave)
-        }
+        private val slave: cse_slave = CseLibrary.createLocalSlave(fmuPath.absolutePath)
+        val index: Int = CseLibrary.addSlave(execution, slave)
 
         fun setInteger(vr: Long, value: Int): Boolean {
             return setInteger(longArrayOf(vr), intArrayOf(value))
