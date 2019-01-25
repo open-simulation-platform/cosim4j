@@ -114,8 +114,8 @@ class CseExecution private constructor (
         }
 
         @JvmStatic
-        fun create(sspDir: File, stepSize: Double): CseExecution {
-            return CseLibrary.createExecution(sspDir.absolutePath, stepSize).let {
+        fun create(sspDir: File, startTime: Double): CseExecution {
+            return CseLibrary.createExecution(sspDir.absolutePath, startTime).let {
                 CseExecution((it))
             }
         }
