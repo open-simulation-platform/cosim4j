@@ -19,7 +19,10 @@ class CseExecutionTest {
     @Test
     fun test1() {
 
-        CseExecution.create(1.0/100).use { execution ->
+        val stepSize = 1.0/100
+        val numSteps = 10L
+
+        CseExecution.create(stepSize).use { execution ->
 
             val observer = execution.addMemBufferObserver()
 
@@ -30,13 +33,20 @@ class CseExecutionTest {
                 Assertions.assertEquals("ControlledTemperature", this[0].name)
             }
 
-            Assertions.assertTrue(execution.step(1))
+            Assertions.assertTrue(execution.step(numSteps))
 
             execution.getStatus().apply {
-                Assertions.assertEquals(0.01, this.currentTime)
+                Assertions.assertEquals(stepSize*numSteps, this.currentTime)
             }
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
+
+            val samples = observer.getRealSamples(slave, 46, 0, 5)
+
+            Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
+            Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
+
+            LOG.info("$samples")
 
         }
 

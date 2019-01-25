@@ -163,6 +163,19 @@ class CseExecution private constructor (
         observer: cse_observer
     ): CseObserver(observer) {
 
+        fun getReal(slave: CseSlave, vr: Long): Double {
+            val ref = DoubleArray(1)
+            return getReal(slave, longArrayOf(vr), ref).let { ref[0] }
+        }
+
+        fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
+            return CseLibrary.getReal(observer, slave.index, vr, ref)
+        }
+
+        fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+            return CseLibrary.getRealSamples(observer, slave.index, vr, stepNumber, nSamples)
+        }
+
         fun getInteger(slave: CseSlave, vr: Long): Int {
             val ref = IntArray(1)
             return getInteger(slave, longArrayOf(vr), ref).let { ref[0] }
@@ -172,13 +185,8 @@ class CseExecution private constructor (
             return CseLibrary.getInteger(observer, slave.index, vr, ref)
         }
 
-        fun getReal(slave: CseSlave, vr: Long): Double {
-            val ref = DoubleArray(1)
-            return getReal(slave, longArrayOf(vr), ref).let { ref[0] }
-        }
-
-        fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-            return CseLibrary.getReal(observer, slave.index, vr, ref)
+        fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+            return CseLibrary.getIntegerSamples(observer, slave.index, vr, stepNumber, nSamples)
         }
 
     }

@@ -14,6 +14,7 @@ extern "C" {
 namespace {
 
     const double sec2nano = 1e9;
+    const double nano2sec = 1.0/sec2nano;
 
     cse_time_point to_cse_time_point(jdouble time_point) {
         return time_point * sec2nano;
@@ -21,6 +22,10 @@ namespace {
 
     cse_duration to_cse_duration(jdouble duration) {
         return duration * sec2nano;
+    }
+
+    jdouble to_seconds(int64_t duration) {
+        return ((double) duration) * nano2sec;
     }
 
 }
@@ -130,7 +135,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
     cse_execution_status _status;
     jboolean success = cse_execution_get_status((cse_execution*) execution, &_status);
 
-    env->SetDoubleField(status, currentTimeId, ((double) _status.current_time) / 1e9);
+    env->SetDoubleField(status, currentTimeId, to_seconds(_status.current_time));
     env->SetDoubleField(status, realTimeFactorId, _status.real_time_factor);
     env->SetIntField(status, stateId, _status.state);
     env->SetIntField(status, errorId, _status.error_code);
@@ -232,6 +237,61 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
     return status;
 }
 
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       return NULL;
+    }
+
+    const char* className = "org/osp/cse/CseRealSamples";
+    jclass cls = env->FindClass(className);
+
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        return NULL;
+    }
+
+    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
+    jfieldID valuesId = env->GetFieldID(cls, "values", "[D");
+    jfieldID stepsId = env->GetFieldID(cls, "steps", "[J");
+    jfieldID timesId = env->GetFieldID(cls, "times", "[D");
+
+    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
+
+    jobject samples = env->NewObject(cls, constructor);
+
+    double* values = (double*) malloc(sizeof(double) * nSamples);
+    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+
+    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+
+    jdoubleArray _values = env->NewDoubleArray(numSamplesRead);
+    jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
+    jlongArray _steps = env->NewLongArray(numSamplesRead);
+
+    env->SetDoubleArrayRegion(_values, 0, numSamplesRead, values);
+
+    for (int i = 0; i < numSamplesRead; i++) {
+        jlong step = (jlong) steps[i];
+        double time = to_seconds(times[i]);
+
+        env->SetDoubleArrayRegion(_times, i, 1, &time);
+        env->SetLongArrayRegion(_steps, i, 1, &step);
+    }
+
+    env->SetIntField(samples, sizeId, numSamplesRead);
+    env->SetObjectField(samples, valuesId, _values);
+    env->SetObjectField(samples, stepsId, _steps);
+    env->SetObjectField(samples, timesId, _times);
+
+    free(values);
+    free(steps);
+    free(times);
+
+    return samples;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
 
     if (execution == 0) {
@@ -280,6 +340,61 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
     env->ReleaseLongArrayElements(vr, _vr, 0);
 
     return status;
+}
+
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       return NULL;
+    }
+
+    const char* className = "org/osp/cse/CseIntegerSamples";
+    jclass cls = env->FindClass(className);
+
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        return NULL;
+    }
+
+    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
+    jfieldID valuesId = env->GetFieldID(cls, "values", "[I");
+    jfieldID stepsId = env->GetFieldID(cls, "steps", "[J");
+    jfieldID timesId = env->GetFieldID(cls, "times", "[D");
+
+    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
+
+    jobject samples = env->NewObject(cls, constructor);
+
+    int* values = (int*) malloc(sizeof(int) * nSamples);
+    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+
+    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+
+    jintArray _values = env->NewIntArray(numSamplesRead);
+    jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
+    jlongArray _steps = env->NewLongArray(numSamplesRead);
+
+    env->SetIntArrayRegion(_values, 0, numSamplesRead, values);
+
+    for (int i = 0; i < numSamplesRead; i++) {
+        jlong step = (jlong) steps[i];
+        double time = to_seconds(times[i]);
+
+        env->SetDoubleArrayRegion(_times, i, 1, &time);
+        env->SetLongArrayRegion(_steps, i, 1, &step);
+    }
+
+    env->SetIntField(samples, sizeId, numSamplesRead);
+    env->SetObjectField(samples, valuesId, _values);
+    env->SetObjectField(samples, stepsId, _steps);
+    env->SetObjectField(samples, timesId, _times);
+
+    free(values);
+    free(steps);
+    free(times);
+
+    return samples;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble duration, jlongArray steps) {

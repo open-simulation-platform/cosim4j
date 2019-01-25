@@ -1,6 +1,8 @@
 package org.osp.cse.jni
 
 import org.osp.cse.CseExecutionStatusImpl
+import org.osp.cse.CseIntegerSamples
+import org.osp.cse.CseRealSamples
 import org.osp.cse.CseSlaveInfo
 import org.osp.libExtension
 import org.osp.libPrefix
@@ -160,12 +162,15 @@ object CseLibrary {
      * @return 0 on success and -1 on error.
      */
     external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
+
+
+
     /**
-     * Retrieves the values of real variables for one slave.
+     * Sets the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
-    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+    external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
 
     /**
      * Retrieves the values of real variables for one slave.
@@ -175,6 +180,18 @@ object CseLibrary {
     external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
     /**
+     * Retrieves a series of observed values, step numbers and times for a real variable.
+     *
+     * @param observer the observer
+     * @param slaveIndex  index of the slave
+     * @param vr the variable index
+     * @param stepNumber the step number to start from
+     * @param nSamples the number of samples to read
+     *
+     */
+    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples
+
+    /**
      *  Sets the values of integer variables for one slave.
      *
      *  @return  0 on success and -1 on error.
@@ -182,11 +199,23 @@ object CseLibrary {
     external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
     /**
-     * Sets the values of real variables for one slave.
+     * Retrieves the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
-    external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+
+    /**
+     * Retrieves a series of observed values, step numbers and times for a real variable.
+     *
+     * @param observer the observer
+     * @param slaveIndex  index of the slave
+     * @param vr the variable index
+     * @param stepNumber the step number to start from
+     * @param nSamples the number of samples to read
+     *
+     */
+    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples
 
     /**
      * Retrieves the step numbers for a range given by a duration.
