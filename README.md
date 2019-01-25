@@ -14,11 +14,17 @@ class Demo {
         
         try(CseExecution execution = CseExecution.create(1.0/100)) {
             
+            //execution.enableRealTimeSimulation();
+            //execution.disableRealTimeSimulation();
+            
             CseMembufferObserver membufferObserver = execution.addMembufferObserver();
             CseFileObserver fileObserver = execution.addFileObserver(new File("results"));
                     
-            CseSlave slave1 = execution.addSlave("path/to/fmu1.fmu");
-            CseSlave slave2 = execution.addSlave("path/to/fmu2.fmu");
+            CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"));
+            CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"));
+            
+            CseSlaveInfo[] infos = execution.getSlaveInfos();
+            String slave1Name = infos[0].getName();
             
             execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
             
