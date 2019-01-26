@@ -292,6 +292,51 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
     return samples;
 }
 
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return NULL;
+    }
+
+    double* values = (double*) malloc(sizeof(double) * nSamples);
+    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+
+    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+
+    double* times_ = (double*) malloc(sizeof(double)* numSamplesRead);
+    for (int i = 0; i < numSamplesRead; i++) {
+        times_[i] = to_seconds(times[i]);
+    }
+    free(times);
+
+    const char* className = "org/osp/cse/CseRealSamplesDirect";
+    jclass cls = env->FindClass(className);
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
+        return NULL;
+    }
+
+    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
+    jfieldID valuesId = env->GetFieldID(cls, "valueBuffer", "Ljava/nio/ByteBuffer;");
+    jfieldID timesId = env->GetFieldID(cls, "timeBuffer",  "Ljava/nio/ByteBuffer;");
+    jfieldID stepsId = env->GetFieldID(cls, "stepBuffer", "Ljava/nio/ByteBuffer;");
+
+    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
+    jobject samples = env->NewObject(cls, constructor);
+
+    jobject valueBuffer = env->NewDirectByteBuffer(values, 8 * numSamplesRead);
+    jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
+    jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
+
+    env->SetIntField(samples, sizeId, numSamplesRead);
+    env->SetObjectField(samples, valuesId, valueBuffer);
+    env->SetObjectField(samples, timesId, timeBuffer);
+    env->SetObjectField(samples, stepsId, stepBuffer);
+
+    return samples;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
 
     if (execution == 0) {
@@ -393,6 +438,51 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     free(values);
     free(steps);
     free(times);
+
+    return samples;
+}
+
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return NULL;
+    }
+
+    int* values = (int*) malloc(sizeof(int) * nSamples);
+    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+
+    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+
+    double* times_ = (double*) malloc(sizeof(double)* numSamplesRead);
+    for (int i = 0; i < numSamplesRead; i++) {
+        times_[i] = to_seconds(times[i]);
+    }
+    free(times);
+
+    const char* className = "org/osp/cse/CseRealSamplesDirect";
+    jclass cls = env->FindClass(className);
+    if (cls == 0) {
+        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
+        return NULL;
+    }
+
+    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
+    jfieldID valuesId = env->GetFieldID(cls, "valueBuffer", "Ljava/nio/ByteBuffer;");
+    jfieldID timesId = env->GetFieldID(cls, "timeBuffer",  "Ljava/nio/ByteBuffer;");
+    jfieldID stepsId = env->GetFieldID(cls, "stepBuffer", "Ljava/nio/ByteBuffer;");
+
+    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
+    jobject samples = env->NewObject(cls, constructor);
+
+    jobject valueBuffer = env->NewDirectByteBuffer(values, 4 * numSamplesRead);
+    jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
+    jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
+
+    env->SetIntField(samples, sizeId, numSamplesRead);
+    env->SetObjectField(samples, valuesId, valueBuffer);
+    env->SetObjectField(samples, timesId, timeBuffer);
+    env->SetObjectField(samples, stepsId, stepBuffer);
 
     return samples;
 }

@@ -49,6 +49,12 @@ class CseExecutionTest {
                 Assertions.assertArrayEquals(longArrayOf(0, 1, 2, 3, 4), samples.steps)
             }
 
+            observer.getRealSamplesDirect(slave, 46, 0, 5).also { samples ->
+                Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
+                Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
+                Assertions.assertArrayEquals(longArrayOf(0, 1, 2, 3, 4), samples.steps)
+            }
+
         }
 
     }

@@ -1,9 +1,6 @@
 package org.osp.cse.jni
 
-import org.osp.cse.CseExecutionStatus
-import org.osp.cse.CseIntegerSamples
-import org.osp.cse.CseRealSamples
-import org.osp.cse.CseSlaveInfo
+import org.osp.cse.*
 import org.osp.util.libExtension
 import org.osp.util.libPrefix
 
@@ -188,6 +185,18 @@ object CseLibrary {
      *
      */
     external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples
+
+    /**
+     * Retrieves a series of observed values, step numbers and times for a real variable.
+     *
+     * @param observer the observer
+     * @param slaveIndex  index of the slave
+     * @param vr the variable index
+     * @param stepNumber the step number to start from
+     * @param nSamples the number of samples to read
+     *
+     */
+    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamplesDirect
 
     /**
      *  Sets the values of integer variables for one slave.

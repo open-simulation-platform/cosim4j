@@ -64,6 +64,10 @@ class CseMembufferObserver(
         return CseLibrary.getRealSamples(observer, slave.index, vr, stepNumber, nSamples)
     }
 
+    fun getRealSamplesDirect(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamplesDirect {
+        return CseLibrary.getRealSamplesDirect(observer, slave.index, vr, stepNumber, nSamples)
+    }
+
     fun getInteger(slave: CseSlave, vr: Long): Int {
         val ref = IntArray(1)
         return getInteger(slave, longArrayOf(vr), ref).let { ref[0] }
