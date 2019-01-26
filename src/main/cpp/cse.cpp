@@ -198,12 +198,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     jlong *_vr = env->GetLongArrayElements(vr, 0);
     jdouble *_values = env->GetDoubleArrayElements(values, 0);
 
-    std::vector<cse_variable_index> __vr(size);
-    for (int i = 0; i < size; i++) {
-        __vr[i] = (cse_variable_index) _vr[i];
-    }
-
-    jboolean status = cse_execution_slave_set_real((cse_execution*) execution, slaveIndex, __vr.data(), size, _values) == 0;
+    jboolean status = cse_execution_slave_set_real((cse_execution*) execution, slaveIndex, (cse_variable_index*) _vr, size, _values) == 0;
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseDoubleArrayElements(values, _values, 0);
@@ -222,12 +217,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
 
     double* _ref = (double*) malloc(sizeof(double) * size);
 
-    std::vector<cse_variable_index> __vr(size);
-    for (int i = 0; i < size; i++) {
-        __vr[i] = (cse_variable_index) _vr[i];
-    }
-
-    jboolean status = cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, __vr.data(), size, _ref) == 0;
+    jboolean status = cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, size, _ref) == 0;
 
     env->SetDoubleArrayRegion(ref, 0, size, _ref);
 
@@ -348,12 +338,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     jlong *_vr = env->GetLongArrayElements(vr, 0);
     jint *_values = env->GetIntArrayElements(values, 0);
 
-    std::vector<cse_variable_index> __vr(size);
-    for (int i = 0; i < size; i++) {
-        __vr[i] = (cse_variable_index) _vr[i];
-    }
-
-    jboolean status = cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, __vr.data(), size, (int*)_values) == 0;
+    jboolean status = cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, (cse_variable_index*) _vr, size, (int*)_values) == 0;
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseIntArrayElements(values, _values, 0);
@@ -372,12 +357,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 
     int* _ref = (int*) malloc(sizeof(int) * size);
 
-    std::vector<cse_variable_index> __vr(size);
-    for (int i = 0; i < size; i++) {
-        __vr[i] = (cse_variable_index) _vr[i];
-    }
-
-    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr.data(), size, _ref) == 0;
+    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, size, _ref) == 0;
 
     env->SetIntArrayRegion(ref, 0, size, (jint*)_ref);
 
@@ -407,7 +387,6 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     jfieldID timesId = env->GetFieldID(cls, "times", "[D");
 
     jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
-
     jobject samples = env->NewObject(cls, constructor);
 
     int* values = (int*) malloc(sizeof(int) * nSamples);
