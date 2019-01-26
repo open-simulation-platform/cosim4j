@@ -38,7 +38,7 @@ JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JN
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *env, jobject obj, jdouble startTime, jdouble stepSize) {
     cse_execution* execution = cse_execution_create(to_cse_time_point(startTime), to_cse_duration(stepSize));
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper]" << "Failed to create execution: " << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper]" << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) execution;
@@ -49,7 +49,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecutionFromSsp(J
     cse_execution* execution = cse_ssp_execution_create(_sspDir, to_cse_time_point(startTime));
     env->ReleaseStringUTFChars(sspDir, _sspDir);
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper]" << "Failed to create execution: " << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper]" << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) execution;
@@ -57,7 +57,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecutionFromSsp(J
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyExecution(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
     return cse_execution_destroy((cse_execution*) execution) == 0;
@@ -73,11 +73,11 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLocalSlave(JNIEnv 
 
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv *env, jobject obj, jlong execution, jlong slave) {
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
     if (slave == 0) {
-        std::cerr << "[JNI-wrapper] slave is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: slave is NULL" << std::endl;
         return false;
     }
 
@@ -98,7 +98,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stop(JNIEnv *env, job
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_enableRealTimeSimulation(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
     return cse_execution_enable_real_time_simulation((cse_execution*) execution) == 0;
@@ -106,7 +106,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_enableRealTimeSimulat
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_disableRealTimeSimulation(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
     return cse_execution_disable_real_time_simulation((cse_execution*) execution) == 0;
@@ -114,7 +114,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_disableRealTimeSimula
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env, jobject obj, jlong execution, jobject status) {
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
 
@@ -122,7 +122,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
     jclass cls = env->FindClass(className);
 
     if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
         return false;
     }
 
@@ -146,7 +146,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
 
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
     return (jint) cse_execution_get_num_slaves((cse_execution*) execution);
@@ -154,7 +154,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv *env,
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv *env, jobject obj, jlong execution, jobjectArray infos) {
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
 
@@ -167,7 +167,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv 
     jclass cls = env->FindClass(className);
 
     if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
         return false;
     }
 
@@ -190,7 +190,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jdoubleArray values) {
 
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
 
@@ -213,7 +213,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
 
@@ -239,7 +239,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
 
 JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
 
@@ -247,7 +247,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
     jclass cls = env->FindClass(className);
 
     if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
         return NULL;
     }
 
@@ -295,7 +295,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
 
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
 
@@ -318,7 +318,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
 
@@ -344,7 +344,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 
 JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
 
@@ -399,7 +399,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble duration, jlongArray steps) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
 
@@ -420,7 +420,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDura
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps) {
     if (observer == 0) {
-       std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
 
@@ -441,7 +441,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectIntegers(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
     return cse_execution_connect_integer_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
@@ -449,7 +449,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectIntegers(JNIEn
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
     if (execution == 0) {
-       std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
     return cse_execution_connect_real_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
@@ -458,7 +458,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createMembufferObserver(JNIEnv *env, jobject obj) {
     auto observer = cse_membuffer_observer_create();
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper]" << "Failed to create observer: " << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) observer;
@@ -469,7 +469,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
     cse_observer* observer = cse_file_observer_create(_logDir);
     env->ReleaseStringUTFChars(logDir, _logDir);
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper]" << "Failed to create observer: " << cse_last_error_message() << std::endl;
+        std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) observer;
@@ -477,12 +477,12 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv *env, jobject obj, jlong execution, jlong observer) {
     if (execution == 0) {
-        std::cerr << "[JNI-wrapper] execution is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
 
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
         return false;
     }
     return cse_execution_add_observer((cse_execution*) execution, (cse_observer*) observer) == 0;
@@ -490,7 +490,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv *e
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv *env, jobject obj, jlong observer) {
     if (observer == 0) {
-        std::cerr << "[JNI-wrapper] observer is NULL" << std::endl;
+        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
         return false;
     }
     return cse_observer_destroy((cse_observer*) observer) == 0;
