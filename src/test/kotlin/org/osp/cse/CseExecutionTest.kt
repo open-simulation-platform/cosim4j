@@ -38,17 +38,16 @@ class CseExecutionTest {
             Assertions.assertTrue(execution.step(numSteps))
 
             execution.getStatus().apply {
-                Assertions.assertEquals(stepSize * numSteps, this.currentTime)
+                Assertions.assertEquals(stepSize * numSteps, this.currentTime, 1E-6)
             }
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
 
-            val samples = observer.getRealSamples(slave, 46, 0, 5)
-
-            Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
-            Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
-
-            LOG.info("$samples")
+            observer.getRealSamples(slave, 46, 0, 5).also { samples ->
+                Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
+                Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
+                Assertions.assertArrayEquals(longArrayOf(0, 1, 2, 3, 4), samples.steps)
+            }
 
         }
 
