@@ -1,4 +1,4 @@
-package org.osp
+package org.osp.util
 
 internal val osName: String = System.getProperty("os.name")
 internal val platformBitness: String = System.getProperty("sun.arch.data.model")
