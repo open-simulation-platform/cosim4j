@@ -3,6 +3,7 @@ package org.osp.cse
 import java.lang.IllegalStateException
 
 class CseSlaveInfo {
+
     private var name_: String? = null
     val name: String by lazy {
         name_ ?: throw IllegalStateException("Not initialized yet!")

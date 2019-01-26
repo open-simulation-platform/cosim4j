@@ -25,6 +25,7 @@ class CseRealSamples: CseSamples() {
     }
 
 }
+
 class CseIntegerSamples: CseSamples() {
 
     lateinit var values: IntArray
