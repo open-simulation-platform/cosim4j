@@ -1,6 +1,6 @@
 package org.osp.cse.jni
 
-import org.osp.cse.CseExecutionStatusImpl
+import org.osp.cse.CseExecutionStatus
 import org.osp.cse.CseIntegerSamples
 import org.osp.cse.CseRealSamples
 import org.osp.cse.CseSlaveInfo
@@ -142,7 +142,7 @@ object CseLibrary {
      *
      * @return 0 on success and -1 on error.
      */
-    external fun getStatus(execution: cse_execution, status: CseExecutionStatusImpl): Boolean
+    external fun getStatus(execution: cse_execution, status: CseExecutionStatus): Boolean
 
     /**
      * Returns the number of slaves which have been added to an execution.

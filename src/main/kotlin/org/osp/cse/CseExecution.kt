@@ -14,7 +14,7 @@ class CseExecution private constructor (
     private val execution: cse_execution
 ): Closeable {
 
-    private val status = CseExecutionStatusImpl()
+    private val status = CseExecutionStatus()
     private val observers: MutableList<CseObserver> = mutableListOf()
 
     val numSlaves: Int

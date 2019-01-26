@@ -118,7 +118,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
         return false;
     }
 
-    const char* className = "org/osp/cse/CseExecutionStatusImpl";
+    const char* className = "org/osp/cse/CseExecutionStatus";
     jclass cls = env->FindClass(className);
 
     if (cls == 0) {
