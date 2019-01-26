@@ -28,6 +28,42 @@ namespace {
         return ((double) duration) * nano2sec;
     }
 
+    struct CseExecutionStatusFields {
+        jfieldID stateId;
+        jfieldID errorId;
+        jfieldID currentTimeId;
+        jfieldID realTimeFactorId;
+        jfieldID realTimeSimulationId;
+
+        bool initialized = false;
+
+    };
+
+    CseExecutionStatusFields cseExecutionStatusFields;
+
+    inline void initCseExecutionStatusFields(JNIEnv *env) {
+
+        if (!cseExecutionStatusFields.initialized) {
+
+            const char* className = "org/osp/cse/CseExecutionStatus";
+            jclass cls = env->FindClass(className);
+
+            if (cls == 0) {
+                std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
+            }
+
+            cseExecutionStatusFields.stateId = env->GetFieldID(cls, "stateId", "I");
+            cseExecutionStatusFields.errorId = env->GetFieldID(cls, "errorCodeId", "I");
+            cseExecutionStatusFields.currentTimeId = env->GetFieldID(cls, "currentTime", "D");
+            cseExecutionStatusFields.realTimeFactorId = env->GetFieldID(cls, "realTimeFactor", "D");
+            cseExecutionStatusFields.realTimeSimulationId = env->GetFieldID(cls, "realTimeSimulation", "Z");
+
+            cseExecutionStatusFields.initialized = true;
+
+        }
+
+    }
+
 }
 
 JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JNIEnv *env, jobject obj) {
@@ -118,28 +154,16 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
         return false;
     }
 
-    const char* className = "org/osp/cse/CseExecutionStatus";
-    jclass cls = env->FindClass(className);
-
-    if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
-        return false;
-    }
-
-    jfieldID currentTimeId = env->GetFieldID(cls, "currentTime", "D");
-    jfieldID stateId = env->GetFieldID(cls, "stateId", "I");
-    jfieldID errorId = env->GetFieldID(cls, "errorCodeId", "I");
-    jfieldID realTimeFactorId = env->GetFieldID(cls, "realTimeFactor", "D");
-    jfieldID realTimeSimulationId = env->GetFieldID(cls, "realTimeSimulation", "Z");
-
     cse_execution_status _status;
     jboolean success = cse_execution_get_status((cse_execution*) execution, &_status);
 
-    env->SetDoubleField(status, currentTimeId, to_seconds(_status.current_time));
-    env->SetDoubleField(status, realTimeFactorId, _status.real_time_factor);
-    env->SetIntField(status, stateId, _status.state);
-    env->SetIntField(status, errorId, _status.error_code);
-    env->SetBooleanField(status, realTimeSimulationId, _status.is_real_time_simulation == 0);
+    initCseExecutionStatusFields(env);
+
+    env->SetIntField(status, cseExecutionStatusFields.stateId, _status.state);
+    env->SetIntField(status, cseExecutionStatusFields.errorId, _status.error_code);
+    env->SetDoubleField(status, cseExecutionStatusFields.realTimeFactorId, _status.real_time_factor);
+    env->SetDoubleField(status, cseExecutionStatusFields.currentTimeId, to_seconds(_status.current_time));
+    env->SetBooleanField(status, cseExecutionStatusFields.realTimeSimulationId, _status.is_real_time_simulation == 0);
 
     return success;
 }
