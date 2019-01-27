@@ -5,6 +5,8 @@ import org.osp.cse.jni.cse_observer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 sealed class CseObserver(
     private var observer_: cse_observer?
@@ -52,12 +54,33 @@ class CseMembufferObserver(
 ): CseObserver(observer) {
 
     fun getReal(slave: CseSlave, vr: Long): Double {
-        val ref = DoubleArray(1)
-        return getReal(slave, longArrayOf(vr), ref).let { ref[0] }
+        return DoubleArray(1).also {
+            getReal(slave, longArrayOf(vr), it)
+        }[0]
+    }
+
+    fun getRealDirect(slave: CseSlave, vr: Long): Double {
+        return DoubleArray(1).also {
+            getRealDirect(slave, longArrayOf(vr), it)
+        }[0]
     }
 
     fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
         return CseLibrary.getReal(observer, slave.index, vr, ref)
+    }
+
+    fun getRealDirect(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
+        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
+            order(ByteOrder.LITTLE_ENDIAN)
+            asLongBuffer().put(vr)
+            rewind()
+        }
+        val refBuf = ByteBuffer.allocateDirect(vr.size*8)
+        return CseLibrary.getRealDirect(observer, slave.index, vrBuf, vr.size, refBuf).also {
+            refBuf.order(ByteOrder.LITTLE_ENDIAN)
+            refBuf.position(0)
+            refBuf.asDoubleBuffer().get(ref)
+        }
     }
 
     fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
@@ -79,6 +102,20 @@ class CseMembufferObserver(
 
     fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
         return CseLibrary.getInteger(observer, slave.index, vr, ref)
+    }
+
+    fun getIntegerDirect(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
+        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
+            order(ByteOrder.LITTLE_ENDIAN)
+            asLongBuffer().put(vr)
+            rewind()
+        }
+        val refBuf = ByteBuffer.allocateDirect(vr.size*5)
+        return CseLibrary.getRealDirect(observer, slave.index, vrBuf, vr.size, refBuf).also {
+            refBuf.order(ByteOrder.LITTLE_ENDIAN)
+            refBuf.position(0)
+            refBuf.asIntBuffer().get(ref)
+        }
     }
 
     fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {

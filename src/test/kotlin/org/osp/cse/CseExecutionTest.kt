@@ -42,6 +42,7 @@ class CseExecutionTest {
             }
 
             Assertions.assertEquals(298.15, observer.getReal(slave, 46))
+            Assertions.assertEquals(298.15, observer.getRealDirect(slave, 46))
 
             observer.getRealSamples(slave, 46, 0, 5).also { samples ->
                 Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)

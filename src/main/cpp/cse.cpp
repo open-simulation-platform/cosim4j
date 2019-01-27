@@ -197,6 +197,18 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jobject vr, jint nvr, jobject ref) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return false;
+    }
+
+    jlong *_vr = (jlong*) env->GetDirectBufferAddress(vr);
+    double* _ref = (double*) env->GetDirectBufferAddress(ref);
+
+    return cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, nvr, _ref) == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
@@ -244,7 +256,6 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
         env->SetLongArrayRegion(_steps, i, 1, &step);
     }
 
-
     initCseRealSamplesFields(env);
     env->SetIntField(samples, cseRealSamplesFields.sizeId, numSamplesRead);
     env->SetObjectField(samples, cseRealSamplesFields.valuesId, _values);
@@ -275,8 +286,6 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(J
         times_[i] = to_seconds(times[i]);
     }
     free(times);
-
-
 
     jobject valueBuffer = env->NewDirectByteBuffer(values, 8 * numSamplesRead);
     jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
@@ -329,6 +338,18 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
     env->ReleaseLongArrayElements(vr, _vr, 0);
 
     return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jobject vr, jint nvr, jobject ref) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return false;
+    }
+
+    jlong *_vr = (jlong*) env->GetDirectBufferAddress(vr);
+    int* _ref = (int*) env->GetDirectBufferAddress(ref);
+
+    return cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, nvr, _ref) == 0;
 }
 
 JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {

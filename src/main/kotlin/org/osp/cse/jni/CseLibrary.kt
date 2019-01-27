@@ -3,6 +3,7 @@ package org.osp.cse.jni
 import org.osp.cse.*
 import org.osp.util.libExtension
 import org.osp.util.libPrefix
+import java.nio.ByteBuffer
 
 typealias cse_execution = Long
 typealias cse_slave = Long
@@ -175,6 +176,13 @@ object CseLibrary {
     external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
     /**
+     * Retrieves the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+
+    /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
      *
      * @param observer the observer
@@ -206,11 +214,18 @@ object CseLibrary {
     external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
     /**
-     * Retrieves the values of real variables for one slave.
+     * Retrieves the values of integer variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
     external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+
+    /**
+     * Retrieves the values of integer variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
