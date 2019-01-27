@@ -16,7 +16,7 @@ sealed class CseSamplesDirect(
     val steps: LongArray by lazy {
         stepBuffer.position(0)
         stepBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        LongArray(stepBuffer.capacity()/Long.SIZE_BYTES).also {
+        LongArray(size).also {
             stepBuffer.asLongBuffer().get(it)
         }
     }
