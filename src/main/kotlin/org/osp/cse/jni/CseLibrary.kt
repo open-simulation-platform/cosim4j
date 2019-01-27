@@ -160,13 +160,19 @@ object CseLibrary {
     external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
 
 
-
     /**
      * Sets the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
     external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+    /**
+     * Sets the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
 
     /**
      * Retrieves the values of real variables for one slave.
