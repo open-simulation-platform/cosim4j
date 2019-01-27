@@ -222,7 +222,19 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples
+    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples)
+
+    /**
+     * Retrieves a series of observed values, step numbers and times for a real variable.
+     *
+     * @param observer the observer
+     * @param slaveIndex  index of the slave
+     * @param vr the variable index
+     * @param stepNumber the step number to start from
+     * @param nSamples the number of samples to read
+     *
+     */
+    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
 
     /**
      * Retrieves the step numbers for a range given by a duration.

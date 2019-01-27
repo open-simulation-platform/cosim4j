@@ -331,27 +331,11 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
     return status;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
-
-    const char* className = "org/osp/cse/CseIntegerSamples";
-    jclass cls = env->FindClass(className);
-
-    if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Fatal: Could not locate '" << className << "'" << std::endl;
-        return NULL;
-    }
-
-    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
-    jfieldID valuesId = env->GetFieldID(cls, "values", "[I");
-    jfieldID stepsId = env->GetFieldID(cls, "steps", "[J");
-    jfieldID timesId = env->GetFieldID(cls, "times", "[D");
-
-    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
-    jobject samples = env->NewObject(cls, constructor);
 
     int* values = (int*) malloc(sizeof(int) * nSamples);
     cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
@@ -373,10 +357,11 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
         env->SetLongArrayRegion(_steps, i, 1, &step);
     }
 
-    env->SetIntField(samples, sizeId, numSamplesRead);
-    env->SetObjectField(samples, valuesId, _values);
-    env->SetObjectField(samples, stepsId, _steps);
-    env->SetObjectField(samples, timesId, _times);
+    initCseIntegerSamplesFields(env);
+    env->SetIntField(samples, cseIntegerSamplesFields.sizeId, numSamplesRead);
+    env->SetObjectField(samples, cseIntegerSamplesFields.valuesId, _values);
+    env->SetObjectField(samples, cseIntegerSamplesFields.stepsId, _steps);
+    env->SetObjectField(samples, cseIntegerSamplesFields.timesId, _times);
 
     free(values);
     free(steps);
@@ -385,7 +370,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     return samples;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
@@ -403,29 +388,15 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirec
     }
     free(times);
 
-    const char* className = "org/osp/cse/CseRealSamplesDirect";
-    jclass cls = env->FindClass(className);
-    if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
-        return NULL;
-    }
-
-    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
-    jfieldID valuesId = env->GetFieldID(cls, "valueBuffer", "Ljava/nio/ByteBuffer;");
-    jfieldID timesId = env->GetFieldID(cls, "timeBuffer",  "Ljava/nio/ByteBuffer;");
-    jfieldID stepsId = env->GetFieldID(cls, "stepBuffer", "Ljava/nio/ByteBuffer;");
-
-    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
-    jobject samples = env->NewObject(cls, constructor);
-
     jobject valueBuffer = env->NewDirectByteBuffer(values, 4 * numSamplesRead);
     jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
     jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
 
-    env->SetIntField(samples, sizeId, numSamplesRead);
-    env->SetObjectField(samples, valuesId, valueBuffer);
-    env->SetObjectField(samples, timesId, timeBuffer);
-    env->SetObjectField(samples, stepsId, stepBuffer);
+    initCseIntegerSamplesDirectFields(env);
+    env->SetIntField(samples, cseIntegerSamplesDirectFields.sizeId, numSamplesRead);
+    env->SetObjectField(samples, cseIntegerSamplesDirectFields.valuesId, valueBuffer);
+    env->SetObjectField(samples, cseIntegerSamplesDirectFields.timesId, timeBuffer);
+    env->SetObjectField(samples, cseIntegerSamplesDirectFields.stepsId, stepBuffer);
 
     return samples;
 }

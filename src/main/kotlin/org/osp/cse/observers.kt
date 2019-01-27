@@ -82,7 +82,15 @@ class CseMembufferObserver(
     }
 
     fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-        return CseLibrary.getIntegerSamples(observer, slave.index, vr, stepNumber, nSamples)
+        return CseIntegerSamples().also {
+            CseLibrary.getIntegerSamples(observer, slave.index, vr, stepNumber, nSamples, it)
+        }
+    }
+
+    fun getIntegerSamplesDirect(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamplesDirect {
+        return CseIntegerSamplesDirect().also {
+            CseLibrary.getIntegerSamplesDirect(observer, slave.index, vr, stepNumber, nSamples, it)
+        }
     }
 
 }
