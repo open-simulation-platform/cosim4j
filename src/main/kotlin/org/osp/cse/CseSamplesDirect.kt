@@ -5,11 +5,13 @@ import java.nio.ByteOrder
 import java.util.*
 
 
-sealed class CseSamplesDirect {
+sealed class CseSamplesDirect(
+    bufferSize: Int
+) {
 
     val size: Int = -1
 
-    private lateinit var stepBuffer: ByteBuffer
+    private val stepBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val steps: LongArray by lazy {
         stepBuffer.position(0)
@@ -19,26 +21,28 @@ sealed class CseSamplesDirect {
         }
     }
 
-    private lateinit var timeBuffer: ByteBuffer
+    private val timeBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val times: DoubleArray by lazy {
         timeBuffer.position(0)
         timeBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        DoubleArray(timeBuffer.capacity()/8).also {
+        DoubleArray(size).also {
             timeBuffer.asDoubleBuffer().get(it)
         }
     }
 
 }
 
-class CseRealSamplesDirect: CseSamplesDirect() {
+class CseRealSamplesDirect(
+    bufferSize: Int
+): CseSamplesDirect(bufferSize) {
 
-    private lateinit var valueBuffer: ByteBuffer
+    private val valueBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val values: DoubleArray by lazy {
         valueBuffer.position(0)
         valueBuffer.order(ByteOrder.LITTLE_ENDIAN)
-        DoubleArray(valueBuffer.capacity()/8).also {
+        DoubleArray(size).also {
             valueBuffer.asDoubleBuffer().get(it)
         }
     }
@@ -49,9 +53,19 @@ class CseRealSamplesDirect: CseSamplesDirect() {
 
 }
 
-class CseIntegerSamplesDirect: CseSamplesDirect() {
+class CseIntegerSamplesDirect(
+    bufferSize: Int
+): CseSamplesDirect(bufferSize) {
 
-    lateinit var values: IntArray
+    private val valueBuffer= ByteBuffer.allocateDirect(bufferSize*4)
+
+    val values: IntArray by lazy {
+        valueBuffer.position(0)
+        valueBuffer.order(ByteOrder.LITTLE_ENDIAN)
+        IntArray(size).also {
+            valueBuffer.asIntBuffer().get(it)
+        }
+    }
 
     override fun toString(): String {
         return "CseIntegerSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"

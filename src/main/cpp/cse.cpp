@@ -282,35 +282,32 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
     return samples;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-       return NULL;
+       return false;
     }
 
-    double* values = (double*) malloc(sizeof(double) * nSamples);
-    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
-    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+    initCseRealSamplesDirectFields(env);
+    jobject valueBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.valuesId);
+    jobject timeBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.timesId);
+    jobject stepBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.stepsId);
+
+    double* values = (double*) env->GetDirectBufferAddress(valueBuffer);
+    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
 
-    double* times_ = (double*) malloc(sizeof(double)* numSamplesRead);
+    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
     for (int i = 0; i < numSamplesRead; i++) {
         times_[i] = to_seconds(times[i]);
     }
     free(times);
 
-    jobject valueBuffer = env->NewDirectByteBuffer(values, 8 * numSamplesRead);
-    jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
-    jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
-
-    initCseRealSamplesDirectFields(env);
     env->SetIntField(samples, cseRealSamplesDirectFields.sizeId, numSamplesRead);
-    env->SetObjectField(samples, cseRealSamplesDirectFields.valuesId, valueBuffer);
-    env->SetObjectField(samples, cseRealSamplesDirectFields.timesId, timeBuffer);
-    env->SetObjectField(samples, cseRealSamplesDirectFields.stepsId, stepBuffer);
 
-    return samples;
+    return true;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
@@ -417,35 +414,32 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     return samples;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-       return NULL;
+       return false;
     }
 
-    int* values = (int*) malloc(sizeof(int) * nSamples);
-    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
-    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+    initCseRealSamplesDirectFields(env);
+    jobject valueBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.valuesId);
+    jobject timeBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.timesId);
+    jobject stepBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.stepsId);
+
+    int* values = (int*) env->GetDirectBufferAddress(valueBuffer);
+    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
+    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
 
-    double* times_ = (double*) malloc(sizeof(double)* numSamplesRead);
+    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
     for (int i = 0; i < numSamplesRead; i++) {
         times_[i] = to_seconds(times[i]);
     }
     free(times);
 
-    jobject valueBuffer = env->NewDirectByteBuffer(values, 4 * numSamplesRead);
-    jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
-    jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
+    env->SetIntField(samples, cseRealSamplesDirectFields.sizeId, numSamplesRead);
 
-    initCseIntegerSamplesDirectFields(env);
-    env->SetIntField(samples, cseIntegerSamplesDirectFields.sizeId, numSamplesRead);
-    env->SetObjectField(samples, cseIntegerSamplesDirectFields.valuesId, valueBuffer);
-    env->SetObjectField(samples, cseIntegerSamplesDirectFields.timesId, timeBuffer);
-    env->SetObjectField(samples, cseIntegerSamplesDirectFields.stepsId, stepBuffer);
-
-    return samples;
+    return true;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jdouble duration, jlongArray steps) {

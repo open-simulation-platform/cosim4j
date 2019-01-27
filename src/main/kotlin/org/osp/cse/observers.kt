@@ -90,7 +90,7 @@ class CseMembufferObserver(
     }
 
     fun getRealSamplesDirect(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamplesDirect {
-        return CseRealSamplesDirect().also {
+        return CseRealSamplesDirect(nSamples).also {
             CseLibrary.getRealSamplesDirect(observer, slave.index, vr, stepNumber, nSamples, it)
         }
     }
@@ -125,7 +125,7 @@ class CseMembufferObserver(
     }
 
     fun getIntegerSamplesDirect(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamplesDirect {
-        return CseIntegerSamplesDirect().also {
+        return CseIntegerSamplesDirect(nSamples).also {
             CseLibrary.getIntegerSamplesDirect(observer, slave.index, vr, stepNumber, nSamples, it)
         }
     }
