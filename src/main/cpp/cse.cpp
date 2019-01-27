@@ -1,10 +1,13 @@
 
 #include <jni.h>
 #include <stdlib.h>
-#include <vector>
 #include <iostream>
 
 #include "cse.h"
+#include "CseSamplesFields.hpp"
+#include "CseSamplesDirectFields.hpp"
+#include "CseExecutionStatusFields.hpp"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,42 +29,6 @@ namespace {
 
     jdouble to_seconds(int64_t duration) {
         return ((double) duration) * nano2sec;
-    }
-
-    struct CseExecutionStatusFields {
-        jfieldID stateId;
-        jfieldID errorId;
-        jfieldID currentTimeId;
-        jfieldID realTimeFactorId;
-        jfieldID realTimeSimulationId;
-
-        bool initialized = false;
-
-    };
-
-    CseExecutionStatusFields cseExecutionStatusFields;
-
-    inline void initCseExecutionStatusFields(JNIEnv *env) {
-
-        if (!cseExecutionStatusFields.initialized) {
-
-            const char* className = "org/osp/cse/CseExecutionStatus";
-            jclass cls = env->FindClass(className);
-
-            if (cls == 0) {
-                std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
-            }
-
-            cseExecutionStatusFields.stateId = env->GetFieldID(cls, "stateId", "I");
-            cseExecutionStatusFields.errorId = env->GetFieldID(cls, "errorCodeId", "I");
-            cseExecutionStatusFields.currentTimeId = env->GetFieldID(cls, "currentTime", "D");
-            cseExecutionStatusFields.realTimeFactorId = env->GetFieldID(cls, "realTimeFactor", "D");
-            cseExecutionStatusFields.realTimeSimulationId = env->GetFieldID(cls, "realTimeSimulation", "Z");
-
-            cseExecutionStatusFields.initialized = true;
-
-        }
-
     }
 
 }
@@ -251,28 +218,11 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
     return status;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
-
-    const char* className = "org/osp/cse/CseRealSamples";
-    jclass cls = env->FindClass(className);
-
-    if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
-        return NULL;
-    }
-
-    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
-    jfieldID valuesId = env->GetFieldID(cls, "values", "[D");
-    jfieldID stepsId = env->GetFieldID(cls, "steps", "[J");
-    jfieldID timesId = env->GetFieldID(cls, "times", "[D");
-
-    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
-
-    jobject samples = env->NewObject(cls, constructor);
 
     double* values = (double*) malloc(sizeof(double) * nSamples);
     cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
@@ -294,10 +244,12 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
         env->SetLongArrayRegion(_steps, i, 1, &step);
     }
 
-    env->SetIntField(samples, sizeId, numSamplesRead);
-    env->SetObjectField(samples, valuesId, _values);
-    env->SetObjectField(samples, stepsId, _steps);
-    env->SetObjectField(samples, timesId, _times);
+
+    initCseRealSamplesFields(env);
+    env->SetIntField(samples, cseRealSamplesFields.sizeId, numSamplesRead);
+    env->SetObjectField(samples, cseRealSamplesFields.valuesId, _values);
+    env->SetObjectField(samples, cseRealSamplesFields.stepsId, _steps);
+    env->SetObjectField(samples, cseRealSamplesFields.timesId, _times);
 
     free(values);
     free(steps);
@@ -306,7 +258,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
     return samples;
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples) {
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
@@ -324,29 +276,17 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(J
     }
     free(times);
 
-    const char* className = "org/osp/cse/CseRealSamplesDirect";
-    jclass cls = env->FindClass(className);
-    if (cls == 0) {
-        std::cerr << "[JNI-wrapper] Error: Fatal: Could not locate '" << className << "'" << std::endl;
-        return NULL;
-    }
 
-    jfieldID sizeId = env->GetFieldID(cls, "size", "I");
-    jfieldID valuesId = env->GetFieldID(cls, "valueBuffer", "Ljava/nio/ByteBuffer;");
-    jfieldID timesId = env->GetFieldID(cls, "timeBuffer",  "Ljava/nio/ByteBuffer;");
-    jfieldID stepsId = env->GetFieldID(cls, "stepBuffer", "Ljava/nio/ByteBuffer;");
-
-    jmethodID constructor = env->GetMethodID(cls, "<init>", "()V");
-    jobject samples = env->NewObject(cls, constructor);
 
     jobject valueBuffer = env->NewDirectByteBuffer(values, 8 * numSamplesRead);
     jobject timeBuffer = env->NewDirectByteBuffer(times_, 8 * numSamplesRead);
     jobject stepBuffer = env->NewDirectByteBuffer(steps, 8 * numSamplesRead);
 
-    env->SetIntField(samples, sizeId, numSamplesRead);
-    env->SetObjectField(samples, valuesId, valueBuffer);
-    env->SetObjectField(samples, timesId, timeBuffer);
-    env->SetObjectField(samples, stepsId, stepBuffer);
+    initCseRealSamplesDirectFields(env);
+    env->SetIntField(samples, cseRealSamplesDirectFields.sizeId, numSamplesRead);
+    env->SetObjectField(samples, cseRealSamplesDirectFields.valuesId, valueBuffer);
+    env->SetObjectField(samples, cseRealSamplesDirectFields.timesId, timeBuffer);
+    env->SetObjectField(samples, cseRealSamplesDirectFields.stepsId, stepBuffer);
 
     return samples;
 }
