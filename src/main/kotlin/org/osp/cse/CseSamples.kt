@@ -49,20 +49,16 @@ sealed class CseSamplesDirect(
     private val stepBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val steps: LongArray by lazy {
-        stepBuffer.position(0)
-        stepBuffer.order(ByteOrder.LITTLE_ENDIAN)
         LongArray(size).also {
-            stepBuffer.asLongBuffer().get(it)
+            stepBuffer.fill(it)
         }
     }
 
     private val timeBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val times: DoubleArray by lazy {
-        timeBuffer.position(0)
-        timeBuffer.order(ByteOrder.LITTLE_ENDIAN)
         DoubleArray(size).also {
-            timeBuffer.asDoubleBuffer().get(it)
+            timeBuffer.fill(it)
         }
     }
 
@@ -75,10 +71,8 @@ class CseRealSamplesDirect(
     private val valueBuffer = ByteBuffer.allocateDirect(bufferSize*8)
 
     val values: DoubleArray by lazy {
-        valueBuffer.position(0)
-        valueBuffer.order(ByteOrder.LITTLE_ENDIAN)
         DoubleArray(size).also {
-            valueBuffer.asDoubleBuffer().get(it)
+            valueBuffer.fill(it)
         }
     }
 
@@ -95,10 +89,8 @@ class CseIntegerSamplesDirect(
     private val valueBuffer= ByteBuffer.allocateDirect(bufferSize*4)
 
     val values: IntArray by lazy {
-        valueBuffer.position(0)
-        valueBuffer.order(ByteOrder.LITTLE_ENDIAN)
         IntArray(size).also {
-            valueBuffer.asIntBuffer().get(it)
+            valueBuffer.fill(it)
         }
     }
 
@@ -106,4 +98,22 @@ class CseIntegerSamplesDirect(
         return "CseIntegerSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
     }
 
+}
+
+private fun ByteBuffer.fill(arr: IntArray) {
+    this.position(0)
+    this.order(ByteOrder.LITTLE_ENDIAN)
+    this.asIntBuffer().get(arr)
+}
+
+private fun ByteBuffer.fill(arr: DoubleArray) {
+    this.position(0)
+    this.order(ByteOrder.LITTLE_ENDIAN)
+    this.asDoubleBuffer().get(arr)
+}
+
+private fun ByteBuffer.fill(arr: LongArray) {
+    this.position(0)
+    this.order(ByteOrder.LITTLE_ENDIAN)
+    this.asLongBuffer().get(arr)
 }
