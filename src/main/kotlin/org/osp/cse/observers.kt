@@ -10,20 +10,21 @@ import java.nio.ByteOrder
 
 sealed class CseObserver(
     private var observer_: cse_observer?
-): Closeable {
+) : Closeable {
 
-    protected val observer: cse_observer = observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
+    protected val observer: cse_observer =
+        observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
 
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
-        val steps = LongArray(2)
-        return CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps).let {
+        return LongArray(2).let { steps ->
+            CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps)
             steps[0] to steps[1]
         }
     }
 
     fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
-        val steps = LongArray(2)
-        return CseLibrary.getStepNumbers(observer, slave.index, begin, end, steps).let {
+        return LongArray(2).let { steps ->
+            CseLibrary.getStepNumbers(observer, slave.index, begin, end, steps)
             steps[0] to steps[1]
         }
     }
@@ -47,11 +48,11 @@ sealed class CseObserver(
 
 class CseFileObserver(
     observer: cse_observer
-): CseObserver(observer)
+) : CseObserver(observer)
 
 class CseMembufferObserver(
     observer: cse_observer
-): CseObserver(observer) {
+) : CseObserver(observer) {
 
     fun getReal(slave: CseSlave, vr: Long): Double {
         return DoubleArray(1).also {
@@ -70,12 +71,12 @@ class CseMembufferObserver(
     }
 
     fun getRealDirect(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
+        val vrBuf = ByteBuffer.allocateDirect(vr.size * 8).apply {
             order(ByteOrder.LITTLE_ENDIAN)
             asLongBuffer().put(vr)
             rewind()
         }
-        val refBuf = ByteBuffer.allocateDirect(vr.size*8)
+        val refBuf = ByteBuffer.allocateDirect(vr.size * 8)
         return CseLibrary.getRealDirect(observer, slave.index, vrBuf, vr.size, refBuf).also {
             refBuf.order(ByteOrder.LITTLE_ENDIAN)
             refBuf.position(0)
@@ -105,12 +106,12 @@ class CseMembufferObserver(
     }
 
     fun getIntegerDirect(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
+        val vrBuf = ByteBuffer.allocateDirect(vr.size * 8).apply {
             order(ByteOrder.LITTLE_ENDIAN)
             asLongBuffer().put(vr)
             rewind()
         }
-        val refBuf = ByteBuffer.allocateDirect(vr.size*5)
+        val refBuf = ByteBuffer.allocateDirect(vr.size * 5)
         return CseLibrary.getRealDirect(observer, slave.index, vrBuf, vr.size, refBuf).also {
             refBuf.order(ByteOrder.LITTLE_ENDIAN)
             refBuf.position(0)

@@ -1,5 +1,6 @@
 package org.osp.cse
 
+import org.osp.util.fill
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.*
@@ -98,22 +99,4 @@ class CseIntegerSamplesDirect(
         return "CseIntegerSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
     }
 
-}
-
-private fun ByteBuffer.fill(arr: IntArray) {
-    this.position(0)
-    this.order(ByteOrder.LITTLE_ENDIAN)
-    this.asIntBuffer().get(arr)
-}
-
-private fun ByteBuffer.fill(arr: DoubleArray) {
-    this.position(0)
-    this.order(ByteOrder.LITTLE_ENDIAN)
-    this.asDoubleBuffer().get(arr)
-}
-
-private fun ByteBuffer.fill(arr: LongArray) {
-    this.position(0)
-    this.order(ByteOrder.LITTLE_ENDIAN)
-    this.asLongBuffer().get(arr)
 }

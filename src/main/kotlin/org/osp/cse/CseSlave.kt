@@ -3,10 +3,8 @@ package org.osp.cse
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
 import org.osp.cse.jni.cse_slave
+import org.osp.util.directBuffer
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
-import kotlin.math.asin
 
 class CseSlave internal constructor(
     private val execution: cse_execution,
@@ -24,7 +22,7 @@ class CseSlave internal constructor(
     }
 
     fun setIntegerDirect(vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setRealDirect(execution, index, longBuffer(vr), vr.size, intBuffer(values))
+        return CseLibrary.setRealDirect(execution, index, vr.directBuffer(), vr.size, values.directBuffer())
     }
 
     fun setReal(vr: Long, value: Double): Boolean {
@@ -36,35 +34,7 @@ class CseSlave internal constructor(
     }
 
     fun setRealDirect(vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setRealDirect(execution, index, longBuffer(vr), vr.size, doubleBuffer(values))
-    }
-
-    private companion object {
-
-        private fun longBuffer(longs: LongArray) : ByteBuffer {
-            return ByteBuffer.allocateDirect(longs.size*8).apply {
-                order(ByteOrder.LITTLE_ENDIAN)
-                asLongBuffer().put(longs)
-                rewind()
-            }
-        }
-
-        private fun doubleBuffer(doubles: DoubleArray) : ByteBuffer {
-            return ByteBuffer.allocateDirect(doubles.size*8).apply {
-                order(ByteOrder.LITTLE_ENDIAN)
-                asDoubleBuffer().put(doubles)
-                rewind()
-            }
-        }
-
-        private fun intBuffer(ints: IntArray) : ByteBuffer {
-            return ByteBuffer.allocateDirect(ints.size*4).apply {
-                order(ByteOrder.LITTLE_ENDIAN)
-                asIntBuffer().put(ints)
-                rewind()
-            }
-        }
-
+        return CseLibrary.setRealDirect(execution, index, vr.directBuffer(), vr.size, values.directBuffer())
     }
 
 }
