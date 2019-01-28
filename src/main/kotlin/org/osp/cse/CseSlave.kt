@@ -6,6 +6,7 @@ import org.osp.cse.jni.cse_slave
 import java.io.File
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.asin
 
 class CseSlave internal constructor(
     private val execution: cse_execution,
@@ -23,17 +24,7 @@ class CseSlave internal constructor(
     }
 
     fun setIntegerDirect(vr: LongArray, values: IntArray): Boolean {
-        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            asLongBuffer().put(vr)
-            rewind()
-        }
-        val valBuf = ByteBuffer.allocateDirect(vr.size*4).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            asIntBuffer().put(values)
-            rewind()
-        }
-        return CseLibrary.setRealDirect(execution, index, vrBuf, vr.size, valBuf)
+        return CseLibrary.setRealDirect(execution, index, longBuffer(vr), vr.size, intBuffer(values))
     }
 
     fun setReal(vr: Long, value: Double): Boolean {
@@ -45,17 +36,35 @@ class CseSlave internal constructor(
     }
 
     fun setRealDirect(vr: LongArray, values: DoubleArray): Boolean {
-        val vrBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            asLongBuffer().put(vr)
-            rewind()
+        return CseLibrary.setRealDirect(execution, index, longBuffer(vr), vr.size, doubleBuffer(values))
+    }
+
+    private companion object {
+
+        private fun longBuffer(longs: LongArray) : ByteBuffer {
+            return ByteBuffer.allocateDirect(longs.size*8).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+                asLongBuffer().put(longs)
+                rewind()
+            }
         }
-        val valBuf = ByteBuffer.allocateDirect(vr.size*8).apply {
-            order(ByteOrder.LITTLE_ENDIAN)
-            asDoubleBuffer().put(values)
-            rewind()
+
+        private fun doubleBuffer(doubles: DoubleArray) : ByteBuffer {
+            return ByteBuffer.allocateDirect(doubles.size*8).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+                asDoubleBuffer().put(doubles)
+                rewind()
+            }
         }
-        return CseLibrary.setRealDirect(execution, index, vrBuf, vr.size, valBuf)
+
+        private fun intBuffer(ints: IntArray) : ByteBuffer {
+            return ByteBuffer.allocateDirect(ints.size*4).apply {
+                order(ByteOrder.LITTLE_ENDIAN)
+                asIntBuffer().put(ints)
+                rewind()
+            }
+        }
+
     }
 
 }
