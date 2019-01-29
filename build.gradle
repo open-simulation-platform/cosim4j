@@ -107,7 +107,7 @@ model {
             cse_corec {
                 binaries.withType(SharedLibraryBinary) {
                     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        sharedLibraryFile = file(projectDir.getPath() + "/src/main/resources/native/cse/csecorec.dll")
+                        sharedLibraryFile = file(projectDir.getPath() + "/cse/lib/csecorec.lib")
                     } else {
                         sharedLibraryFile = file(projectDir.getPath() + "/src/main/resources/native/cse/libcsecorec.so")
                     }
@@ -116,7 +116,7 @@ model {
             cse_corecpp {
                 binaries.withType(SharedLibraryBinary) {
                     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                        sharedLibraryFile = file(projectDir.getPath() + "/src/main/resources/native/cse/csecorecpp.dll")
+                        sharedLibraryFile = file(projectDir.getPath() + "/cse/lib/csecorecpp.lib")
                     } else {
                         sharedLibraryFile = file(projectDir.getPath() + "/src/main/resources/native/cse/libcsecorecpp.so")
                     }
@@ -164,7 +164,7 @@ model {
         }
         copyNativeLibs(Copy) {
             from "$buildDir/libs/main/shared"
-            include "**/*.lib", "**/*.so"
+            include "**/*.dll", "**/*.so"
             into "$projectDir/src/main/resources/native/cse"
             dependsOn buildAllExecutables
         }
