@@ -391,7 +391,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
     jlongArray _steps = env->NewLongArray(numSamplesRead);
 
-    env->SetIntArrayRegion(_values, 0, numSamplesRead, values);
+    env->SetIntArrayRegion(_values, 0, numSamplesRead, (jint*) values);
 
     for (int i = 0; i < numSamplesRead; i++) {
         jlong step = (jlong) steps[i];
