@@ -11,13 +11,21 @@ import kotlin.system.measureTimeMillis
 class PerformanceTest {
 
     companion object {
+
         private val testFmu
             get() = TestFMUs.fmi20().cs()
                 .vendor("20sim").version("4.6.4.8004")
                 .name("ControlledTemperature").file()
 
-        private val stop: Double = 100.0
-        private val stepSize: Double = 1.0 / 1000
+
+        private const val warmup = 3
+        private const val stop: Double = 10.0
+        private const val stepSize: Double = 1.0 / 1000
+        private const val numSteps = (stop / stepSize).toLong()
+
+        private const val numVarsToRead = 25
+        private val vr = LongArray(numVarsToRead) {i -> i.toLong()}
+        private val ref = DoubleArray(numVarsToRead)
 
         private val LOG: Logger = LoggerFactory.getLogger(PerformanceTest::class.java)
     }
@@ -27,19 +35,46 @@ class PerformanceTest {
 
         Fmu.from(testFmu).use { fmu ->
 
-            fmu.asCoSimulationFmu().newInstance().use { slave ->
-
-                val elapsed = measureTimeMillis {
+            for (i in 0..warmup) {
+                fmu.asCoSimulationFmu().newInstance().use { slave ->
 
                     slave.simpleSetup()
-                    while (slave.simulationTime <= stop) {
-                        slave.doStep(stepSize)
-                        slave.variableAccessor.readReal(47)
+                    measureTimeMillis {
+                        while (slave.simulationTime <= stop) {
+                            slave.doStep(stepSize)
+                        }
+                    }.also { elapsed ->
+                        if (i == warmup) {
+                            LOG.info("FMI4j: $elapsed ms")
+                        }
+                    }
+
+                }
+            }
+
+        }
+
+    }
+
+    @Test
+    fun runfmi4jwithread() {
+
+        Fmu.from(testFmu).use { fmu ->
+
+            for (i in 0..warmup) {
+            fmu.asCoSimulationFmu().newInstance().use { slave ->
+                    slave.simpleSetup()
+                    measureTimeMillis {
+                        while (slave.simulationTime <= stop) {
+                            slave.doStep(stepSize)
+                            slave.variableAccessor.readReal(vr, ref)
+                        }
+                    }.also { elapsed ->
+                        if (i == warmup) {
+                            LOG.info("FMI4j[with read]: $elapsed ms")
+                        }
                     }
                 }
-
-                LOG.info("FMI4j: $elapsed ms")
-
             }
 
         }
@@ -49,24 +84,42 @@ class PerformanceTest {
     @Test
     fun runcse() {
 
+        for (i in 0..warmup) {
         CseExecution.create(stepSize).use { execution ->
-
-            val slave = execution.addSlave(testFmu)
-            val observer = execution.addMembufferObserver()
-
-            val numSteps = (stop / stepSize).toLong()
-
-            val vr = longArrayOf(47)
-            val ref = DoubleArray(1)
-            val elapsed = measureTimeMillis {
-                for (i in 0..numSteps) {
-                    execution.step(1)
-                    observer.getReal(slave, vr, ref)
+                execution.addSlave(testFmu)
+                execution.step(1)
+                measureTimeMillis {
+                    for (j in 0 until numSteps) {
+                        execution.step(1)
+                    }
+                }.also { elapsed ->
+                    if (i == warmup) {
+                        LOG.info("cse-core4j: $elapsed ms")
+                    }
                 }
             }
+        }
 
-            LOG.info("cse-core4j: $elapsed ms")
+    }
 
+    @Test
+    fun runcsewithobserver() {
+
+        for (i in 0..warmup) {
+        CseExecution.create(stepSize).use { execution ->
+                val slave = execution.addSlave(testFmu)
+                val observer = execution.addMembufferObserver()
+                measureTimeMillis {
+                    for (j in 0..numSteps) {
+                        execution.step(1)
+                        observer.getReal(slave, vr, ref)
+                    }
+                }.also { elapsed ->
+                    if (i == warmup) {
+                        LOG.info("cse-core4j[with read]: $elapsed ms")
+                    }
+                }
+            }
         }
 
     }
