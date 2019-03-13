@@ -1,1 +1,4 @@
 rootProject.name = 'cse-core4j'
+
+include 'core'
+include 'native'

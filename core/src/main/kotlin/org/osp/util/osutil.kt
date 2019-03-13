@@ -38,7 +38,7 @@ internal val libPrefix: String
         }
     }
 
-internal val libExtension: String
+internal val sharedLibExtension: String
     get() {
         return when {
             isMac -> "dylib"

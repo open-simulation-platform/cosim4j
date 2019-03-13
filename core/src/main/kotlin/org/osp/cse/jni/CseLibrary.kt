@@ -1,8 +1,10 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
-import org.osp.util.libExtension
+import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
+import java.io.File
+import java.io.FileOutputStream
 import java.nio.ByteBuffer
 
 typealias cse_execution = Long
@@ -13,16 +15,25 @@ object CseLibrary {
 
     init {
 
-        CseLibrary::class.java.classLoader.apply {
+        val libs = listOf(
+            "${libPrefix}csecorecpp.$sharedLibExtension",
+            "${libPrefix}csecorec.$sharedLibExtension",
+            "${libPrefix}csecorejni.$sharedLibExtension")
 
-            getResource("native/cse/${libPrefix}csecorecpp.$libExtension").file.also {
-                System.load(it)
-            }
-            getResource("native/cse/${libPrefix}csecorec.$libExtension").file.also {
-                System.load(it)
-            }
-            getResource("native/cse/${libPrefix}csecore_jni.$libExtension").file.also {
-                System.load(it)
+        CseLibrary::class.java.classLoader.also { cl ->
+
+            libs.forEach { libName ->
+
+                val outputFile = File(libName).also {
+                    it.deleteOnExit()
+                }
+                println(libName)
+                cl.getResourceAsStream("native/$libName").use { `is` ->
+                    FileOutputStream(outputFile).use { fos ->
+                        `is`.copyTo(fos)
+                    }
+                }
+                System.load(outputFile.absolutePath)
             }
 
         }
