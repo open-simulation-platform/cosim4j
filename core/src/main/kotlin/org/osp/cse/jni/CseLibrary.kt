@@ -27,7 +27,7 @@ object CseLibrary {
                 val outputFile = File(libName).also {
                     it.deleteOnExit()
                 }
-                println(libName)
+
                 cl.getResourceAsStream("native/$libName").use { `is` ->
                     FileOutputStream(outputFile).use { fos ->
                         `is`.copyTo(fos)
