@@ -6,6 +6,10 @@ class Demo {
 
     public static void main(String[] args) {
 
+        if (true) {
+            throw new IllegalStateException("Demo code. Not intended to be run!");
+        }
+
         try(CseExecution execution = CseExecution.create(1.0/100)) {
 
             //execution.enableRealTimeSimulation();
