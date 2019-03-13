@@ -1,7 +1,7 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
-import org.osp.util.libExtension
+import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import java.io.File
 import java.io.FileOutputStream
@@ -15,9 +15,10 @@ object CseLibrary {
 
     init {
 
-        val libs = listOf("${libPrefix}csecorecpp.$libExtension",
-            "${libPrefix}csecorec.$libExtension",
-            "${libPrefix}csecore_jni.$libExtension")
+        val libs = listOf(
+            "${libPrefix}csecorecpp.$sharedLibExtension",
+            "${libPrefix}csecorec.$sharedLibExtension",
+            "${libPrefix}csecorejni.$sharedLibExtension")
 
         CseLibrary::class.java.classLoader.also { cl ->
 
@@ -26,7 +27,8 @@ object CseLibrary {
                 val outputFile = File(libName).also {
                     it.deleteOnExit()
                 }
-                cl.getResourceAsStream("native/cse/$libName").use { `is` ->
+                println(libName)
+                cl.getResourceAsStream("native/$libName").use { `is` ->
                     FileOutputStream(outputFile).use { fos ->
                         `is`.copyTo(fos)
                     }

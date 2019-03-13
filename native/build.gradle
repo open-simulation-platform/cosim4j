@@ -1,0 +1,72 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    id 'cpp-library'
+}
+
+def javaHome = org.gradle.internal.jvm.Jvm.current().javaHome
+
+def libcsecorec = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
+def libcsecorecpp = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
+
+
+library { CppLibrary lib ->
+
+    baseName = "csecorejni"
+
+    targetMachines = [
+            machines.windows.x86_64,
+            machines.linux.x86_64,
+    ]
+
+    lib.binaries.whenElementFinalized { CppBinary binary ->
+
+        project.dependencies {
+            add(binary.linkLibraries.name, files(libcsecorec))
+            add(binary.linkLibraries.name, files(libcsecorecpp))
+
+            add(binary.includePathConfiguration.name, files("$javaHome/include"))
+
+            if (OperatingSystem.current().isLinux()) {
+                add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
+            } else if (OperatingSystem.current().isWindows()) {
+                add(binary.includePathConfiguration.name, files("$javaHome/include/win32"))
+            }
+
+        }
+
+    }
+
+}
+
+def assembleAllRelease = []
+
+tasks.all {
+    if (it.name.contains("assembleRelease")) {
+        assembleAllRelease.add(it)
+    }
+}
+
+tasks.register("assembleAllRelease") {
+    dependsOn assembleAllRelease
+}
+
+task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
+
+    into "$rootDir/core/src/main/resources/native"
+
+    if (OperatingSystem.current().isLinux()) {
+
+            from "$buildDir/lib/main/release/linux"
+            include "*.so"
+
+    } else if (OperatingSystem.current().isWindows()) {
+
+            from "$buildDir/lib/main/release/windows"
+            include "*.dll"
+
+    } else {
+        throw Exception("Unsupported OS: " + OperatingSystem.current().name)
+    }
+
+}
