@@ -2,15 +2,13 @@ package org.osp.cse.jni
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.osp.cse.TestFMUs
 
 
 class CseLibraryTest {
 
     private companion object {
-        val testFmu = TestFMUs.fmi20().cs()
-            .vendor("20sim").version("4.6.4.8004")
-            .name("ControlledTemperature").file().absolutePath
+        val testFmu = CseLibraryTest::class.java.classLoader
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature.fmu").file
     }
 
     @Test
