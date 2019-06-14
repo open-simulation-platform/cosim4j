@@ -12,9 +12,8 @@ class CseExecutionTest {
 
         val LOG: Logger = LoggerFactory.getLogger(CseExecutionTest::class.java)
 
-        val testFmu = TestFMUs.fmi20().cs()
-            .vendor("20sim").version("4.6.4.8004")
-            .name("ControlledTemperature").file()
+        val testFmu = File(CseExecutionTest::class.java.classLoader
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature.fmu").file)
 
     }
 
