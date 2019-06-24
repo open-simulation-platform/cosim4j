@@ -20,17 +20,17 @@ object CseLibrary {
             it.deleteOnExit()
         }
 
-       try {
-           CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
-                   FileOutputStream(outputFile).use { fos ->
-                       `is`.copyTo(fos)
-                   }
-               System.loadLibrary("cse-core4j")
-           }
-       } catch (ex: Exception) {
-           outputFile.delete()
-           throw ex
-       }
+        try {
+            CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
+                FileOutputStream(outputFile).use { fos ->
+                    `is`.copyTo(fos)
+                }
+            }
+            System.loadLibrary("cse-core4j")
+        } catch (ex: Exception) {
+            outputFile.delete()
+            throw ex
+        }
 
     }
 
