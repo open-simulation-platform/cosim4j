@@ -27,11 +27,9 @@ library { CppLibrary lib ->
         def libcsecorecpp = file(OperatingSystem.current().getLinkLibraryName("${cseHome}/lib/csecorecpp"))
         
         project.dependencies {
-            add(binary.linkLibraries.name, files(libcsecorec))
-            add(binary.linkLibraries.name, files(libcsecorecpp))
             
-            add(binary.includePathConfiguration.name, files("$cseHome/include"))
-            add(binary.includePathConfiguration.name, files("$javaHome/include"))
+            add(binary.linkLibraries.name, files(libcsecorec, libcsecorecpp))
+            add(binary.includePathConfiguration.name, files("$cseHome/include", "$javaHome/include"))
 
             if (OperatingSystem.current().isLinux()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
