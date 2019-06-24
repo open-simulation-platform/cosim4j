@@ -15,28 +15,22 @@ object CseLibrary {
 
     init {
 
-        val libs = listOf(
-            "${libPrefix}csecorecpp.$sharedLibExtension",
-            "${libPrefix}csecorec.$sharedLibExtension",
-            "${libPrefix}csecorejni.$sharedLibExtension")
-
-        CseLibrary::class.java.classLoader.also { cl ->
-
-            libs.forEach { libName ->
-
-                val outputFile = File(libName).also {
-                    it.deleteOnExit()
-                }
-
-                cl.getResourceAsStream("native/$libName").use { `is` ->
-                    FileOutputStream(outputFile).use { fos ->
-                        `is`.copyTo(fos)
-                    }
-                }
-                System.load(outputFile.absolutePath)
-            }
-
+        val libName = "${libPrefix}cse-core4j.$sharedLibExtension"
+        val outputFile = File(libName).also {
+            it.deleteOnExit()
         }
+
+       try {
+           CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
+                   FileOutputStream(outputFile).use { fos ->
+                       `is`.copyTo(fos)
+                   }
+               System.loadLibrary("cse-core4j")
+           }
+       } catch (ex: Exception) {
+           outputFile.delete()
+           throw ex
+       }
 
     }
 
