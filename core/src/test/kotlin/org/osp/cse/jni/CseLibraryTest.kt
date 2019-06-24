@@ -8,7 +8,7 @@ class CseLibraryTest {
 
     private companion object {
         val testFmu = CseLibraryTest::class.java.classLoader
-                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature.fmu").file
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file
     }
 
     @Test
