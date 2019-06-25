@@ -1,6 +1,7 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
+import org.osp.util.isLinux
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import java.io.File
@@ -15,6 +16,9 @@ object CseLibrary {
 
     init {
 
+        val cseHome = System.getenv("CSE_HOME")
+                ?: throw AssertionError("NO CSE_HOME ENV VARIABLE SET!")
+
         val libName = "${libPrefix}cse-core4j.$sharedLibExtension"
         val outputFile = File(libName).also {
             it.deleteOnExit()
@@ -26,7 +30,12 @@ object CseLibrary {
                     `is`.copyTo(fos)
                 }
             }
-            System.loadLibrary("cse-core4j")
+
+            val libFolder = if (isLinux) "lib" else "bin";
+            System.load("$cseHome/$libFolder/${libPrefix}csecorecpp.$sharedLibExtension")
+            System.load("$cseHome/$libFolder/${libPrefix}csecorec.$sharedLibExtension")
+
+            System.load(outputFile.absolutePath)
         } catch (ex: Exception) {
             outputFile.delete()
             throw ex
