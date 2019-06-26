@@ -1,0 +1,21 @@
+"C:\Program Files\JetBrains\CLion 2019.1.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - NMake Makefiles" D:\Development\java\cse-core4j\csecorejni
+-- Conan: Using cmake global configuration
+-- Conan: Adjusting default RPATHs Conan policies
+-- Conan: Adjusting language standard
+-- Current conanbuildinfo.cmake directory: D:/Development/java/cse-core4j/csecorejni/cmake-build-release
+-- Boost version: 1.66.0
+-- Found the following Boost libraries:
+--   date_time
+--   fiber
+--   filesystem
+--   log
+--   context
+--   thread
+--   chrono
+--   system
+--   log_setup
+--   regex
+--   atomic
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/Development/java/cse-core4j/csecorejni/cmake-build-release
