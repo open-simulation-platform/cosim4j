@@ -1,8 +1,9 @@
 
 cmake_minimum_required(VERSION 3.12)
-project(csecorejni)
+project(csecorejni VERSION 0.3.0)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
     include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
