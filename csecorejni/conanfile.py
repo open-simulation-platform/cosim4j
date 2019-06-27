@@ -12,7 +12,7 @@ class CsecorejniConan(ConanFile):
     )
 
     default_options = {
-        "csecore:fmuproxy": True
+        "csecore:fmuproxy": False
     }
 
     def imports(self):
