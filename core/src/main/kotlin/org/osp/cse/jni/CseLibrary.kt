@@ -6,6 +6,7 @@ import org.osp.util.libPrefix
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
+import java.nio.file.Files
 
 typealias cse_execution = Long
 typealias cse_slave = Long
@@ -15,22 +16,22 @@ object CseLibrary {
 
     init {
 
-        val libName = "${libPrefix}cse-core4j.$sharedLibExtension"
-        val outputFile = File(libName).also {
-            it.deleteOnExit()
-        }
-
+        val libName = "${libPrefix}csecorejni.$sharedLibExtension"
+        val tempDir = Files.createTempDirectory("cse-core4j_").toFile()
+        val lib = File(tempDir, libName)
         try {
             CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
-                FileOutputStream(outputFile).use { fos ->
+                FileOutputStream(lib).use { fos ->
                     `is`.copyTo(fos)
                 }
             }
-            System.loadLibrary("cse-core4j")
+            System.load(lib.absolutePath)
         } catch (ex: Exception) {
-            outputFile.delete()
+            tempDir.deleteRecursively()
             throw ex
         }
+        lib.deleteOnExit()
+        tempDir.deleteOnExit()
 
     }
 

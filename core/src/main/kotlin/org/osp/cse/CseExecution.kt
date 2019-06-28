@@ -27,14 +27,14 @@ class CseExecution private constructor (
         }
     }
 
-    fun addMembufferObserver(): CseMembufferObserver {
-        return CseLibrary.createMembufferObserver().let {
-            CseLibrary.addObserver(execution, it)
-            CseMembufferObserver(it)
-        }.also {
-            observers.add(it)
-        }
-    }
+//    fun addMembufferObserver(): CseMembufferObserver {
+//        return CseLibrary.createMembufferObserver().let {
+//            CseLibrary.addObserver(execution, it)
+//            CseMembufferObserver(it)
+//        }.also {
+//            observers.add(it)
+//        }
+//    }
 
     fun addFileObserver(logDir: File): CseFileObserver {
         if (!logDir.exists()) {
