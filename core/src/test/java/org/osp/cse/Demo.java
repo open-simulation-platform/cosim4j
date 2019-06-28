@@ -15,7 +15,6 @@ class Demo {
             //execution.enableRealTimeSimulation();
             //execution.disableRealTimeSimulation();
 
-            CseMembufferObserver membufferObserver = execution.addMembufferObserver();
             CseFileObserver fileObserver = execution.addFileObserver(new File("results"));
 
             CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"));
@@ -34,13 +33,6 @@ class Demo {
             double currentTime = status.getCurrentTime();
             CseExecutionState state = status.getState();
             CseErrorCode errorCode = status.getErrorCode();
-
-            double value = membufferObserver.getReal(slave1, 46 /*vr*/);
-
-            CseRealSamples samples = membufferObserver.getRealSamples(slave1, 46 /*vr*/, 0, 5);
-            double[] values = samples.getValues();
-            double[] times = samples.getTimes();
-            long[] steps = samples.getSteps();
 
         } // try with resources (calls destroy internally)
 
