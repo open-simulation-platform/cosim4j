@@ -8,6 +8,9 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.nio.file.Files
+import java.util.StringTokenizer
+
+
 
 typealias cse_execution = Long
 typealias cse_slave = Long
@@ -17,36 +20,22 @@ object CseLibrary {
 
     init {
 
-        val cseHome = System.getenv("CSE_HOME")
-                ?: throw AssertionError("NO CSE_HOME ENV VARIABLE SET!")
-
-        val libName = "${libPrefix}cse-core4j.$sharedLibExtension"
-
+        val libName = "${libPrefix}csecorejni.$sharedLibExtension"
         val tempDir = Files.createTempDirectory("cse-core4j_").toFile()
-        val lib = File(libName)
+        val lib = File(tempDir, libName)
         try {
-
             CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
                 FileOutputStream(lib).use { fos ->
                     `is`.copyTo(fos)
                 }
             }
-
-
-            if (isLinux) {
-                System.load("$cseHome/lib/${libPrefix}csecorecpp.$sharedLibExtension")
-                System.load("$cseHome/lib/${libPrefix}csecorec.$sharedLibExtension")
-            }
-
             System.load(lib.absolutePath)
         } catch (ex: Exception) {
             tempDir.deleteRecursively()
             throw ex
-        } finally {
-            lib.deleteOnExit()
-            tempDir.deleteOnExit()
         }
-
+        lib.deleteOnExit()
+        tempDir.deleteOnExit()
     }
 
     /**
