@@ -8,6 +8,7 @@ import java.io.FileOutputStream
 import java.nio.ByteBuffer
 import java.nio.file.Files
 
+typealias cse_error_code = Int
 typealias cse_execution = Long
 typealias cse_slave = Long
 typealias cse_observer = Long
@@ -33,6 +34,26 @@ object CseLibrary {
         lib.deleteOnExit()
         tempDir.deleteOnExit()
 
+    }
+
+
+    private external fun getLastErrorCode_(): cse_error_code
+
+    /**
+     *  Returns the error code associated with the last reported error.
+     *
+     *  Most functions in this library will indicate that an error occurred by
+     *  returning -1 or `NULL`, after which this function can be called to
+     *  obtain more detailed information about the problem.
+     *
+     *  This function must be called from the thread in which the error occurred,
+     *  and before any new calls to functions in this library (with the exception
+     *  of `cse_last_error_message()`).
+     *
+     *  @return The error code associated with the last reported error.
+     */
+    fun getLastErrorCode(): CseErrorCode {
+        return CseErrorCode.valueOf(getLastErrorCode_())
     }
 
     /**
@@ -67,7 +88,7 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createExecution(sspDir: String, startTime: Double): cse_execution
+    external fun createSspExecution(sspDir: String, startTime: Double): cse_execution
 
     /**
      * Destroys an execution.
@@ -139,6 +160,11 @@ object CseLibrary {
     external fun disableRealTimeSimulation(execution: cse_execution): Boolean
 
     /**
+     * Sets a custom real time factor.
+     */
+    external fun setRealTimeFactorTarget(execution: cse_execution, realTimeFactor: Double): Boolean
+
+    /**
      * Returns execution status.
      *
      * @param execution The execution to get status create.
@@ -165,6 +191,40 @@ object CseLibrary {
      */
     external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
 
+    /**
+     * Retrieves the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
+
+    /**
+     * Retrieves the values of real variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+
+    /**
+     * Retrieves the values of integer variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+
+    /**
+     * Retrieves the values of integer variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+
+    /**
+     * Retrieves the values of integer variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
 
     /**
      * Sets the values of real variables for one slave.
@@ -180,19 +240,15 @@ object CseLibrary {
      */
     external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
 
-    /**
-     * Retrieves the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
     /**
-     * Retrieves the values of real variables for one slave.
+     *  Sets the values of integer variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     *  @return  0 on success and -1 on error.
      */
-    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+    external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+
+
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -218,26 +274,6 @@ object CseLibrary {
      */
     external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
 
-    /**
-     *  Sets the values of integer variables for one slave.
-     *
-     *  @return  0 on success and -1 on error.
-     */
-    external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
-
-    /**
-     * Retrieves the values of integer variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
-
-    /**
-     * Retrieves the values of integer variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -326,13 +362,6 @@ object CseLibrary {
     external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
     /**
-     * Creates an observer which buffers variable values in memory.
-     *
-     * @return  The created observer.
-     */
-    external fun createMembufferObserver(): cse_observer
-
-    /**
      * Creates an observer which logs variable values to file in csv format.
      *
      * @param logDir The directory where log files will be created.
@@ -340,6 +369,45 @@ object CseLibrary {
      * @return  The created observer.
      */
     external fun createFileObserver(logDir: String): cse_observer
+
+    /**
+     * Creates an observer which logs variable values to file in csv format. Variables to be logged
+     * are specified in the supplied log config xml file.
+     *
+     * @param logDir The directory where log files will be created.
+     * @param cfgDir The path to the provided config xml file.
+     * @return The created observer.
+     */
+    external fun createFileObserverFromCfg(logDir: String, cfgDir: String): cse_observer
+
+    /**
+     * Creates an observer which buffers variable values in memory.
+     *
+     * To start observing a variable, `cse_observer_start_observing()` must be called.
+     */
+    external fun createTimeSeriesObserver(): cse_observer
+
+    /**
+     * Creates an observer which buffers up to `bufferSize` variable values in memory.
+     *
+     * To start observing a variable, `cse_observer_start_observing()` must be called.
+     */
+    external fun createTimeSeriesObserver(bufferSize: Int): cse_observer
+
+    /**
+     * Start observing a variable with a `time_series_observer`
+     */
+    external fun startObserving(observer: cse_observer): Boolean
+
+    /**
+     * Stop observing a variable with a `time_series_observer`
+     */
+    external fun stopObserving(observer: cse_observer): Boolean
+
+    /**
+     * Destroys an observer
+     */
+    external fun destroyObserver(observer: cse_observer): Boolean
 
     /**
      * Add an observer to an execution.
@@ -352,9 +420,5 @@ object CseLibrary {
      */
     external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
 
-    /**
-     * Destroys an observer
-     */
-    external fun destroyObserver(observer: cse_observer): Boolean
 
 }

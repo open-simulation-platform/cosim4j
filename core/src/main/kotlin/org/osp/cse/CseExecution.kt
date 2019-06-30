@@ -10,9 +10,9 @@ import java.io.Closeable
 import java.io.File
 
 
-class CseExecution private constructor (
-    private val execution: cse_execution
-): Closeable {
+class CseExecution private constructor(
+        private val execution: cse_execution
+) : Closeable {
 
     private val status = CseExecutionStatus()
     private val observers: MutableList<CseObserver> = mutableListOf()
@@ -20,31 +20,9 @@ class CseExecution private constructor (
     val numSlaves: Int
         get() = CseLibrary.getNumSlaves(execution)
 
-
     fun getStatus(): CseExecutionStatus {
         return status.also {
             CseLibrary.getStatus(execution, status)
-        }
-    }
-
-//    fun addMembufferObserver(): CseMembufferObserver {
-//        return CseLibrary.createMembufferObserver().let {
-//            CseLibrary.addObserver(execution, it)
-//            CseMembufferObserver(it)
-//        }.also {
-//            observers.add(it)
-//        }
-//    }
-
-    fun addFileObserver(logDir: File): CseFileObserver {
-        if (!logDir.exists()) {
-            logDir.mkdirs()
-        }
-        return CseLibrary.createFileObserver(logDir.absolutePath).let {
-            CseLibrary.addObserver(execution, it)
-            CseFileObserver(it)
-        }.also {
-            observers.add(it)
         }
     }
 
@@ -72,6 +50,10 @@ class CseExecution private constructor (
         return CseLibrary.disableRealTimeSimulation(execution)
     }
 
+    fun setRealTimeFactor(realTimeFactor: Double): Boolean {
+        return CseLibrary.setRealTimeFactorTarget(execution, realTimeFactor)
+    }
+
     fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
         return CseLibrary.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
@@ -81,8 +63,35 @@ class CseExecution private constructor (
     }
 
     fun getSlaveInfos(): Array<CseSlaveInfo> {
-        return Array(numSlaves) {CseSlaveInfo()}.also {
+        return Array(numSlaves) { CseSlaveInfo() }.also {
             CseLibrary.getSlaveInfos(execution, it)
+        }
+    }
+
+    fun addFileObserver(logDir: File, cfgDir: File? = null): CseFileObserver {
+        if (!logDir.exists()) {
+            logDir.mkdirs()
+        }
+        val observer = if (cfgDir == null) {
+            CseLibrary.createFileObserver(logDir.absolutePath)
+        } else {
+            CseLibrary.createFileObserverFromCfg(logDir.absolutePath, cfgDir.absolutePath)
+        }
+        CseLibrary.addObserver(execution, observer)
+        return CseFileObserver(observer, logDir).also {
+            observers.add(it)
+        }
+    }
+
+    fun addTimeSeriesObserver(bufferSize: Int? = null): CseTimeSeriesObserver {
+        val observer = if (bufferSize == null) {
+            CseLibrary.createTimeSeriesObserver()
+        } else {
+            CseLibrary.createTimeSeriesObserver(bufferSize)
+        }
+        CseLibrary.addObserver(execution, observer)
+        return CseTimeSeriesObserver(observer).also {
+            observers.add(it)
         }
     }
 
@@ -115,7 +124,7 @@ class CseExecution private constructor (
 
         @JvmStatic
         fun create(sspDir: File, startTime: Double): CseExecution {
-            return CseLibrary.createExecution(sspDir.absolutePath, startTime).let {
+            return CseLibrary.createSspExecution(sspDir.absolutePath, startTime).let {
                 CseExecution((it))
             }
         }
@@ -123,4 +132,3 @@ class CseExecution private constructor (
     }
 
 }
-

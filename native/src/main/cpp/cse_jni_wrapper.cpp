@@ -32,6 +32,10 @@ namespace {
 
 }
 
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorCode_(JNIEnv *env, jobject obj) {
+    return cse_last_error_code();
+}
+
 JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JNIEnv *env, jobject obj) {
     const char* msg = cse_last_error_message();
     return env->NewStringUTF(msg);
@@ -39,14 +43,14 @@ JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JN
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *env, jobject obj, jdouble startTime, jdouble stepSize) {
     cse_execution* execution = cse_execution_create(to_cse_time_point(startTime), to_cse_duration(stepSize));
-    if (execution == 0) {
+    if (execution == nullptr) {
         std::cerr << "[JNI-wrapper]" << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
     }
     return (jlong) execution;
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecutionFromSsp(JNIEnv *env, jobject obj, jstring sspDir, jdouble startTime) {
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv *env, jobject obj, jstring sspDir, jdouble startTime) {
     const char* _sspDir = env->GetStringUTFChars(sspDir, 0);
     cse_execution* execution = cse_ssp_execution_create(_sspDir, to_cse_time_point(startTime));
     env->ReleaseStringUTFChars(sspDir, _sspDir);
@@ -112,6 +116,14 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_disableRealTimeSimula
         return false;
     }
     return cse_execution_disable_real_time_simulation((cse_execution*) execution) == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setRealTimeFactorTarget(JNIEnv *env, jobject obj, jlong execution, jdouble realTimeFactor) {
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return false;
+    }
+    return cse_execution_set_real_time_factor_target((cse_execution*) execution, realTimeFactor) == 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env, jobject obj, jlong execution, jobject status) {
@@ -243,38 +255,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(
 
     return true;
 }
-
-//JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jlongArray vr, jintArray values) {
-//
-//    if (execution == 0) {
-//       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
-//       return false;
-//    }
-//
-//    const jsize size = env->GetArrayLength(vr);
-//    jlong *_vr = env->GetLongArrayElements(vr, 0);
-//    jint *_values = env->GetIntArrayElements(values, 0);
-//
-//    jboolean status = cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, (cse_variable_index*) _vr, size, (int*)_values) == 0;
-//
-//    env->ReleaseLongArrayElements(vr, _vr, 0);
-//    env->ReleaseIntArrayElements(values, _values, 0);
-//
-//    return status;
-//}
-//
-//JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setIntegerDirect(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jobject vr, jint nvr, jobject values) {
-//
-//    if (execution == 0) {
-//       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
-//       return false;
-//    }
-//
-//    jlong *_vr = (jlong*) env->GetDirectBufferAddress(vr);
-//    int *_values = (int*) env->GetDirectBufferAddress(values);
-//
-//    return cse_execution_slave_set_integer((cse_execution*) execution, slaveIndex, (cse_variable_index*) _vr, nvr, _values) == 0;
-//}
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jintArray ref) {
     if (observer == 0) {
@@ -445,6 +425,52 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
     return (jlong) observer;
 }
 
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCfg(JNIEnv *env, jobject obj, jstring logDir, jstring cfgPath) {
+    const char* _logDir = env->GetStringUTFChars(logDir, 0);
+    const char* _cfgPath = env->GetStringUTFChars(cfgPath, 0);
+    cse_observer* observer = cse_file_observer_create_from_cfg(_logDir, _cfgPath);
+    env->ReleaseStringUTFChars(logDir, _logDir);
+    env->ReleaseStringUTFChars(cfgPath, _cfgPath);
+    if (observer == 0) {
+        std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
+        return 0;
+    }
+    return (jlong) observer;
+}
+
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver(JNIEnv *env, jobject obj) {
+    return (jlong) cse_time_series_observer_create;
+}
+
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createBufferedTimeSeriesObserver(JNIEnv *env, jobject obj, jint bufferSize) {
+    return (jlong) cse_buffered_time_series_observer_create(static_cast<size_t>(bufferSize));
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jint variableType, jlong vr) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return false;
+    }
+    return cse_observer_start_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_variable_index) vr) == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jint variableType, jlong vr) {
+    if (observer == 0) {
+       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+       return false;
+    }
+    return cse_observer_stop_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_variable_index) vr) == 0;
+}
+
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv *env, jobject obj, jlong observer) {
+    if (observer == 0) {
+        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+        return false;
+    }
+    return cse_observer_destroy((cse_observer*) observer) == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv *env, jobject obj, jlong execution, jlong observer) {
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
@@ -458,13 +484,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv *e
     return cse_execution_add_observer((cse_execution*) execution, (cse_observer*) observer) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv *env, jobject obj, jlong observer) {
-    if (observer == 0) {
-        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-        return false;
-    }
-    return cse_observer_destroy((cse_observer*) observer) == 0;
-}
 
 #ifdef __cplusplus
 }
