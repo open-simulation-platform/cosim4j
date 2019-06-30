@@ -8,7 +8,7 @@ class CsecorejniConan(ConanFile):
     generators = "cmake"
 
     requires = (
-        "cse-core/0.3.0@osp/testing"
+        "cse-core/0.3.0@markaren/testing"
     )
 
     default_options = (
@@ -19,4 +19,4 @@ class CsecorejniConan(ConanFile):
     def imports(self):
         self.copy("*.dll", dst="cse/bin", keep_path=False)
         self.copy("*.lib", dst="cse/lib", keep_path=False)
-        self.copy("cse.h", dst="cse", keep_path=False)
+        self.copy("**/cse.h", dst="cse", keep_path=False)
