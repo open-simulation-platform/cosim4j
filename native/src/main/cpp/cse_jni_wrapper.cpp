@@ -1,12 +1,11 @@
 
-#include <jni.h>
-#include <stdlib.h>
 #include <iostream>
 
-#include "cse.h"
-#include "CseSamplesFields.hpp"
-#include "CseSamplesDirectFields.hpp"
-#include "CseExecutionStatusFields.hpp"
+#include "cse_jni_wrapper.hpp"
+
+#include "cse_samples_fields.hpp"
+#include "cse_samples_direct_fields.hpp"
+#include "cse_execution_status_fields.hpp"
 
 
 #ifdef __cplusplus
