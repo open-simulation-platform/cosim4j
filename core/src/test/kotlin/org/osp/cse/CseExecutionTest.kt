@@ -50,7 +50,11 @@ class CseExecutionTest {
             val logDir = File("build/results");
             execution.addFileObserver(logDir)
 
-            execution.addSlave(testFmu)
+            val slave = execution.addSlave(testFmu)
+            slave.variables.forEach {
+                println(it)
+            }
+
             Assertions.assertTrue(execution.step(10))
 
             execution.getStatus().apply {

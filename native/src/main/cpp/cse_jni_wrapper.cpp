@@ -1,4 +1,5 @@
 
+#include <string>
 #include <iostream>
 
 #include "cse_jni_wrapper.hpp"
@@ -69,13 +70,20 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyExecution(JNIE
     return cse_execution_destroy((cse_execution*) execution) == 0;
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLocalSlave(JNIEnv *env, jobject obj, jstring fmuPath) {
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv *env, jobject obj, jstring fmuPath) {
     const char* _fmuPath = env->GetStringUTFChars(fmuPath, 0);
     cse_slave* slave = cse_local_slave_create(_fmuPath);
     env->ReleaseStringUTFChars(fmuPath, _fmuPath);
     return (jlong) slave;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv *env, jobject obj, jlong slave) {
+     if (slave == 0) {
+       std::cerr << "[JNI-wrapper] Error: slave is NULL" << std::endl;
+       return false;
+    }
+    return cse_local_slave_destroy((cse_slave*) slave) == 0;
+}
 
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv *env, jobject obj, jlong execution, jlong slave) {
     if (execution == 0) {
@@ -146,6 +154,58 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env
     return success;
 }
 
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumVariables(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+       return false;
+    }
+    return (jint) cse_slave_get_num_variables((cse_execution*) execution, slaveIndex);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jobjectArray vars) {
+    if (execution == 0) {
+       std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+       return false;
+    }
+
+    const char* className = "org/osp/cse/CseVariableDescription";
+    jclass cls = env->FindClass(className);
+
+    if (cls == nullptr) {
+        std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
+        return false;
+    }
+
+    const jsize size = env->GetArrayLength(vars);
+    cse_variable_description* _vars = (cse_variable_description*) malloc(sizeof(cse_variable_description)*size);
+    jboolean status = cse_slave_get_variables((cse_execution*) execution, slaveIndex, _vars, size) != -1;
+
+    if (status) {
+
+        jfieldID vrId = env->GetFieldID(cls, "valueReference", "J");
+        jfieldID nameId = env->GetFieldID(cls, "name", "Ljava/lang/String;");
+        jfieldID typeId = env->GetFieldID(cls, "variableType", "I");
+        jfieldID causalityId = env->GetFieldID(cls, "variableCausality", "I");
+        jfieldID variabilityId = env->GetFieldID(cls, "variableVariability", "I");
+
+        for (int i = 0; i < size; i++) {
+            jobject var = env->GetObjectArrayElement(vars, i);
+            env->SetLongField(var, vrId, (jlong) _vars[i].index);
+            env->SetObjectField(var, nameId, env->NewStringUTF(_vars[i].name));
+            env->SetIntField(var, typeId, (jint) _vars[i].type);
+            env->SetIntField(var, causalityId, (jint) _vars[i].causality);
+            env->SetIntField(var, variabilityId, (jint) _vars[i].variability);
+        }
+
+    } else {
+        std::cerr << "Error:" << cse_last_error_message() << std::endl;
+    }
+
+    free(_vars);
+
+    return status == 0;
+}
+
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv *env, jobject obj, jlong execution) {
     if (execution == 0) {
        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
@@ -160,28 +220,33 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv 
        return false;
     }
 
-    const jsize size = env->GetArrayLength(infos);
-
-    cse_slave_info* _infos = (cse_slave_info*) malloc(sizeof(cse_slave_info)*size);
-    jboolean status = cse_execution_get_slave_infos((cse_execution*) execution, _infos, size) == 0;
-
     const char* className = "org/osp/cse/CseSlaveInfo";
     jclass cls = env->FindClass(className);
 
-    if (cls == 0) {
+    if (cls == nullptr) {
         std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
         return false;
     }
 
-    jfieldID nameId = env->GetFieldID(cls, "name", "Ljava/lang/String;");
-    jfieldID sourceId = env->GetFieldID(cls, "source", "Ljava/lang/String;");
-    jfieldID indexId = env->GetFieldID(cls, "index", "I");
+    const jsize size = env->GetArrayLength(infos);
+    cse_slave_info* _infos = (cse_slave_info*) malloc(sizeof(cse_slave_info)*size);
+    jboolean status = cse_execution_get_slave_infos((cse_execution*) execution, _infos, size) == 0;
 
-    for (int i = 0; i < size; i++) {
-        jobject info = env->GetObjectArrayElement(infos, i);
-        env->SetObjectField(info, nameId, env->NewStringUTF(_infos[i].name));
-        env->SetObjectField(info, sourceId, env->NewStringUTF(_infos[i].source));
-        env->SetIntField(info, indexId, _infos[i].index);
+    if (status) {
+
+        jfieldID indexId = env->GetFieldID(cls, "index", "I");
+        jfieldID nameId = env->GetFieldID(cls, "name", "Ljava/lang/String;");
+        jfieldID sourceId = env->GetFieldID(cls, "source", "Ljava/lang/String;");
+
+        for (int i = 0; i < size; i++) {
+            jobject info = env->GetObjectArrayElement(infos, i);
+            env->SetIntField(info, indexId, _infos[i].index);
+            env->SetObjectField(info, nameId, env->NewStringUTF(_infos[i].name));
+            env->SetObjectField(info, sourceId, env->NewStringUTF(_infos[i].source));
+        }
+
+    } else {
+      std::cerr << "Error:" << cse_last_error_message() << std::endl;
     }
 
     free(_infos);

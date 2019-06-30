@@ -15,6 +15,8 @@ class CseExecution private constructor(
 ) : Closeable {
 
     private val status = CseExecutionStatus()
+
+    private val slaves: MutableList<CseSlave> = mutableListOf()
     private val observers: MutableList<CseObserver> = mutableListOf()
     private val manipulators: MutableList<CseManipulator> = mutableListOf()
 
@@ -28,9 +30,11 @@ class CseExecution private constructor(
     }
 
     fun addSlave(fmuPath: File): CseSlave {
-        return CseLibrary.createLocalSlave(fmuPath.absolutePath).let { slavePointer ->
-            val index = CseLibrary.addSlave(execution, slavePointer)
-            CseSlave(index, slavePointer)
+        return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
+            val index = CseLibrary.addSlave(execution, slave)
+            CseSlave(index, slave, execution).also {
+                slaves.add(it)
+            }
         }
     }
 
@@ -109,6 +113,12 @@ class CseExecution private constructor(
 
     override fun close() {
         observers.forEach {
+            it.close()
+        }
+        manipulators.forEach {
+            it.close()
+        }
+        slaves.forEach {
             it.close()
         }
         CseLibrary.destroyExecution(execution).also {

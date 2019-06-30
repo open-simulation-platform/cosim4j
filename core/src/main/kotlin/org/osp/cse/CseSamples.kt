@@ -41,62 +41,62 @@ class CseIntegerSamples: CseSamples() {
 }
 
 
-sealed class CseSamplesDirect(
-    bufferSize: Int
-) {
-
-    val size: Int = -1
-
-    private val stepBuffer = ByteBuffer.allocateDirect(bufferSize*8)
-
-    val steps: LongArray by lazy {
-        LongArray(size).also {
-            stepBuffer.fill(it)
-        }
-    }
-
-    private val timeBuffer = ByteBuffer.allocateDirect(bufferSize*8)
-
-    val times: DoubleArray by lazy {
-        DoubleArray(size).also {
-            timeBuffer.fill(it)
-        }
-    }
-
-}
-
-class CseRealSamplesDirect(
-    bufferSize: Int
-): CseSamplesDirect(bufferSize) {
-
-    private val valueBuffer = ByteBuffer.allocateDirect(bufferSize*8)
-
-    val values: DoubleArray by lazy {
-        DoubleArray(size).also {
-            valueBuffer.fill(it)
-        }
-    }
-
-    override fun toString(): String {
-        return "CseRealSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
-    }
-
-}
-
-class CseIntegerSamplesDirect(
-    bufferSize: Int
-): CseSamplesDirect(bufferSize) {
-
-    private val valueBuffer= ByteBuffer.allocateDirect(bufferSize*4)
-
-    val values: IntArray by lazy {
-        IntArray(size).also {
-            valueBuffer.fill(it)
-        }
-    }
-
-    override fun toString(): String {
-        return "CseIntegerSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
-    }
-
-}
+//sealed class CseSamplesDirect(
+//    bufferSize: Int
+//) {
+//
+//    val size: Int = -1
+//
+//    private val stepBuffer = ByteBuffer.allocateDirect(bufferSize*8)
+//
+//    val steps: LongArray by lazy {
+//        LongArray(size).also {
+//            stepBuffer.fill(it)
+//        }
+//    }
+//
+//    private val timeBuffer = ByteBuffer.allocateDirect(bufferSize*8)
+//
+//    val times: DoubleArray by lazy {
+//        DoubleArray(size).also {
+//            timeBuffer.fill(it)
+//        }
+//    }
+//
+//}
+//
+//class CseRealSamplesDirect(
+//    bufferSize: Int
+//): CseSamplesDirect(bufferSize) {
+//
+//    private val valueBuffer = ByteBuffer.allocateDirect(bufferSize*8)
+//
+//    val values: DoubleArray by lazy {
+//        DoubleArray(size).also {
+//            valueBuffer.fill(it)
+//        }
+//    }
+//
+//    override fun toString(): String {
+//        return "CseRealSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
+//    }
+//
+//}
+//
+//class CseIntegerSamplesDirect(
+//    bufferSize: Int
+//): CseSamplesDirect(bufferSize) {
+//
+//    private val valueBuffer= ByteBuffer.allocateDirect(bufferSize*4)
+//
+//    val values: IntArray by lazy {
+//        IntArray(size).also {
+//            valueBuffer.fill(it)
+//        }
+//    }
+//
+//    override fun toString(): String {
+//        return "CseIntegerSamplesDirect(size=$size\nvalues=${Arrays.toString(values)}\nsteps=${Arrays.toString(steps)}\ntimes=${Arrays.toString(times)})"
+//    }
+//
+//}

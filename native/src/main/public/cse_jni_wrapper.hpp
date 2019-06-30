@@ -19,9 +19,9 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEn
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyExecution(JNIEnv *env, jobject obj, jlong execution);
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLocalSlave(JNIEnv *env, jobject obj, jstring fmuPath);
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv *env, jobject obj, jstring fmuPath);
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_destroyLocalSlave(JNIEnv *env, jobject obj, jlong slave);
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv *env, jobject obj, jlong slave);
 
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv *env, jobject obj, jlong execution, jlong slave);
 
@@ -38,6 +38,12 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_disableRealTimeSimula
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setRealTimeFactorTarget(JNIEnv *env, jobject obj, jlong execution, jdouble realTimeFactor);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv *env, jobject obj, jlong execution, jobject status);
+
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumVariables(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex);
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv *env, jobject obj, jlong execution, jint slaveIndex, jobjectArray vars);
+
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv *env, jobject obj, jlong execution);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv *env, jobject obj, jlong execution, jobjectArray infos);
 

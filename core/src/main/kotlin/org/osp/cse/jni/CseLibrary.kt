@@ -105,14 +105,14 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createLocalSlave(fmuPath: String): cse_slave
+    external fun createSlave(fmuPath: String): cse_slave
 
     /**
      *  Destroys a local slave.
      *
      *  @returns 0 on success and -1 on error.
      */
-    external fun destroyLocalSlave(slave: cse_slave): Boolean
+    external fun destroySlave(slave: cse_slave): Boolean
 
     /**
      *  Loads a co-simulation FMU, instantiates a slave based on it, and adds it
@@ -183,9 +183,27 @@ object CseLibrary {
     external fun getStatus(execution: cse_execution, status: CseExecutionStatus): Boolean
 
     /**
+     * Get the number of variables for a slave which has been added to an execution
+     *
+     * @return the number of variables for a slave which has been added to an execution, or -1 on error.
+     */
+    external fun getNumVariables(execution: cse_execution, slaveIndex: Int): Int
+
+    /**
+     *  Returns variable metadata for a slave.
+     *
+     *  @param execution The execution which the slave has been added to.
+     *  @param slaveIndex The index of the slave.
+     *  @param variables A pointer to an array of length `numVariables` which will be filled with actual `cse_variable_description` values.
+     *
+     *  @return The number of variables written to `variables` array or -1 on error.
+     */
+    external fun getVariables(execution: cse_execution, slaveIndex: Int, variables: Array<CseVariableDescription>): Boolean
+
+    /**
      * Returns the number of slaves which have been added to an execution.
      *
-     * @return  the number of slaves which have been added to an execution.
+     * @return the number of slaves which have been added to an execution.
      */
     external fun getNumSlaves(execution: cse_execution): Int
 
@@ -257,7 +275,6 @@ object CseLibrary {
     external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
 
-
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
      *
@@ -270,17 +287,17 @@ object CseLibrary {
      */
     external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples)
 
-    /**
-     * Retrieves a series of observed values, step numbers and times for a real variable.
-     *
-     * @param observer the observer
-     * @param slaveIndex  index of the slave
-     * @param vr the variable index
-     * @param stepNumber the step number to start from
-     * @param nSamples the number of samples to read
-     *
-     */
-    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
+//    /**
+//     * Retrieves a series of observed values, step numbers and times for a real variable.
+//     *
+//     * @param observer the observer
+//     * @param slaveIndex  index of the slave
+//     * @param vr the variable index
+//     * @param stepNumber the step number to start from
+//     * @param nSamples the number of samples to read
+//     *
+//     */
+//    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
 
 
     /**
@@ -295,17 +312,17 @@ object CseLibrary {
      */
     external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples)
 
-    /**
-     * Retrieves a series of observed values, step numbers and times for a real variable.
-     *
-     * @param observer the observer
-     * @param slaveIndex  index of the slave
-     * @param vr the variable index
-     * @param stepNumber the step number to start from
-     * @param nSamples the number of samples to read
-     *
-     */
-    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
+//    /**
+//     * Retrieves a series of observed values, step numbers and times for a real variable.
+//     *
+//     * @param observer the observer
+//     * @param slaveIndex  index of the slave
+//     * @param vr the variable index
+//     * @param stepNumber the step number to start from
+//     * @param nSamples the number of samples to read
+//     *
+//     */
+//    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
 
     /**
      * Retrieves the step numbers for a range given by a duration.

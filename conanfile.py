@@ -12,6 +12,7 @@ class CsecorejniConan(ConanFile):
     )
 
     default_options = (
+        "cse-core:fmuproxy=True",
         "cse-core:build_apidoc=False",
         "cse-core:revision=markaren/testing"
     )
