@@ -16,6 +16,7 @@ class CseExecution private constructor(
 
     private val status = CseExecutionStatus()
     private val observers: MutableList<CseObserver> = mutableListOf()
+    private val manipulators: MutableList<CseManipulator> = mutableListOf()
 
     val numSlaves: Int
         get() = CseLibrary.getNumSlaves(execution)
@@ -27,7 +28,10 @@ class CseExecution private constructor(
     }
 
     fun addSlave(fmuPath: File): CseSlave {
-        return CseSlave(execution, fmuPath)
+        return CseLibrary.createLocalSlave(fmuPath.absolutePath).let { slavePointer ->
+            val index = CseLibrary.addSlave(execution, slavePointer)
+            CseSlave(index, slavePointer)
+        }
     }
 
     fun start(): Boolean {
@@ -92,6 +96,14 @@ class CseExecution private constructor(
         CseLibrary.addObserver(execution, observer)
         return CseTimeSeriesObserver(observer).also {
             observers.add(it)
+        }
+    }
+
+    fun loadScenario(scenarioFile: File): CseScenario {
+        val manipulator = CseLibrary.createManipulator()
+        CseLibrary.loadScenario(execution, manipulator, scenarioFile.absolutePath)
+        return CseScenario(manipulator).also {
+            manipulators.add(it)
         }
     }
 

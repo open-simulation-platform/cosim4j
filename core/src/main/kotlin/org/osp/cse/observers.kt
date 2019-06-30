@@ -10,11 +10,16 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 sealed class CseObserver(
-    private var observer_: cse_observer?
+    protected var observer: cse_observer
 ) : Closeable {
 
-    internal val observer: cse_observer =
-        observer_ ?: throw IllegalStateException("${javaClass.simpleName} has been closed!")
+    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
+        return CseLibrary.getReal(observer, slave.index, vr, ref)
+    }
+
+    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
+        return CseLibrary.getInteger(observer, slave.index, vr, ref)
+    }
 
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
@@ -31,11 +36,8 @@ sealed class CseObserver(
     }
 
     override fun close() {
-        observer_?.also {
-            CseLibrary.destroyObserver(it).also { success ->
-                observer_ = null
-                LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
-            }
+        CseLibrary.destroyObserver(observer).also { success ->
+            LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
         }
     }
 
@@ -60,7 +62,7 @@ class CseTimeSeriesObserver(
         return CseLibrary.startObserving(observer)
     }
 
-    fun stopObservering(): Boolean {
+    fun stopObserving(): Boolean {
         return CseLibrary.stopObserving(observer)
     }
 

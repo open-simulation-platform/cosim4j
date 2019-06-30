@@ -5,7 +5,10 @@ plugins {
     id 'cpp-library'
 }
 
-def cseDir = "${rootDir}/build/cse"
+def cseDir = "${rootDir}/cse"
+if (!new File(cseDir).exists()) {
+    throw new GradleException("Error: You need to run install-cse first!")
+}
 
 library { CppLibrary lib ->
 

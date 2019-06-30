@@ -12,6 +12,7 @@ typealias cse_error_code = Int
 typealias cse_execution = Long
 typealias cse_slave = Long
 typealias cse_observer = Long
+typealias cse_manipulator = Long
 
 object CseLibrary {
 
@@ -107,6 +108,13 @@ object CseLibrary {
     external fun createLocalSlave(fmuPath: String): cse_slave
 
     /**
+     *  Destroys a local slave.
+     *
+     *  @returns 0 on success and -1 on error.
+     */
+    external fun destroyLocalSlave(slave: cse_slave): Boolean
+
+    /**
      *  Loads a co-simulation FMU, instantiates a slave based on it, and adds it
      *  to an execution.
      *
@@ -198,12 +206,12 @@ object CseLibrary {
      */
     external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
-    /**
-     * Retrieves the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+//    /**
+//     * Retrieves the values of real variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
     /**
      * Retrieves the values of integer variables for one slave.
@@ -212,33 +220,33 @@ object CseLibrary {
      */
     external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
 
-    /**
-     * Retrieves the values of integer variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+//    /**
+//     * Retrieves the values of integer variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
-    /**
-     * Retrieves the values of integer variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
-
-    /**
-     * Sets the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+//    /**
+//     * Retrieves the values of integer variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
 
     /**
      * Sets the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
-    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
+    external fun setReal(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+//    /**
+//     * Sets the values of real variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
 
 
     /**
@@ -246,7 +254,7 @@ object CseLibrary {
      *
      *  @return  0 on success and -1 on error.
      */
-    external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+    external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
 
 
@@ -420,5 +428,45 @@ object CseLibrary {
      */
     external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
 
+    /**
+     * Creates a manipulator for overriding variable values
+     */
+    external fun createManipulator(): cse_manipulator
+
+    /**
+     *  Add a manipulator to an execution.
+     *
+     *  @param execution The execution.
+     *  @param manipulator  A pointer to a manipulator, which may not be null.
+     *  The manipulator may not previously have been added to any execution.
+     *
+     *  @return 0 on success and -1 on error.
+     */
+    external fun addManipulator(execution: cse_execution, manipulator: cse_manipulator): Boolean
+
+    /**
+     * Destroys a manipulator
+     */
+    external fun destroyManipulator(manipulator: cse_manipulator): Boolean
+
+    /**
+     * Creates a manipulator for running scenarios.
+     */
+    external fun createScenarioManager(): cse_manipulator
+
+    /**
+     * Loads and executes a scenario from file.
+     */
+    external fun loadScenario(execution: cse_execution, manipulator: cse_manipulator, scenarioFile: String): Boolean
+
+    /**
+     * Checks if a scenario is running
+     */
+    external fun isScenarioRunning(manipulator: cse_manipulator): Boolean
+
+    /**
+     * Aborts the execution of a running scenario
+     */
+    external fun abortScenario(manipulator: cse_manipulator): Boolean
 
 }
