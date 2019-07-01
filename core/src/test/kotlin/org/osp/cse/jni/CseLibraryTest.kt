@@ -2,13 +2,14 @@ package org.osp.cse.jni
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import java.io.File
 
 
 class CseLibraryTest {
 
     private companion object {
-        val testFmu = CseLibraryTest::class.java.classLoader
-                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file
+        val testFmu = File(CseLibraryTest::class.java.classLoader
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file)
     }
 
     @Test
@@ -22,9 +23,11 @@ class CseLibraryTest {
     @Test
     fun testLibrary2() {
 
+        Assertions.assertTrue(testFmu.exists())
+
         val execution = CseLibrary.createExecution(0.0, 1.0/100)
 
-        val slave = CseLibrary.createSlave(testFmu)
+        val slave = CseLibrary.createSlave(testFmu.absolutePath)
         val index = CseLibrary.addSlave(execution, slave)
         Assertions.assertEquals(0, index)
 
