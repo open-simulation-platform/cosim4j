@@ -5,7 +5,8 @@ class CseVariableDescription internal constructor() {
     var valueReference: Long = -1
         private set
 
-    var name: String = ""
+    var name: String = "undefined"
+        private set
 
     private var variableType: Int = -1
     private var variableCausality: Int = -1
