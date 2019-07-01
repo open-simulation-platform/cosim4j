@@ -51,8 +51,11 @@ class CseExecutionTest {
             execution.addFileObserver(logDir)
 
             val slave = execution.addSlave(testFmu)
-            slave.variables.forEach {
-                println(it)
+            slave.variables.also {
+
+                Assertions.assertEquals(19, it[0].valueReference)
+                Assertions.assertEquals("Ground.p1.u", it[0].name)
+
             }
 
             Assertions.assertTrue(execution.step(10))
@@ -62,6 +65,15 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
+
+            execution.addLastValueObserver().also { observer ->
+
+                val ref = DoubleArray(1)
+                observer.getReal(slave, longArrayOf(1), ref)
+
+               Assertions.assertEquals(298.0, ref[0])
+
+            }
 
         }
 

@@ -13,42 +13,6 @@ sealed class CseObserver(
     protected var observer: cse_observer
 ) : Closeable {
 
-    fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
-        return CseLibrary.getReal(observer, slaveIndex, vr, ref)
-    }
-
-    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-        return getReal(slave.index, vr, ref)
-    }
-
-    fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
-        return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
-    }
-
-    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-        return getInteger(slave.index, vr, ref)
-    }
-
-    fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
-        return CseRealSamples().also {
-            CseLibrary.getRealSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
-        }
-    }
-
-    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
-        return getRealSamples(slave.index, vr, stepNumber, nSamples)
-    }
-
-    fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-        return CseIntegerSamples().also {
-            CseLibrary.getIntegerSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
-        }
-    }
-
-    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-        return getIntegerSamples(slave.index, vr, stepNumber, nSamples)
-    }
-
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
             CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps)
@@ -92,6 +56,48 @@ class CseTimeSeriesObserver(
 
     fun stopObserving(): Boolean {
         return CseLibrary.stopObserving(observer)
+    }
+
+}
+
+class CseLastValueObserver(
+        observer: cse_observer
+): CseObserver(observer) {
+
+    fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
+        return CseLibrary.getReal(observer, slaveIndex, vr, ref)
+    }
+
+    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
+        return getReal(slave.index, vr, ref)
+    }
+
+    fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
+        return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
+    }
+
+    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
+        return getInteger(slave.index, vr, ref)
+    }
+
+    fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return CseRealSamples().also {
+            CseLibrary.getRealSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+        }
+    }
+
+    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return getRealSamples(slave.index, vr, stepNumber, nSamples)
+    }
+
+    fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return CseIntegerSamples().also {
+            CseLibrary.getIntegerSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+        }
+    }
+
+    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return getIntegerSamples(slave.index, vr, stepNumber, nSamples)
     }
 
 }

@@ -76,6 +76,14 @@ class CseExecution private constructor(
         }
     }
 
+    fun addLastValueObserver(): CseLastValueObserver {
+        val observer = CseLibrary.createLastValueObserver()
+        CseLibrary.addObserver(execution, observer)
+        return CseLastValueObserver(observer).also {
+            observers.add(it)
+        }
+    }
+
     fun addFileObserver(logDir: File, cfgDir: File? = null): CseFileObserver {
         if (!logDir.exists()) {
             logDir.mkdirs()

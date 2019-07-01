@@ -386,6 +386,8 @@ object CseLibrary {
      */
     external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
+    external fun createLastValueObserver(): cse_observer
+
     /**
      * Creates an observer which logs variable values to file in csv format.
      *

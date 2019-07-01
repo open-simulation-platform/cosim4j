@@ -18,11 +18,11 @@ class CseSlave internal constructor(
         }
     }
 
-    fun getReal(observer: CseObserver, vr: LongArray, ref: DoubleArray): Boolean {
+    fun getReal(observer: CseLastValueObserver, vr: LongArray, ref: DoubleArray): Boolean {
         return observer.getReal(this, vr, ref)
     }
 
-    fun getInteger(observer: CseObserver, vr: LongArray, ref: IntArray): Boolean {
+    fun getInteger(observer: CseLastValueObserver, vr: LongArray, ref: IntArray): Boolean {
         return observer.getInteger(this, vr, ref)
     }
 
@@ -34,11 +34,11 @@ class CseSlave internal constructor(
         return manipulator.setInteger(this, vr, values)
     }
 
-    fun getRealSamples(observer: CseObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+    fun getRealSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
         return observer.getRealSamples(this, vr, stepNumber, nSamples)
     }
 
-    fun getIntegerSamples(observer: CseObserver, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+    fun getIntegerSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
         return observer.getIntegerSamples(this, vr, stepNumber, nSamples)
     }
 
