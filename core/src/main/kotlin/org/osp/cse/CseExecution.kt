@@ -84,6 +84,7 @@ class CseExecution private constructor(
         }
     }
 
+    @JvmOverloads
     fun addFileObserver(logDir: File, cfgDir: File? = null): CseFileObserver {
         if (!logDir.exists()) {
             logDir.mkdirs()
