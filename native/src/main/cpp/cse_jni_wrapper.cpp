@@ -264,10 +264,17 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     jlong *_vr = env->GetLongArrayElements(vr, 0);
     jdouble *_values = env->GetDoubleArrayElements(values, 0);
 
-    jboolean status = cse_manipulator_slave_set_real((cse_manipulator*) manipulator, slaveIndex, (cse_variable_index*) _vr, size, _values) == 0;
+    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_manipulator_slave_set_real((cse_manipulator*) manipulator, slaveIndex, __vr, size, _values) == 0;
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseDoubleArrayElements(values, _values, 0);
+
+    free(__vr);
 
     return status;
 }
@@ -282,10 +289,17 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     jlong *_vr = env->GetLongArrayElements(vr, 0);
     jint *_values = env->GetIntArrayElements(values, 0);
 
-    jboolean status = cse_manipulator_slave_set_integer((cse_manipulator*) manipulator, slaveIndex, (cse_variable_index*) _vr, size, (int*)_values) == 0;
+    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_manipulator_slave_set_integer((cse_manipulator*) manipulator, slaveIndex, __vr, size, (int*)_values) == 0;
 
     env->ReleaseLongArrayElements(vr, _vr, 0);
     env->ReleaseIntArrayElements(values, _values, 0);
+
+    free(__vr);
 
     return status;
 }
@@ -298,14 +312,19 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
 
     const jsize size = env->GetArrayLength(vr);
     jlong *_vr = env->GetLongArrayElements(vr, 0);
-
     double* _ref = (double*) malloc(sizeof(double) * size);
 
-    jboolean status = cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, size, _ref) == 0;
+    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
 
     env->SetDoubleArrayRegion(ref, 0, size, _ref);
 
     free(_ref);
+    free(__vr);
     env->ReleaseLongArrayElements(vr, _vr, 0);
 
     return status;
@@ -319,14 +338,19 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 
     const jsize size = env->GetArrayLength(vr);
     jlong *_vr = env->GetLongArrayElements(vr, 0);
-
     int* _ref = (int*) malloc(sizeof(int) * size);
 
-    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, size, _ref) == 0;
+    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
 
     env->SetIntArrayRegion(ref, 0, size, (jint*)_ref);
 
     free(_ref);
+    free(__vr);
     env->ReleaseLongArrayElements(vr, _vr, 0);
 
     return status;
