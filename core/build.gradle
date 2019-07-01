@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'org.osp'
-version '0.1-SNAPSHOT'
+version '0.3-SNAPSHOT'
 
 sourceCompatibility = 1.8
 
@@ -57,6 +57,7 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 publishing {
+    
     publications {
         maven(MavenPublication) {
             from components.java
@@ -64,4 +65,15 @@ publishing {
             artifact javadocJar
         }
     }
+
+    repositories {
+        maven {
+            credentials {
+                username mvnUser
+                password mvnPw
+            }
+            url "sftp://login.stud.ntnu.no:22/web/folk/laht/mvn"
+        }
+    }
+
 }
