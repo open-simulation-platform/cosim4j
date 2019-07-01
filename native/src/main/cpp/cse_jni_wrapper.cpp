@@ -368,43 +368,50 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 //    return cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, nvr, _ref) == 0;
 //}
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
+
+std::cerr << "hello" << std::endl;
 
     double* values = (double*) malloc(sizeof(double) * nSamples);
     cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
     cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+    jboolean success = numSamplesRead != -1;
 
-    jdoubleArray _values = env->NewDoubleArray(numSamplesRead);
-    jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
-    jlongArray _steps = env->NewLongArray(numSamplesRead);
+    if (success) {
 
-    env->SetDoubleArrayRegion(_values, 0, numSamplesRead, values);
+        jdoubleArray _values = env->NewDoubleArray(numSamplesRead);
+        jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
+        jlongArray _steps = env->NewLongArray(numSamplesRead);
 
-    for (int i = 0; i < numSamplesRead; i++) {
-        jlong step = (jlong) steps[i];
-        double time = to_seconds(times[i]);
+        env->SetDoubleArrayRegion(_values, 0, numSamplesRead, values);
 
-        env->SetDoubleArrayRegion(_times, i, 1, &time);
-        env->SetLongArrayRegion(_steps, i, 1, &step);
+        for (int i = 0; i < numSamplesRead; i++) {
+            jlong step = (jlong) steps[i];
+            double time = to_seconds(times[i]);
+
+            env->SetDoubleArrayRegion(_times, i, 1, &time);
+            env->SetLongArrayRegion(_steps, i, 1, &step);
+        }
+
+        initCseRealSamplesFields(env);
+        env->SetIntField(samples, cseRealSamplesFields.sizeId, numSamplesRead);
+        env->SetObjectField(samples, cseRealSamplesFields.valuesId, _values);
+        env->SetObjectField(samples, cseRealSamplesFields.stepsId, _steps);
+        env->SetObjectField(samples, cseRealSamplesFields.timesId, _times);
+
     }
-
-    initCseRealSamplesFields(env);
-    env->SetIntField(samples, cseRealSamplesFields.sizeId, numSamplesRead);
-    env->SetObjectField(samples, cseRealSamplesFields.valuesId, _values);
-    env->SetObjectField(samples, cseRealSamplesFields.stepsId, _steps);
-    env->SetObjectField(samples, cseRealSamplesFields.timesId, _times);
 
     free(values);
     free(steps);
     free(times);
 
-    return samples;
+    return success;
 }
 
 //JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
@@ -435,7 +442,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv 
 //    return true;
 //}
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
@@ -446,32 +453,35 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+    jboolean success = numSamplesRead != -1;
 
-    jintArray _values = env->NewIntArray(numSamplesRead);
-    jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
-    jlongArray _steps = env->NewLongArray(numSamplesRead);
+    if (success) {
 
-    env->SetIntArrayRegion(_values, 0, numSamplesRead, (jint*) values);
+        jintArray _values = env->NewIntArray(numSamplesRead);
+        jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
+        jlongArray _steps = env->NewLongArray(numSamplesRead);
 
-    for (int i = 0; i < numSamplesRead; i++) {
-        jlong step = (jlong) steps[i];
-        double time = to_seconds(times[i]);
+        env->SetIntArrayRegion(_values, 0, numSamplesRead, (jint*) values);
 
-        env->SetDoubleArrayRegion(_times, i, 1, &time);
-        env->SetLongArrayRegion(_steps, i, 1, &step);
+        for (int i = 0; i < numSamplesRead; i++) {
+            jlong step = (jlong) steps[i];
+            double time = to_seconds(times[i]);
+
+            env->SetDoubleArrayRegion(_times, i, 1, &time);
+            env->SetLongArrayRegion(_steps, i, 1, &step);
+        }
+
+        initCseIntegerSamplesFields(env);
+        env->SetIntField(samples, cseIntegerSamplesFields.sizeId, numSamplesRead);
+        env->SetObjectField(samples, cseIntegerSamplesFields.valuesId, _values);
+        env->SetObjectField(samples, cseIntegerSamplesFields.stepsId, _steps);
+        env->SetObjectField(samples, cseIntegerSamplesFields.timesId, _times);
     }
-
-    initCseIntegerSamplesFields(env);
-    env->SetIntField(samples, cseIntegerSamplesFields.sizeId, numSamplesRead);
-    env->SetObjectField(samples, cseIntegerSamplesFields.valuesId, _values);
-    env->SetObjectField(samples, cseIntegerSamplesFields.stepsId, _steps);
-    env->SetObjectField(samples, cseIntegerSamplesFields.timesId, _times);
-
     free(values);
     free(steps);
     free(times);
 
-    return samples;
+    return success;
 }
 
 //JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {

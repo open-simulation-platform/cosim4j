@@ -132,9 +132,7 @@ class CseExecution private constructor(
 
         @JvmStatic
         fun create(stepSize: Double): CseExecution {
-            return CseLibrary.createExecution(0.0, stepSize).let {
-                CseExecution(it)
-            }
+            return create(0.0, stepSize)
         }
 
         @JvmStatic
@@ -145,7 +143,8 @@ class CseExecution private constructor(
         }
 
         @JvmStatic
-        fun create(sspDir: File, startTime: Double): CseExecution {
+        @JvmOverloads
+        fun createFromSsp(sspDir: File, startTime: Double = 0.0): CseExecution {
             return CseLibrary.createSspExecution(sspDir.absolutePath, startTime).let {
                 CseExecution((it))
             }

@@ -52,4 +52,4 @@ build/
 /**/out/
 /**/build/
 
-cse/
+/cse

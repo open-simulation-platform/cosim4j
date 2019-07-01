@@ -285,7 +285,7 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples)
+    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
 
 //    /**
 //     * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -310,7 +310,7 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples)
+    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples) : Boolean
 
 //    /**
 //     * Retrieves a series of observed values, step numbers and times for a real variable.

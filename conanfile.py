@@ -20,4 +20,4 @@ class CsecorejniConan(ConanFile):
     def imports(self):
         self.copy("*.dll", dst="../cse/bin", keep_path=False)
         self.copy("**/cse*.lib", dst="../cse/lib", keep_path=False)
-        self.copy("**/cse.h", dst="../cse", keep_path=False)
+        self.copy("**/cse*.h", dst="../cse", keep_path=False)

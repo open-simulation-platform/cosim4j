@@ -21,6 +21,26 @@ sealed class CseObserver(
         return CseLibrary.getInteger(observer, slave.index, vr, ref)
     }
 
+    fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return CseRealSamples().also {
+            CseLibrary.getRealSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+        }
+    }
+
+    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return getRealSamples(slave.index, vr, stepNumber, nSamples)
+    }
+
+    fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return CseIntegerSamples().also {
+            CseLibrary.getIntegerSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+        }
+    }
+
+    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return getIntegerSamples(slave.index, vr, stepNumber, nSamples)
+    }
+
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
             CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps)

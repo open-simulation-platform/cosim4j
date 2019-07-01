@@ -34,6 +34,14 @@ class CseSlave internal constructor(
         return manipulator.setInteger(this, vr, values)
     }
 
+    fun getRealSamples(observer: CseObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return observer.getRealSamples(this, vr, stepNumber, nSamples)
+    }
+
+    fun getIntegerSamples(observer: CseObserver, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return observer.getIntegerSamples(this, vr, stepNumber, nSamples)
+    }
+
     override fun close() {
         CseLibrary.destroySlave(slave)
     }
