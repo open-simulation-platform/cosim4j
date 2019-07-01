@@ -62,8 +62,16 @@ class CseExecution private constructor(
         return CseLibrary.setRealTimeFactorTarget(execution, realTimeFactor)
     }
 
+    fun connectIntegers(outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean {
+        return CseLibrary.connectIntegers(execution, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
+    }
+
     fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
         return CseLibrary.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+    }
+
+    fun connectReals(outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean {
+        return CseLibrary.connectReals(execution, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
     }
 
     fun connectReals(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
@@ -147,17 +155,13 @@ class CseExecution private constructor(
 
         @JvmStatic
         fun create(startTime: Double, stepSize: Double): CseExecution {
-            return CseLibrary.createExecution(startTime, stepSize).let {
-                CseExecution(it)
-            }
+            return CseExecution(CseLibrary.createExecution(startTime, stepSize))
         }
 
         @JvmStatic
         @JvmOverloads
         fun createFromSsp(sspDir: File, startTime: Double = 0.0): CseExecution {
-            return CseLibrary.createSspExecution(sspDir.absolutePath, startTime).let {
-                CseExecution((it))
-            }
+            return CseExecution((CseLibrary.createSspExecution(sspDir.absolutePath, startTime)))
         }
 
     }
