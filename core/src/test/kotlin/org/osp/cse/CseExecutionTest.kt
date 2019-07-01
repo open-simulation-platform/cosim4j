@@ -59,20 +59,23 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(10))
-
             execution.getStatus().apply {
                 Assertions.assertEquals(0.1, this.currentTime)
             }
 
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
 
-            execution.addLastValueObserver().also { observer ->
+            execution.addLastValueObserver().use { observer ->
 
                 val ref = DoubleArray(1)
                 observer.getReal(slave, longArrayOf(1), ref)
+                Assertions.assertEquals(298.0, ref[0])
 
-               Assertions.assertEquals(298.0, ref[0])
+            }
 
+            Assertions.assertTrue(execution.step(10))
+            execution.getStatus().apply {
+                Assertions.assertEquals(0.2, this.currentTime)
             }
 
         }

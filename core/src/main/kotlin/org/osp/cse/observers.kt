@@ -28,15 +28,10 @@ sealed class CseObserver(
     }
 
     override fun close() {
-        CseLibrary.destroyObserver(observer).also { success ->
-            LOG.debug("Destroyed instance of ${javaClass.simpleName} successfully: $success")
+        if (observer != 0L) {
+            CseLibrary.destroyObserver(observer)
+            observer = 0L
         }
-    }
-
-    private companion object {
-
-        private val LOG: Logger = LoggerFactory.getLogger(CseObserver::class.java)
-
     }
 
 }

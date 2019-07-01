@@ -7,7 +7,7 @@ import java.io.Closeable
 
 class CseSlave internal constructor(
         val index: Int,
-        private val slave: cse_slave,
+        private var slave: cse_slave,
         private val execution: cse_execution
 ) : Closeable {
 
@@ -43,7 +43,10 @@ class CseSlave internal constructor(
     }
 
     override fun close() {
-        CseLibrary.destroySlave(slave)
+        if (slave != 0L) {
+            CseLibrary.destroySlave(slave)
+            slave = 0L
+        }
     }
 
 }

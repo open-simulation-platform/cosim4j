@@ -6,7 +6,7 @@ import java.io.Closeable
 
 
 sealed class CseManipulator(
-        protected val manipulator: cse_manipulator
+        protected var manipulator: cse_manipulator
 ) : Closeable {
 
     fun setReal(slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean {
@@ -26,7 +26,10 @@ sealed class CseManipulator(
     }
 
     override fun close() {
-        CseLibrary.destroyManipulator(manipulator)
+        if (manipulator != 0L) {
+            CseLibrary.destroyManipulator(manipulator)
+            manipulator = 0L
+        }
     }
 
 }
