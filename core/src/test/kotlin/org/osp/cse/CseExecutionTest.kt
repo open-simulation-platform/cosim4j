@@ -47,7 +47,7 @@ class CseExecutionTest {
 
         CseExecution.create(1.0 / 100).use { execution ->
 
-            val logDir = File("build/results");
+            val logDir = File("build/results")
             execution.addFileObserver(logDir)
 
             val slave = execution.addSlave(testFmu)
@@ -67,9 +67,9 @@ class CseExecutionTest {
 
             execution.addLastValueObserver().use { observer ->
 
-                val ref = DoubleArray(1)
-                observer.getReal(slave, longArrayOf(1), ref)
-                Assertions.assertEquals(298.0, ref[0])
+                observer.getReal(slave.index, 1).also {
+                    Assertions.assertEquals(298.0, it)
+                }
 
             }
 
