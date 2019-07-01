@@ -13,12 +13,20 @@ sealed class CseObserver(
     protected var observer: cse_observer
 ) : Closeable {
 
+    fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
+        return CseLibrary.getReal(observer, slaveIndex, vr, ref)
+    }
+
     fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-        return CseLibrary.getReal(observer, slave.index, vr, ref)
+        return getReal(slave.index, vr, ref)
+    }
+
+    fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
+        return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
     }
 
     fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-        return CseLibrary.getInteger(observer, slave.index, vr, ref)
+        return getInteger(slave.index, vr, ref)
     }
 
     fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {

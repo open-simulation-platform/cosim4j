@@ -9,12 +9,20 @@ sealed class CseManipulator(
         protected val manipulator: cse_manipulator
 ) : Closeable {
 
+    fun setReal(slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean {
+        return CseLibrary.setReal(manipulator, slaveIndex, vr, values)
+    }
+
     fun setReal(slave: CseSlave, vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setReal(manipulator, slave.index, vr, values)
+        return setReal(slave.index, vr, values)
+    }
+
+    fun setInteger(slaveIndex: Int, vr: LongArray, values: IntArray): Boolean {
+        return CseLibrary.setInteger(manipulator, slaveIndex, vr, values)
     }
 
     fun setInteger(slave: CseSlave, vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setInteger(manipulator, slave.index, vr, values)
+        return setInteger(slave.index, vr, values)
     }
 
     override fun close() {
