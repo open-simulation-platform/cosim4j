@@ -2,12 +2,8 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_observer
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 sealed class CseObserver(
     protected var observer: cse_observer
@@ -59,21 +55,35 @@ class CseLastValueObserver(
         observer: cse_observer
 ): CseObserver(observer) {
 
+    fun getReal(slaveIndex: Int, vr: Long): Double? {
+        return DoubleArray(1).also {
+            if (!CseLibrary.getReal(observer, slaveIndex, longArrayOf(vr), it)) {
+                return null
+            }
+        }[0]
+    }
+
+    fun getReal(slave: CseSlave, vr: Long) = getReal(slave.index, vr)
+
     fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
         return CseLibrary.getReal(observer, slaveIndex, vr, ref)
     }
 
-    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray): Boolean {
-        return getReal(slave.index, vr, ref)
+    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray) = getReal(slave.index, vr, ref)
+
+    fun getInteger(slaveIndex: Int, vr: Long): Int? {
+        return IntArray(1).also {
+            if (!CseLibrary.getInteger(observer, slaveIndex, longArrayOf(vr), it)) {
+                return null
+            }
+        }[0]
     }
 
     fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
         return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
     }
 
-    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray): Boolean {
-        return getInteger(slave.index, vr, ref)
-    }
+    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray) = getInteger(slave.index, vr, ref)
 
     fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
         return CseRealSamples().also {
@@ -81,9 +91,7 @@ class CseLastValueObserver(
         }
     }
 
-    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
-        return getRealSamples(slave.index, vr, stepNumber, nSamples)
-    }
+    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int) = getRealSamples(slave.index, vr, stepNumber, nSamples)
 
     fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
         return CseIntegerSamples().also {
@@ -91,8 +99,6 @@ class CseLastValueObserver(
         }
     }
 
-    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-        return getIntegerSamples(slave.index, vr, stepNumber, nSamples)
-    }
+    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int) = getIntegerSamples(slave.index, vr, stepNumber, nSamples)
 
 }
