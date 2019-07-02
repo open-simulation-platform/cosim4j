@@ -17,7 +17,7 @@ pipeline {
                     agent { 
                         dockerfile {
                             filename 'Dockerfile.build'
-                            dir 'cse-core/.dockerfiles'
+                            dir 'cse-core4j/.dockerfiles'
                             label 'linux && docker'
                         }
                     }
