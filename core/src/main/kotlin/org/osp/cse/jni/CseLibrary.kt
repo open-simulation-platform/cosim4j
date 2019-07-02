@@ -35,14 +35,16 @@ object CseLibrary {
                 val prefix = "boost_"
                 val postfix = "-vc141-mt-x64-1_66.dll"
                 var i = 0
-                libNames.add(i++, "${prefix}context$postfix")
-                libNames.add(i++, "${prefix}date_time$postfix")
-                libNames.add(i++, "${prefix}fiber$postfix")
-                libNames.add(i++, "${prefix}system$postfix")
-                libNames.add(i++, "${prefix}filesystem$postfix")
-                libNames.add(i++, "${prefix}chrono$postfix")
-                libNames.add(i++, "${prefix}thread$postfix")
-                libNames.add(i++, "${prefix}log$postfix")
+                with(libNames) {
+                    add(i++, "${prefix}context$postfix")
+                    add(i++, "${prefix}date_time$postfix")
+                    add(i++, "${prefix}fiber$postfix")
+                    add(i++, "${prefix}system$postfix")
+                    add(i++, "${prefix}filesystem$postfix")
+                    add(i++, "${prefix}chrono$postfix")
+                    add(i++, "${prefix}thread$postfix")
+                    add(i, "${prefix}log$postfix")
+                }
             }
 
             libNames.forEach { libName ->
