@@ -12,9 +12,8 @@ class CseExecutionTest {
 
         val LOG: Logger = LoggerFactory.getLogger(CseExecutionTest::class.java)
 
-        val testFmu = TestFMUs.fmi20().cs()
-            .vendor("20sim").version("4.6.4.8004")
-            .name("ControlledTemperature").file()
+        val testFmu = File(CseExecutionTest::class.java.classLoader
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file)
 
     }
 
@@ -26,9 +25,7 @@ class CseExecutionTest {
 
         CseExecution.create(stepSize).use { execution ->
 
-            val observer = execution.addMembufferObserver()
-
-            val slave = execution.addSlave(testFmu)
+            execution.addSlave(testFmu)
 
             execution.getSlaveInfos().apply {
                 Assertions.assertEquals(0, this[0].index)
@@ -41,21 +38,6 @@ class CseExecutionTest {
                 Assertions.assertEquals(stepSize * numSteps, this.currentTime, 1E-6)
             }
 
-            Assertions.assertEquals(298.15, observer.getReal(slave, 46))
-            Assertions.assertEquals(298.15, observer.getRealDirect(slave, 46))
-
-            observer.getRealSamples(slave, 46, 0, 5).also { samples ->
-                Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
-                Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
-                Assertions.assertArrayEquals(longArrayOf(0, 1, 2, 3, 4), samples.steps)
-            }
-
-            observer.getRealSamplesDirect(slave, 46, 0, 5).also { samples ->
-                Assertions.assertArrayEquals(doubleArrayOf(0.0, 298.15, 298.15, 298.15, 298.15), samples.values)
-                Assertions.assertArrayEquals(doubleArrayOf(0.0, 0.01, 0.02, 0.030000000000000002, 0.04), samples.times)
-                Assertions.assertArrayEquals(longArrayOf(0, 1, 2, 3, 4), samples.steps)
-            }
-
         }
 
     }
@@ -65,21 +47,36 @@ class CseExecutionTest {
 
         CseExecution.create(1.0 / 100).use { execution ->
 
-            val logDir = File("build/results");
+            val logDir = File("build/results")
             execution.addFileObserver(logDir)
 
-            val observer = execution.addMembufferObserver()
-
             val slave = execution.addSlave(testFmu)
+            slave.variables.also {
+
+                Assertions.assertEquals(19, it[0].valueReference)
+                Assertions.assertEquals("Ground.p1.u", it[0].name)
+
+            }
+
             Assertions.assertTrue(execution.step(10))
-
-            Assertions.assertEquals(298.15, observer.getReal(slave, 46))
-
             execution.getStatus().apply {
                 Assertions.assertEquals(0.1, this.currentTime)
             }
 
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
+
+            execution.addLastValueObserver().use { observer ->
+
+                observer.getReal(slave.index, 1).also {
+                    Assertions.assertEquals(298.0, it)
+                }
+
+            }
+
+            Assertions.assertTrue(execution.step(10))
+            execution.getStatus().apply {
+                Assertions.assertEquals(0.2, this.currentTime)
+            }
 
         }
 

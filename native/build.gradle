@@ -1,14 +1,14 @@
+import org.gradle.internal.jvm.Jvm
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id 'cpp-library'
 }
 
-def javaHome = org.gradle.internal.jvm.Jvm.current().javaHome
-
-def libcsecorec = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
-def libcsecorecpp = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
-
+def cseDir = "${rootDir}/cse"
+if (!new File(cseDir).exists()) {
+    throw new GradleException("Error: You need to run install-cse first!")
+}
 
 library { CppLibrary lib ->
 
@@ -21,12 +21,15 @@ library { CppLibrary lib ->
 
     lib.binaries.whenElementFinalized { CppBinary binary ->
 
+        def javaHome = Jvm.current().javaHome
+        def libcsecorec = file(OperatingSystem.current().getLinkLibraryName("${cseDir}/lib/csecorec"))
+        def libcsecorecpp = file(OperatingSystem.current().getLinkLibraryName("${cseDir}/lib/csecorecpp"))
+        
         project.dependencies {
-            add(binary.linkLibraries.name, files(libcsecorec))
-            add(binary.linkLibraries.name, files(libcsecorecpp))
-
-            add(binary.includePathConfiguration.name, files("$javaHome/include"))
-
+            
+            add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
+            add(binary.includePathConfiguration.name, files(cseDir, "$javaHome/include"))
+            
             if (OperatingSystem.current().isLinux()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
             } else if (OperatingSystem.current().isWindows()) {
@@ -47,9 +50,7 @@ tasks.all {
     }
 }
 
-tasks.register("assembleAllRelease") {
-    dependsOn assembleAllRelease
-}
+tasks.register("assembleAllRelease")
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 

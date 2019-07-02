@@ -3,38 +3,67 @@ package org.osp.cse
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
 import org.osp.cse.jni.cse_slave
-import org.osp.util.directBuffer
-import java.io.File
+import java.io.Closeable
 
 class CseSlave internal constructor(
-    private val execution: cse_execution,
-    fmuPath: File
-) {
-    private val slave: cse_slave = CseLibrary.createLocalSlave(fmuPath.absolutePath)
-    val index: Int = CseLibrary.addSlave(execution, slave)
+        val index: Int,
+        private var slave: cse_slave,
+        private val execution: cse_execution
+) : Closeable {
 
-    fun setInteger(vr: Long, value: Int): Boolean {
-        return setInteger(longArrayOf(vr), intArrayOf(value))
+
+    val variables: Array<CseVariableDescription> by lazy {
+        Array(CseLibrary.getNumVariables(execution, index)) { CseVariableDescription() }.also {
+            CseLibrary.getVariables(execution, index, it)
+        }
     }
 
-    fun setInteger(vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setInteger(execution, index, vr, values)
+    fun getReal(observer: CseLastValueObserver, vr: LongArray, ref: DoubleArray): Boolean {
+        return observer.getReal(this, vr, ref)
     }
 
-    fun setIntegerDirect(vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setRealDirect(execution, index, vr.directBuffer(), vr.size, values.directBuffer())
+    fun getInteger(observer: CseLastValueObserver, vr: LongArray, ref: IntArray): Boolean {
+        return observer.getInteger(this, vr, ref)
     }
 
-    fun setReal(vr: Long, value: Double): Boolean {
-        return setReal(longArrayOf(vr), doubleArrayOf(value))
+    fun setReal(manipulator: CseManipulator, vr: LongArray, values: DoubleArray): Boolean {
+        return manipulator.setReal(this, vr, values)
     }
 
-    fun setReal(vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setReal(execution, index, vr, values)
+    fun setInteger(manipulator: CseManipulator, vr: LongArray, values: IntArray): Boolean {
+        return manipulator.setInteger(this, vr, values)
     }
 
-    fun setRealDirect(vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setRealDirect(execution, index, vr.directBuffer(), vr.size, values.directBuffer())
+    fun getRealSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return observer.getRealSamples(this, vr, stepNumber, nSamples)
+    }
+
+    fun getIntegerSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return observer.getIntegerSamples(this, vr, stepNumber, nSamples)
+    }
+
+    override fun close() {
+        if (slave != 0L) {
+            CseLibrary.destroySlave(slave)
+            slave = 0L
+        }
+    }
+
+}
+
+class CseSlaveInfo {
+
+    lateinit var name: String
+        private set
+
+    lateinit var source: String
+        private set
+
+    var index: Int = -1
+        private set
+
+    override fun toString(): String {
+        return "CseSlaveInfo(name=$name, source=$source, index=$index)"
     }
 
 }
