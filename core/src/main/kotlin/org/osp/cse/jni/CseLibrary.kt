@@ -18,21 +18,29 @@ object CseLibrary {
 
     init {
 
-        val libName = "${libPrefix}csecorejni.$sharedLibExtension"
         val tempDir = Files.createTempDirectory("cse-core4j_").toFile()
-        val lib = File(tempDir, libName)
-        try {
-            CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
-                FileOutputStream(lib).use { fos ->
-                    `is`.copyTo(fos)
+        listOf(
+                "${libPrefix}csecorecpp.$sharedLibExtension",
+                "${libPrefix}csecorec.$sharedLibExtension",
+                "${libPrefix}csecorejni.$sharedLibExtension"
+        ).forEach { libName ->
+
+            val lib = File(tempDir, libName)
+            try {
+                CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
+                    FileOutputStream(lib).use { fos ->
+                        `is`.copyTo(fos)
+                    }
                 }
+                System.load(lib.absolutePath)
+            } catch (ex: Exception) {
+                tempDir.deleteRecursively()
+                throw ex
             }
-            System.load(lib.absolutePath)
-        } catch (ex: Exception) {
-            tempDir.deleteRecursively()
-            throw ex
+            lib.deleteOnExit()
+
         }
-        lib.deleteOnExit()
+
         tempDir.deleteOnExit()
 
     }
