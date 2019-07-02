@@ -66,14 +66,18 @@ publishing {
         }
     }
 
-    repositories {
-        maven {
-            credentials {
-                username mvnUser
-                password mvnPw
-            }
-            url "sftp://login.stud.ntnu.no:22/web/folk/laht/mvn"
-        }
-    }
+   if (hasProperty("mvnUser") && hasProperty("mvnPw")) {
+
+       repositories {
+           maven {
+               credentials {
+                   username mvnUser
+                   password mvnPw
+               }
+               url "sftp://login.stud.ntnu.no:22/web/folk/laht/mvn"
+           }
+       }
+       
+   }
 
 }
