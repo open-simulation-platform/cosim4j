@@ -1,6 +1,7 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
+import org.osp.util.isLinux
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import java.io.File
@@ -26,8 +27,9 @@ object CseLibrary {
         ).forEach { libName ->
 
             val lib = File(tempDir, libName)
+            val platform = if (isLinux) "linux" else "win64"
             try {
-                CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
+                CseLibrary::class.java.classLoader.getResourceAsStream("native/$platform/$libName").use { `is` ->
                     FileOutputStream(lib).use { fos ->
                         `is`.copyTo(fos)
                     }

@@ -5,8 +5,8 @@ plugins {
     id 'cpp-library'
 }
 
-def cseLibDir = "${rootDir}/core/src/main/resources/native"
-
+def platform = OperatingSystem.current().isLinux() ? "linux" : "win64"
+def cseLibDir = "${rootDir}/core/src/main/resources/native/${platform}"
 
 library { CppLibrary lib ->
 
@@ -52,7 +52,7 @@ tasks.register("assembleAllRelease")
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
-    into "$rootDir/core/src/main/resources/native"
+    into "$rootDir/core/src/main/resources/native/${platform}"
 
     if (OperatingSystem.current().isLinux()) {
 

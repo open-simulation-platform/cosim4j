@@ -8,16 +8,12 @@ class CsecorejniConan(ConanFile):
     generators = "cmake"
 
     requires = (
-        "cse-core/0.3.0@markaren/testing"
+        "boost/1.66.0@conan/stable"
     )
 
     default_options = (
-        "cse-core:fmuproxy=True",
-        "cse-core:build_apidoc=False",
-        "cse-core:revision=markaren/testing"
+        "boost:shared=True"
     )
 
     def imports(self):
-        self.copy("*.dll", dst="../cse/bin", keep_path=False)
-        self.copy("**/cse*.lib", dst="../cse/lib", keep_path=False)
-        self.copy("**/cse*.h", dst="../cse", keep_path=False)
+        self.copy("*.dll", dst="bin", keep_path=False)
