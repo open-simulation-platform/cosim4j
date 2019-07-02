@@ -671,6 +671,37 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createScenarioManager(JN
     return (jlong) cse_scenario_manager_create();
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_loadScenario(JNIEnv *env, jobject obj, jlong execution, jlong manipulator, jstring scenarioFile) {
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return false;
+    }
+    if (manipulator == 0) {
+        std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
+        return false;
+    }
+    const char* _scenarioFile = env->GetStringUTFChars(scenarioFile, 0);
+    jboolean status = cse_execution_load_scenario((cse_execution*) execution, (cse_manipulator*) manipulator, _scenarioFile) == 0;
+    env->ReleaseStringUTFChars(scenarioFile, _scenarioFile);
+    return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_isScenarioRunning(JNIEnv *env, jobject obj, jlong manipulator) {
+    if (manipulator == 0) {
+        std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
+        return false;
+    }
+    return cse_scenario_is_running((cse_manipulator*) manipulator) == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_abortScenario(JNIEnv *env, jobject obj, jlong manipulator) {
+    if (manipulator == 0) {
+        std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
+        return false;
+    }
+    return cse_scenario_abort((cse_manipulator*) manipulator) == 0;
+}
+
 #ifdef __cplusplus
 }
 #endif

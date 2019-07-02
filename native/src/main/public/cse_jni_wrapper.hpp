@@ -107,6 +107,13 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyManipulator(JN
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createScenarioManager(JNIEnv *env, jobject obj);
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_loadScenario(JNIEnv *env, jobject obj, jlong execution, jlong manipulator, jstring scenarioFile);
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_isScenarioRunning(JNIEnv *env, jobject obj, jlong manipulator);
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_abortScenario(JNIEnv *env, jobject obj, jlong manipulator);
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -460,7 +460,7 @@ object CseLibrary {
     /**
      * Creates a manipulator for overriding variable values
      */
-    external fun createManipulator(): cse_manipulator
+    external fun createOverrideManipulator(): cse_manipulator
 
     /**
      *  Add a manipulator to an execution.
