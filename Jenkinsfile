@@ -1,6 +1,8 @@
 pipeline {
     agent none
 
+    options { checkoutToSubdirectory('cse-core4j') }
+
     stages {
 
         stage('Build') {
