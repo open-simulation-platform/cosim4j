@@ -1,14 +1,12 @@
+import org.gradle.internal.jvm.Jvm
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id 'cpp-library'
 }
 
-def javaHome = org.gradle.internal.jvm.Jvm.current().javaHome
-
-def libcsecorec = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
-def libcsecorecpp = file(OperatingSystem.current().getSharedLibraryName(rootDir.getPath() + "/core/src/main/resources/native/csecorec"))
-
+def platform = OperatingSystem.current().isLinux() ? "linux" : "win64"
+def cseLibDir = "${rootDir}/core/src/main/resources/native/${platform}"
 
 library { CppLibrary lib ->
 
@@ -21,12 +19,15 @@ library { CppLibrary lib ->
 
     lib.binaries.whenElementFinalized { CppBinary binary ->
 
+        def javaHome = Jvm.current().javaHome
+        def libcsecorec = file(OperatingSystem.current().getLinkLibraryName("${cseLibDir}/csecorec"))
+        def libcsecorecpp = file(OperatingSystem.current().getLinkLibraryName("${cseLibDir}/csecorecpp"))
+        
         project.dependencies {
-            add(binary.linkLibraries.name, files(libcsecorec))
-            add(binary.linkLibraries.name, files(libcsecorecpp))
-
+            
+            add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
             add(binary.includePathConfiguration.name, files("$javaHome/include"))
-
+            
             if (OperatingSystem.current().isLinux()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
             } else if (OperatingSystem.current().isWindows()) {
@@ -47,13 +48,11 @@ tasks.all {
     }
 }
 
-tasks.register("assembleAllRelease") {
-    dependsOn assembleAllRelease
-}
+tasks.register("assembleAllRelease")
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
-    into "$rootDir/core/src/main/resources/native"
+    into "$rootDir/core/src/main/resources/native/${platform}"
 
     if (OperatingSystem.current().isLinux()) {
 

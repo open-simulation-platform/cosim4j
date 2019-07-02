@@ -1,43 +1,88 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
+import org.osp.util.isLinux
+import org.osp.util.isWindows
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
+import java.nio.file.Files
 
+typealias cse_error_code = Int
 typealias cse_execution = Long
 typealias cse_slave = Long
 typealias cse_observer = Long
+typealias cse_manipulator = Long
 
 object CseLibrary {
 
     init {
 
-        val libs = listOf(
-            "${libPrefix}csecorecpp.$sharedLibExtension",
-            "${libPrefix}csecorec.$sharedLibExtension",
-            "${libPrefix}csecorejni.$sharedLibExtension")
+        val platform = if (isLinux) "linux" else "win64"
+        val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
+            it.deleteOnExit()
+        }
+        try {
 
-        CseLibrary::class.java.classLoader.also { cl ->
+            val libNames = mutableListOf(
+                    "${libPrefix}csecorecpp.$sharedLibExtension",
+                    "${libPrefix}csecorec.$sharedLibExtension",
+                    "${libPrefix}csecorejni.$sharedLibExtension"
+            )
 
-            libs.forEach { libName ->
-
-                val outputFile = File(libName).also {
-                    it.deleteOnExit()
-                }
-                println(libName)
-                cl.getResourceAsStream("native/$libName").use { `is` ->
-                    FileOutputStream(outputFile).use { fos ->
-                        `is`.copyTo(fos)
-                    }
-                }
-                System.load(outputFile.absolutePath)
+            if (isWindows) {
+                val prefix = "boost_"
+                val postfix = "-vc141-mt-x64-1_66.dll"
+                var i = 0
+                libNames.add(i++, "${prefix}context$postfix")
+                libNames.add(i++, "${prefix}date_time$postfix")
+                libNames.add(i++, "${prefix}fiber$postfix")
+                libNames.add(i++, "${prefix}system$postfix")
+                libNames.add(i++, "${prefix}filesystem$postfix")
+                libNames.add(i++, "${prefix}chrono$postfix")
+                libNames.add(i++, "${prefix}thread$postfix")
+                libNames.add(i++, "${prefix}log$postfix")
             }
 
+            libNames.forEach { libName ->
+
+                val lib = File(tempDir, libName).also {
+                    it.deleteOnExit()
+                }
+                val relativeLibPath = "native/$platform/$libName"
+                CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath).use {
+                    FileOutputStream(lib).use { fos ->
+                        it.copyTo(fos)
+                    }
+                }
+                System.load(lib.absolutePath)
+            }
+        } catch (ex: Exception) {
+            tempDir.deleteRecursively()
+            throw ex
         }
 
+    }
+
+
+    private external fun getLastErrorCode_(): cse_error_code
+
+    /**
+     *  Returns the error code associated with the last reported error.
+     *
+     *  Most functions in this library will indicate that an error occurred by
+     *  returning -1 or `NULL`, after which this function can be called to
+     *  obtain more detailed information about the problem.
+     *
+     *  This function must be called from the thread in which the error occurred,
+     *  and before any new calls to functions in this library (with the exception
+     *  of `cse_last_error_message()`).
+     *
+     *  @return The error code associated with the last reported error.
+     */
+    fun getLastErrorCode(): CseErrorCode {
+        return CseErrorCode.valueOf(getLastErrorCode_())
     }
 
     /**
@@ -72,7 +117,7 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createExecution(sspDir: String, startTime: Double): cse_execution
+    external fun createSspExecution(sspDir: String, startTime: Double): cse_execution
 
     /**
      * Destroys an execution.
@@ -88,7 +133,14 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createLocalSlave(fmuPath: String): cse_slave
+    external fun createSlave(fmuPath: String): cse_slave
+
+    /**
+     *  Destroys a local slave.
+     *
+     *  @returns 0 on success and -1 on error.
+     */
+    external fun destroySlave(slave: cse_slave): Boolean
 
     /**
      *  Loads a co-simulation FMU, instantiates a slave based on it, and adds it
@@ -144,6 +196,11 @@ object CseLibrary {
     external fun disableRealTimeSimulation(execution: cse_execution): Boolean
 
     /**
+     * Sets a custom real time factor.
+     */
+    external fun setRealTimeFactorTarget(execution: cse_execution, realTimeFactor: Double): Boolean
+
+    /**
      * Returns execution status.
      *
      * @param execution The execution to get status create.
@@ -154,9 +211,27 @@ object CseLibrary {
     external fun getStatus(execution: cse_execution, status: CseExecutionStatus): Boolean
 
     /**
+     * Get the number of variables for a slave which has been added to an execution
+     *
+     * @return the number of variables for a slave which has been added to an execution, or -1 on error.
+     */
+    external fun getNumVariables(execution: cse_execution, slaveIndex: Int): Int
+
+    /**
+     *  Returns variable metadata for a slave.
+     *
+     *  @param execution The execution which the slave has been added to.
+     *  @param slaveIndex The index of the slave.
+     *  @param variables A pointer to an array of length `numVariables` which will be filled with actual `cse_variable_description` values.
+     *
+     *  @return The number of variables written to `variables` array or -1 on error.
+     */
+    external fun getVariables(execution: cse_execution, slaveIndex: Int, variables: Array<CseVariableDescription>): Boolean
+
+    /**
      * Returns the number of slaves which have been added to an execution.
      *
-     * @return  the number of slaves which have been added to an execution.
+     * @return the number of slaves which have been added to an execution.
      */
     external fun getNumSlaves(execution: cse_execution): Int
 
@@ -170,21 +245,6 @@ object CseLibrary {
      */
     external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
 
-
-    /**
-     * Sets the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun setReal(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
-
-    /**
-     * Sets the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
-
     /**
      * Retrieves the values of real variables for one slave.
      *
@@ -192,43 +252,12 @@ object CseLibrary {
      */
     external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
-    /**
-     * Retrieves the values of real variables for one slave.
-     *
-     * @return  0 on success and -1 on error.
-     */
-    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
-
-    /**
-     * Retrieves a series of observed values, step numbers and times for a real variable.
-     *
-     * @param observer the observer
-     * @param slaveIndex  index of the slave
-     * @param vr the variable index
-     * @param stepNumber the step number to start from
-     * @param nSamples the number of samples to read
-     *
-     */
-    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples)
-
-    /**
-     * Retrieves a series of observed values, step numbers and times for a real variable.
-     *
-     * @param observer the observer
-     * @param slaveIndex  index of the slave
-     * @param vr the variable index
-     * @param stepNumber the step number to start from
-     * @param nSamples the number of samples to read
-     *
-     */
-    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
-
-    /**
-     *  Sets the values of integer variables for one slave.
-     *
-     *  @return  0 on success and -1 on error.
-     */
-    external fun setInteger(execution: cse_execution, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+//    /**
+//     * Retrieves the values of real variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
     /**
      * Retrieves the values of integer variables for one slave.
@@ -237,12 +266,42 @@ object CseLibrary {
      */
     external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
 
+//    /**
+//     * Retrieves the values of integer variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+
+//    /**
+//     * Retrieves the values of integer variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
+
     /**
-     * Retrieves the values of integer variables for one slave.
+     * Sets the values of real variables for one slave.
      *
      * @return  0 on success and -1 on error.
      */
-    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
+    external fun setReal(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+
+//    /**
+//     * Sets the values of real variables for one slave.
+//     *
+//     * @return  0 on success and -1 on error.
+//     */
+//    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
+
+
+    /**
+     *  Sets the values of integer variables for one slave.
+     *
+     *  @return  0 on success and -1 on error.
+     */
+    external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -254,7 +313,20 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples)
+    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
+
+//    /**
+//     * Retrieves a series of observed values, step numbers and times for a real variable.
+//     *
+//     * @param observer the observer
+//     * @param slaveIndex  index of the slave
+//     * @param vr the variable index
+//     * @param stepNumber the step number to start from
+//     * @param nSamples the number of samples to read
+//     *
+//     */
+//    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
+
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -266,7 +338,19 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
+    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
+
+//    /**
+//     * Retrieves a series of observed values, step numbers and times for a real variable.
+//     *
+//     * @param observer the observer
+//     * @param slaveIndex  index of the slave
+//     * @param vr the variable index
+//     * @param stepNumber the step number to start from
+//     * @param nSamples the number of samples to read
+//     *
+//     */
+//    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
 
     /**
      * Retrieves the step numbers for a range given by a duration.
@@ -330,12 +414,7 @@ object CseLibrary {
      */
     external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
-    /**
-     * Creates an observer which buffers variable values in memory.
-     *
-     * @return  The created observer.
-     */
-    external fun createMembufferObserver(): cse_observer
+    external fun createLastValueObserver(): cse_observer
 
     /**
      * Creates an observer which logs variable values to file in csv format.
@@ -345,6 +424,45 @@ object CseLibrary {
      * @return  The created observer.
      */
     external fun createFileObserver(logDir: String): cse_observer
+
+    /**
+     * Creates an observer which logs variable values to file in csv format. Variables to be logged
+     * are specified in the supplied log config xml file.
+     *
+     * @param logDir The directory where log files will be created.
+     * @param cfgDir The path to the provided config xml file.
+     * @return The created observer.
+     */
+    external fun createFileObserverFromCfg(logDir: String, cfgDir: String): cse_observer
+
+    /**
+     * Creates an observer which buffers variable values in memory.
+     *
+     * To start observing a variable, `cse_observer_start_observing()` must be called.
+     */
+    external fun createTimeSeriesObserver(): cse_observer
+
+    /**
+     * Creates an observer which buffers up to `bufferSize` variable values in memory.
+     *
+     * To start observing a variable, `cse_observer_start_observing()` must be called.
+     */
+    external fun createTimeSeriesObserver(bufferSize: Int): cse_observer
+
+    /**
+     * Start observing a variable with a `time_series_observer`
+     */
+    external fun startObserving(observer: cse_observer): Boolean
+
+    /**
+     * Stop observing a variable with a `time_series_observer`
+     */
+    external fun stopObserving(observer: cse_observer): Boolean
+
+    /**
+     * Destroys an observer
+     */
+    external fun destroyObserver(observer: cse_observer): Boolean
 
     /**
      * Add an observer to an execution.
@@ -358,8 +476,44 @@ object CseLibrary {
     external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
 
     /**
-     * Destroys an observer
+     * Creates a manipulator for overriding variable values
      */
-    external fun destroyObserver(observer: cse_observer): Boolean
+    external fun createOverrideManipulator(): cse_manipulator
+
+    /**
+     *  Add a manipulator to an execution.
+     *
+     *  @param execution The execution.
+     *  @param manipulator  A pointer to a manipulator, which may not be null.
+     *  The manipulator may not previously have been added to any execution.
+     *
+     *  @return 0 on success and -1 on error.
+     */
+    external fun addManipulator(execution: cse_execution, manipulator: cse_manipulator): Boolean
+
+    /**
+     * Destroys a manipulator
+     */
+    external fun destroyManipulator(manipulator: cse_manipulator): Boolean
+
+    /**
+     * Creates a manipulator for running scenarios.
+     */
+    external fun createScenarioManager(): cse_manipulator
+
+    /**
+     * Loads and executes a scenario from file.
+     */
+    external fun loadScenario(execution: cse_execution, manipulator: cse_manipulator, scenarioFile: String): Boolean
+
+    /**
+     * Checks if a scenario is running
+     */
+    external fun isScenarioRunning(manipulator: cse_manipulator): Boolean
+
+    /**
+     * Aborts the execution of a running scenario
+     */
+    external fun abortScenario(manipulator: cse_manipulator): Boolean
 
 }
