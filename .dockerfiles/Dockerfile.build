@@ -6,4 +6,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     default-jre \
     libboost-all-dev \
+    libzip-dev \
+    libmsgsl-dev \
+    nlohmann-json-dev \
     && rm -rf /var/lib/apt/lists/*
