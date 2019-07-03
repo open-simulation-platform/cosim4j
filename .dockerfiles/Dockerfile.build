@@ -1,0 +1,13 @@
+FROM ubuntu:18.04
+
+COPY sources-18.04-azure.list /etc/apt/sources.list
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    default-jdk \
+    build-essential \
+    libboost-all-dev \
+    libzip-dev \
+    libmsgsl-dev \
+    nlohmann-json-dev \
+    && rm -rf /var/lib/apt/lists/*
