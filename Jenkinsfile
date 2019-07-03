@@ -7,13 +7,13 @@ pipeline {
 
         stage('Build') {
             parallel {
-                stage('Windows') {
+                /*stage('Windows') {
                     agent { label 'windows' }
                     
                     steps {
                         bat 'gradlew.bat clean build'
                     }
-                }
+                }*/
 
                 stage ('Linux') {
                     agent { 
