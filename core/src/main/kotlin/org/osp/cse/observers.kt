@@ -79,6 +79,8 @@ class CseLastValueObserver(
         }[0]
     }
 
+    fun getInteger(slave: CseSlave, vr: Long) = getInteger(slave.index, vr)
+
     fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
         return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
     }

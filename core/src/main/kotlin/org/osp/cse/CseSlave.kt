@@ -18,8 +18,16 @@ class CseSlave internal constructor(
         }
     }
 
+    fun getReal(observer: CseLastValueObserver, vr: Long): Double? {
+        return observer.getReal(this, vr)
+    }
+
     fun getReal(observer: CseLastValueObserver, vr: LongArray, ref: DoubleArray): Boolean {
         return observer.getReal(this, vr, ref)
+    }
+
+    fun getInteger(observer: CseLastValueObserver, vr: Long): Int? {
+        return observer.getInteger(this, vr)
     }
 
     fun getInteger(observer: CseLastValueObserver, vr: LongArray, ref: IntArray): Boolean {

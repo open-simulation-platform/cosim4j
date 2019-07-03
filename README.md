@@ -12,18 +12,18 @@ class Demo {
 
     public static void main(String[] args) {
 
-        try(CseExecution execution = CseExecution.create(1.0/100)) {
+        try(CseExecution execution = CseExecution.createFromSsp(new File("path/to/sspDir"))) {
 
             //execution.enableRealTimeSimulation();
             //execution.disableRealTimeSimulation();
 
-            CseFileObserver fileObserver = execution.addFileObserver(new File("results"));
+            CseLastValueObserver observer = execution.addLastValueObserver();
+
+            execution.addFileObserver(new File("results"));
+            execution.loadScenario(new File("path/to/scenario.json"));
 
             CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"));
             CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"));
-
-            CseSlaveInfo[] infos = execution.getSlaveInfos();
-            String slave1Name = infos[0].getName();
 
             execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
 
@@ -36,9 +36,9 @@ class Demo {
             CseExecutionState state = status.getState();
             CseErrorCode errorCode = status.getErrorCode();
 
-            double value = slave1.getReal(fileObserver, 46 /*vr*/);
+            double value = slave1.getReal(observer, 46 /*vr*/);
 
-            CseRealSamples samples = slave1.getRealSamples(fileObserver, 46 /*vr*/, 0, 5);
+            CseRealSamples samples = slave1.getRealSamples(observer, 46 /*vr*/, 0, 5);
             double[] values = samples.getValues();
             double[] times = samples.getTimes();
             long[] steps = samples.getSteps();
