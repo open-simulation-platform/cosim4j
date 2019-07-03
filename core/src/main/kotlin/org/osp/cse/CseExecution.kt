@@ -2,8 +2,6 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
-import org.osp.cse.jni.cse_observer
-import org.osp.cse.jni.cse_slave
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -122,9 +120,12 @@ class CseExecution private constructor(
     }
 
     fun loadScenario(scenarioFile: File): CseScenario {
-        val manipulator = CseLibrary.createManipulator()
-        CseLibrary.loadScenario(execution, manipulator, scenarioFile.absolutePath)
-        return CseScenario(manipulator).also {
+        val scenarioManager = CseLibrary.createScenarioManager()
+        CseLibrary.addManipulator(execution, scenarioManager)
+        CseLibrary.loadScenario(execution, scenarioManager, scenarioFile.absolutePath).also {
+            LOG.info("Loaded scenario ${scenarioFile.name} with success: $it")
+        }
+        return CseScenario(scenarioManager).also {
             manipulators.add(it)
         }
     }

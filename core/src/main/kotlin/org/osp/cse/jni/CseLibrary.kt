@@ -1,11 +1,12 @@
 package org.osp.cse.jni
 
 import org.osp.cse.*
+import org.osp.util.isLinux
+import org.osp.util.isWindows
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
 import java.nio.file.Files
 
 typealias cse_error_code = Int
@@ -18,22 +19,51 @@ object CseLibrary {
 
     init {
 
-        val libName = "${libPrefix}csecorejni.$sharedLibExtension"
-        val tempDir = Files.createTempDirectory("cse-core4j_").toFile()
-        val lib = File(tempDir, libName)
+        val platform = if (isLinux) "linux" else "win64"
+        val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
+            it.deleteOnExit()
+        }
         try {
-            CseLibrary::class.java.classLoader.getResourceAsStream("native/$libName").use { `is` ->
-                FileOutputStream(lib).use { fos ->
-                    `is`.copyTo(fos)
+
+            val libNames = mutableListOf(
+                    "${libPrefix}csecorecpp.$sharedLibExtension",
+                    "${libPrefix}csecorec.$sharedLibExtension",
+                    "${libPrefix}csecorejni.$sharedLibExtension"
+            )
+
+            if (isWindows) {
+                val prefix = "boost_"
+                val postfix = "-vc141-mt-x64-1_66.dll"
+                var i = 0
+                with(libNames) {
+                    add(i++, "${prefix}context$postfix")
+                    add(i++, "${prefix}date_time$postfix")
+                    add(i++, "${prefix}fiber$postfix")
+                    add(i++, "${prefix}system$postfix")
+                    add(i++, "${prefix}filesystem$postfix")
+                    add(i++, "${prefix}chrono$postfix")
+                    add(i++, "${prefix}thread$postfix")
+                    add(i, "${prefix}log$postfix")
                 }
             }
-            System.load(lib.absolutePath)
+
+            libNames.forEach { libName ->
+
+                val lib = File(tempDir, libName).also {
+                    it.deleteOnExit()
+                }
+                val relativeLibPath = "native/$platform/$libName"
+                CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath).use {
+                    FileOutputStream(lib).use { fos ->
+                        it.copyTo(fos)
+                    }
+                }
+                System.load(lib.absolutePath)
+            }
         } catch (ex: Exception) {
             tempDir.deleteRecursively()
             throw ex
         }
-        lib.deleteOnExit()
-        tempDir.deleteOnExit()
 
     }
 
@@ -310,7 +340,7 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples) : Boolean
+    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
 
 //    /**
 //     * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -450,7 +480,7 @@ object CseLibrary {
     /**
      * Creates a manipulator for overriding variable values
      */
-    external fun createManipulator(): cse_manipulator
+    external fun createOverrideManipulator(): cse_manipulator
 
     /**
      *  Add a manipulator to an execution.

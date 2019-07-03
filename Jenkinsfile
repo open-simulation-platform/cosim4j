@@ -1,6 +1,8 @@
 pipeline {
     agent none
 
+    options { checkoutToSubdirectory('cse-core4j') }
+
     stages {
 
         stage('Build') {
@@ -9,17 +11,21 @@ pipeline {
                     agent { label 'windows' }
                     
                     steps {
-                        bat 'gradlew.bat shadow'
+                        bat 'gradlew.bat clean build'
                     }
                 }
 
                 stage ('Linux') {
                     agent { 
-                        docker { image 'openjdk:8-alpine' }
+                        dockerfile {
+                            filename 'Dockerfile.build'
+                            dir 'cse-core4j/.dockerfiles'
+                            label 'linux && docker'
+                        }
                     }
 
                     steps {
-                        sh './gradlew'
+                        sh './gradlew clean build'
                     }
                 }
             }
