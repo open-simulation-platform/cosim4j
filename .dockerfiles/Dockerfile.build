@@ -11,4 +11,5 @@ RUN apt-get update && \
     libmsgsl-dev \
     nlohmann-json-dev \
 	libyaml-cpp-dev \
+	libevent-dev \
     && rm -rf /var/lib/apt/lists/*
