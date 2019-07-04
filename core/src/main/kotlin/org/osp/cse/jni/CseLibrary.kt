@@ -416,6 +416,9 @@ object CseLibrary {
      */
     external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
+    /**
+     * Creates an observer which stores the last observed value for all variables.
+     */
     external fun createLastValueObserver(): cse_observer
 
     /**

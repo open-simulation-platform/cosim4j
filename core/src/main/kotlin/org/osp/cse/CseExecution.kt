@@ -119,6 +119,13 @@ class CseExecution private constructor(
         }
     }
 
+    fun addOverrideManipulator(): CseOverrideManipulator {
+        val manipulator = CseLibrary.createOverrideManipulator()
+        return CseOverrideManipulator(manipulator).also {
+            manipulators.add(it)
+        }
+    }
+
     fun loadScenario(scenarioFile: File): CseScenario {
         val scenarioManager = CseLibrary.createScenarioManager()
         CseLibrary.addManipulator(execution, scenarioManager)
