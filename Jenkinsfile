@@ -1,8 +1,6 @@
 pipeline {
     agent none
 
-    options { checkoutToSubdirectory('cse-core4j') }
-
     stages {
 
         stage('Build') {
@@ -19,7 +17,7 @@ pipeline {
                     agent { 
                         dockerfile {
                             filename 'Dockerfile.build'
-                            dir 'cse-core4j/.dockerfiles'
+                            dir '.dockerfiles'
                             label 'linux && docker'
                         }
                     }
@@ -32,4 +30,3 @@ pipeline {
         }
     }
 }
-        
