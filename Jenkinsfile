@@ -23,7 +23,7 @@ pipeline {
                     }
 
                     steps {
-                        sh './cse-core4j/gradlew clean build'
+                        sh './gradlew clean build'
                     }
                 }
             }
