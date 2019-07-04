@@ -1,8 +1,6 @@
 pipeline {
     agent none
 
-    options { checkoutToSubdirectory('cse-core4j') }
-
     stages {
 
         stage('Build') {
@@ -25,7 +23,7 @@ pipeline {
                     }
 
                     steps {
-                        sh './gradlew clean build'
+                        sh './cse-core4j/gradlew clean build'
                     }
                 }
             }
