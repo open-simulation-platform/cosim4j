@@ -5,8 +5,9 @@ plugins {
     id 'cpp-library'
 }
 
-def platform = OperatingSystem.current().isLinux() ? "linux" : "win64"
-def cseLibDir = "${rootDir}/core/src/main/resources/native/${platform}"
+def isLinux = OperatingSystem.current().isLinux()
+def platform = isLinux ? "linux" : "win64"
+def cseLibDir = isLinux ? "${rootDir}/core/src/main/resources/native/${platform}" : "${rootDir}/native/lib/${platform}"
 
 library { CppLibrary lib ->
 
