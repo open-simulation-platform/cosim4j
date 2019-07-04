@@ -5,13 +5,15 @@ pipeline {
 
         stage('Build') {
             parallel {
-                /*stage('Windows') {
+                stage('Windows') {
                     agent { label 'windows' }
+
+                    tools { jdk 'jdk8' }
                     
                     steps {
                         bat 'gradlew.bat clean build'
                     }
-                }*/
+                }
 
                 stage ('Linux') {
                     agent { 
