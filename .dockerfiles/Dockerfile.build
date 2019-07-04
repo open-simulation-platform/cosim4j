@@ -10,5 +10,5 @@ RUN apt-get update && \
     libzip-dev \
     libmsgsl-dev \
     nlohmann-json-dev \
-	libyaml-dev \
+	libyaml-cpp-dev \
     && rm -rf /var/lib/apt/lists/*
