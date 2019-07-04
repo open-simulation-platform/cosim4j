@@ -34,8 +34,16 @@ class CseSlave internal constructor(
         return observer.getInteger(this, vr, ref)
     }
 
+    fun setReal(manipulator: CseOverrideManipulator, vr: Long, values: Double): Boolean {
+        return manipulator.setReal(this, vr, values)
+    }
+
     fun setReal(manipulator: CseOverrideManipulator, vr: LongArray, values: DoubleArray): Boolean {
         return manipulator.setReal(this, vr, values)
+    }
+
+    fun setInteger(manipulator: CseOverrideManipulator, vr: Long, values: Int): Boolean {
+        return manipulator.setInteger(this, vr, values)
     }
 
     fun setInteger(manipulator: CseOverrideManipulator, vr: LongArray, values: IntArray): Boolean {
