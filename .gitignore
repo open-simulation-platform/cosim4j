@@ -52,4 +52,5 @@ build/
 /**/out/
 /**/build/
 
-/cse
+# wsl
+ubuntu_setup_env.sh
