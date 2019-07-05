@@ -12,10 +12,11 @@ class Demo {
 
         try(CseExecution execution = CseExecution.createFromSsp(new File("path/to/sspDir"))) {
 
-            //execution.enableRealTimeSimulation();
-            //execution.disableRealTimeSimulation();
+            CseSlave mySlave = execution.getSlave("mySlave");
+            int index = mySlave.getIndex();
 
-            CseLastValueObserver observer = execution.addLastValueObserver();
+            CseVariableDescription myVar = mySlave.getVariable("myVar");
+            long vr = myVar.getValueReference();
 
             execution.addFileObserver(new File("results"));
             execution.loadScenario(new File("path/to/scenario.json"));
@@ -25,15 +26,8 @@ class Demo {
 
             execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
 
-            //execution.start();
+            CseLastValueObserver observer = execution.addLastValueObserver();
             execution.step(10);
-            //execution.stop();
-
-            CseExecutionStatus status = execution.getStatus();
-            double currentTime = status.getCurrentTime();
-            CseExecutionState state = status.getState();
-            CseErrorCode errorCode = status.getErrorCode();
-
             double value = slave1.getReal(observer, 46 /*vr*/);
 
             CseRealSamples samples = slave1.getRealSamples(observer, 46 /*vr*/, 0, 5);
