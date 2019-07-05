@@ -7,15 +7,23 @@ import java.io.Closeable
 
 class CseSlave internal constructor(
         val index: Int,
+        val name: String,
         private var slave: cse_slave,
         private val execution: cse_execution
 ) : Closeable {
-
 
     val variables: Array<CseVariableDescription> by lazy {
         Array(CseLibrary.getNumVariables(execution, index)) { CseVariableDescription() }.also {
             CseLibrary.getVariables(execution, index, it)
         }
+    }
+
+    fun getVariable(name: String): CseVariableDescription? {
+        return variables.find { it.name == name }
+    }
+
+    fun getVariable(vr: Long, type: CseVariableType): CseVariableDescription? {
+        return variables.find { it.valueReference == vr && it.type == type }
     }
 
     fun getReal(observer: CseLastValueObserver, vr: Long): Double? {
@@ -65,9 +73,16 @@ class CseSlave internal constructor(
         }
     }
 
+    override fun toString(): String {
+        return "CseSlave(name='$name', index=$index)"
+    }
+
 }
 
 class CseSlaveInfo {
+
+    var index: Int = -1
+        private set
 
     lateinit var name: String
         private set
@@ -75,11 +90,8 @@ class CseSlaveInfo {
     lateinit var source: String
         private set
 
-    var index: Int = -1
-        private set
-
     override fun toString(): String {
-        return "CseSlaveInfo(name=$name, source=$source, index=$index)"
+        return "CseSlaveInfo(name=$name, index=$index, source=$source)"
     }
 
 }

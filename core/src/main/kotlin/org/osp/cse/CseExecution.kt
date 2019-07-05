@@ -2,6 +2,7 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
+import org.osp.cse.jni.cse_slave
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -12,25 +13,34 @@ class CseExecution private constructor(
         private val execution: cse_execution
 ) : Closeable {
 
-    private val status = CseExecutionStatus()
-
     private val slaves: MutableList<CseSlave> = mutableListOf()
     private val observers: MutableList<CseObserver> = mutableListOf()
     private val manipulators: MutableList<CseManipulator> = mutableListOf()
 
+    init {
+        getSlaveInfos().forEach {
+            slaves.add(CseSlave(it.index, it.name,0L, execution))
+        }
+    }
+
     val numSlaves: Int
         get() = CseLibrary.getNumSlaves(execution)
 
-    fun getStatus(): CseExecutionStatus {
-        return status.also {
-            CseLibrary.getStatus(execution, status)
+    val status: CseExecutionStatus
+        get() = CseExecutionStatus().also {
+            CseLibrary.getStatus(execution, it)
         }
+
+    fun getSlave(name: String): CseSlave? {
+        return slaves.find { it.name == name }
     }
 
     fun addSlave(fmuPath: File): CseSlave {
         return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
             val index = CseLibrary.addSlave(execution, slave)
-            CseSlave(index, slave, execution).also {
+            val name = getSlaveInfos().find { it.index == index }!!.name
+            println(name)
+            CseSlave(index, name, slave, execution).also {
                 slaves.add(it)
             }
         }
