@@ -1,4 +1,5 @@
 
+#include <vector>
 #include <string>
 #include <iostream>
 
@@ -327,6 +328,35 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv *en
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv *env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jobjectArray values) {
+    if (manipulator == 0) {
+       std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
+       return false;
+    }
+
+    const jsize size = env->GetArrayLength(vr);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+
+    std::vector<const char*> _values(size);
+    for (int i = 0; i < size; i++) {
+       auto str = (jstring) env->GetObjectArrayElement(values, i);
+       _values[i] = env->GetStringUTFChars(str, nullptr);
+    }
+
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_manipulator_slave_set_string((cse_manipulator*) manipulator, slaveIndex, __vr, size, _values.data()) == 0;
+
+    env->ReleaseLongArrayElements(vr, _vr, 0);
+
+    free(__vr);
+
+    return status;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
@@ -411,6 +441,39 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv *en
   env->SetBooleanArrayRegion(ref, 0, size, (jboolean *)_ref);
 
   free(_ref);
+  free(__vr);
+  env->ReleaseLongArrayElements(vr, _vr, 0);
+
+  return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jobjectArray ref) {
+  if (observer == 0) {
+    std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+    return false;
+  }
+
+  const jsize size = env->GetArrayLength(vr);
+  jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+
+  std::vector<const char*> _ref(size);
+  for (int i = 0; i < size; i++) {
+    auto str = (jstring) env->GetObjectArrayElement(ref, i);
+    _ref[i] = env->GetStringUTFChars(str, nullptr);
+  }
+
+  auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+  for (unsigned int i = 0; i < size; ++i) {
+    __vr[i] = (cse_variable_index) _vr[i];
+  }
+
+  jboolean status = cse_observer_slave_get_string((cse_observer*) observer, slaveIndex, __vr, size, _ref.data()) == 0;
+
+  for (int i = 0; i < size; i++) {
+    jstring value = env->NewStringUTF(_ref[i]);
+    env->SetObjectArrayElement(ref, i, value);
+  }
+
   free(__vr);
   env->ReleaseLongArrayElements(vr, _vr, 0);
 

@@ -4,7 +4,6 @@ import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_manipulator
 import java.io.Closeable
 
-
 sealed class CseManipulator(
         protected var manipulator: cse_manipulator
 ) : Closeable {
@@ -62,6 +61,20 @@ class CseOverrideManipulator(
 
     fun setBoolean(slave: CseSlave, vr: LongArray, values: BooleanArray): Boolean {
         return setBoolean(slave.index, vr, values)
+    }
+
+    fun setString(slave: CseSlave, vr: Long, value: String)
+            = setString(slave.index, vr, value)
+
+    fun setString(slaveIndex: Int, vr: Long, value: String)
+            = CseLibrary.setString(manipulator, slaveIndex, longArrayOf(vr), arrayOf(value))
+
+    fun setString(slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean {
+        return CseLibrary.setString(manipulator, slaveIndex, vr, values)
+    }
+
+    fun setString(slave: CseSlave, vr: LongArray, values: Array<String>): Boolean {
+        return setString(slave.index, vr, values)
     }
 
 }

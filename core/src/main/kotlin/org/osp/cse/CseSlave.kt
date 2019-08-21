@@ -50,6 +50,14 @@ class CseSlave internal constructor(
         return observer.getBoolean(this, vr, ref)
     }
 
+    fun getString(observer: CseLastValueObserver, vr: Long): String? {
+        return observer.getString(this, vr)
+    }
+
+    fun getString(observer: CseLastValueObserver, vr: LongArray, ref: Array<String>): Boolean {
+        return observer.getString(this, vr, ref)
+    }
+
     fun setReal(manipulator: CseOverrideManipulator, vr: Long, value: Double): Boolean {
         return manipulator.setReal(this, vr, value)
     }
@@ -72,6 +80,14 @@ class CseSlave internal constructor(
 
     fun setBoolean(manipulator: CseOverrideManipulator, vr: LongArray, values: BooleanArray): Boolean {
         return manipulator.setBoolean(this, vr, values)
+    }
+
+    fun setString(manipulator: CseOverrideManipulator, vr: Long, value: String): Boolean {
+        return manipulator.setString(this, vr, value)
+    }
+
+    fun setString(manipulator: CseOverrideManipulator, vr: LongArray, values: Array<String>): Boolean {
+        return manipulator.setString(this, vr, values)
     }
 
     fun getRealSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {

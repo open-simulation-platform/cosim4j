@@ -103,6 +103,23 @@ class CseLastValueObserver(
 
     fun getBoolean(slave: CseSlave, vr: LongArray, ref: BooleanArray) = getBoolean(slave.index, vr, ref)
 
+    fun getString(slaveIndex: Int, vr: Long): String? {
+        return Array<String>(1) {""}.also {
+            if (!CseLibrary.getString(observer, slaveIndex, longArrayOf(vr), it)) {
+                return null
+            }
+        }[0]
+    }
+
+    fun getString(slave: CseSlave, vr: Long) = getString(slave.index, vr)
+
+    fun getString(slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean {
+        return CseLibrary.getString(observer, slaveIndex, vr, ref)
+    }
+
+    fun getString(slave: CseSlave, vr: LongArray, ref: Array<String>) = getString(slave.index, vr, ref)
+
+
     fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
         return CseRealSamples().also {
             CseLibrary.getRealSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
