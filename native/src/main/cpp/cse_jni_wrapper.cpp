@@ -812,6 +812,15 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_abortScenario(JNIEnv 
     return cse_scenario_abort((cse_manipulator*) manipulator) == 0;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setupSimpleConsoleLogging(JNIEnv *env, jobject obj) {
+  return cse_log_setup_simple_console_logging() == 0;
+}
+
+JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setLogLevel(JNIEnv *env, jobject obj, jint level) {
+  cse_log_set_output_level((cse_log_severity_level) level);
+}
+
+
 #ifdef __cplusplus
 }
 #endif

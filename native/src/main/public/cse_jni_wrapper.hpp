@@ -117,6 +117,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_isScenarioRunning(JNI
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_abortScenario(JNIEnv *env, jobject obj, jlong manipulator);
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setupSimpleConsoleLogging(JNIEnv *env, jobject obj);
+
+JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setLogLevel(JNIEnv *env, jobject obj, jint level);
 
 #ifdef __cplusplus
 }

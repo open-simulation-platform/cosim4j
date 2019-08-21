@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'org.osp'
-version '0.3-SNAPSHOT'
+version '0.5-SNAPSHOT'
 
 sourceCompatibility = 1.8
 

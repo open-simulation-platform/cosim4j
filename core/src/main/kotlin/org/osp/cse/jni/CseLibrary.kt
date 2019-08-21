@@ -60,6 +60,9 @@ object CseLibrary {
                 }
                 System.load(lib.absolutePath)
             }
+
+            setupSimpleConsoleLogging()
+
         } catch (ex: Exception) {
             tempDir.deleteRecursively()
             throw ex
@@ -548,5 +551,33 @@ object CseLibrary {
      * Aborts the execution of a running scenario
      */
     external fun abortScenario(manipulator: cse_manipulator): Boolean
+
+    /**
+     *  Configures simple console logging.
+     *
+     *  Note that the library may produce log messages before this function is
+     *  called, but then it uses the default or existing settings of the underlying
+     *  logging framework (Boost.Log).
+     *
+     *  \returns
+     *      0 on success and -1 on error.
+     */
+    private external fun setupSimpleConsoleLogging(): Boolean
+
+
+    private external fun setLogLevel(level: Int): Boolean
+
+    /**
+     *  Installs a global severity level filter for log messages.
+     *
+     *  This function sets up a log message filter which ensures that only messages
+     *  whose severity level is at least `level` will be printed.
+     *
+     *  \param [in] level
+     *      The minimum visible severity level.
+     */
+    fun setLogLevel(level: CseLogLevel) {
+        CseLibrary.setLogLevel(level.code)
+    }
 
 }
