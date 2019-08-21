@@ -42,20 +42,36 @@ class CseSlave internal constructor(
         return observer.getInteger(this, vr, ref)
     }
 
-    fun setReal(manipulator: CseOverrideManipulator, vr: Long, values: Double): Boolean {
-        return manipulator.setReal(this, vr, values)
+    fun getBoolean(observer: CseLastValueObserver, vr: Long): Boolean? {
+        return observer.getBoolean(this, vr)
+    }
+
+    fun getBoolean(observer: CseLastValueObserver, vr: LongArray, ref: BooleanArray): Boolean {
+        return observer.getBoolean(this, vr, ref)
+    }
+
+    fun setReal(manipulator: CseOverrideManipulator, vr: Long, value: Double): Boolean {
+        return manipulator.setReal(this, vr, value)
     }
 
     fun setReal(manipulator: CseOverrideManipulator, vr: LongArray, values: DoubleArray): Boolean {
         return manipulator.setReal(this, vr, values)
     }
 
-    fun setInteger(manipulator: CseOverrideManipulator, vr: Long, values: Int): Boolean {
-        return manipulator.setInteger(this, vr, values)
+    fun setInteger(manipulator: CseOverrideManipulator, vr: Long, value: Int): Boolean {
+        return manipulator.setInteger(this, vr, value)
     }
 
     fun setInteger(manipulator: CseOverrideManipulator, vr: LongArray, values: IntArray): Boolean {
         return manipulator.setInteger(this, vr, values)
+    }
+
+    fun setBoolean(manipulator: CseOverrideManipulator, vr: Long, value: Boolean): Boolean {
+        return manipulator.setBoolean(this, vr, value)
+    }
+
+    fun setBoolean(manipulator: CseOverrideManipulator, vr: LongArray, values: BooleanArray): Boolean {
+        return manipulator.setBoolean(this, vr, values)
     }
 
     fun getRealSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {

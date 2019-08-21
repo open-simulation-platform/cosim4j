@@ -268,6 +268,13 @@ object CseLibrary {
      */
     external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
 
+    /**
+     * Retrieves the values of boolean variables for one slave.
+     *
+     * @return  0 on success and -1 on error.
+     */
+    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
+
 //    /**
 //     * Retrieves the values of integer variables for one slave.
 //     *
@@ -304,6 +311,12 @@ object CseLibrary {
      */
     external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
+    /**
+     *  Sets the values of boolean variables for one slave.
+     *
+     *  @return  0 on success and -1 on error.
+     */
+    external fun setBoolean(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.

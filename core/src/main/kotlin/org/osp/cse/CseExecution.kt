@@ -19,7 +19,7 @@ class CseExecution private constructor(
 
     init {
         getSlaveInfos().forEach {
-            slaves.add(CseSlave(it.index, it.name,0L, execution))
+            slaves.add(CseSlave(it.index, it.name, 0L, execution))
         }
     }
 
@@ -52,6 +52,21 @@ class CseExecution private constructor(
 
     fun step(numSteps: Long): Boolean {
         return CseLibrary.step(execution, numSteps)
+    }
+
+    fun stepUntil(t: Number): Boolean {
+
+        val td = t.toDouble()
+        do {
+
+            if (!step(1)) {
+                return false
+            }
+
+        } while (td >= status.currentTime)
+
+        return true
+
     }
 
     fun stop(): Boolean {
@@ -131,6 +146,7 @@ class CseExecution private constructor(
 
     fun addOverrideManipulator(): CseOverrideManipulator {
         val manipulator = CseLibrary.createOverrideManipulator()
+        CseLibrary.addManipulator(execution, manipulator)
         return CseOverrideManipulator(manipulator).also {
             manipulators.add(it)
         }

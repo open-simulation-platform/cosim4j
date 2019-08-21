@@ -8,15 +8,13 @@
 #include "cse_samples_direct_fields.hpp"
 #include "cse_execution_status_fields.hpp"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-
 namespace {
 
-    const double sec2nano = 1e9;
+const double sec2nano = 1e9;
     const double nano2sec = 1.0/sec2nano;
 
     cse_time_point to_cse_time_point(jdouble time_point) {
@@ -52,10 +50,10 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv *
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv *env, jobject obj, jstring sspDir, jdouble startTime) {
-    const char* _sspDir = env->GetStringUTFChars(sspDir, 0);
+    const char* _sspDir = env->GetStringUTFChars(sspDir, nullptr);
     cse_execution* execution = cse_ssp_execution_create(_sspDir, to_cse_time_point(startTime));
     env->ReleaseStringUTFChars(sspDir, _sspDir);
-    if (execution == 0) {
+    if (execution == nullptr) {
         std::cerr << "[JNI-wrapper]" << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
         return 0;
     }
@@ -177,7 +175,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv *
     }
 
     const jsize size = env->GetArrayLength(vars);
-    cse_variable_description* _vars = (cse_variable_description*) malloc(sizeof(cse_variable_description)*size);
+    auto* _vars = (cse_variable_description*) malloc(sizeof(cse_variable_description)*size);
     jboolean status = cse_slave_get_variables((cse_execution*) execution, slaveIndex, _vars, size) != -1;
 
     if (status) {
@@ -229,7 +227,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv 
     }
 
     const jsize size = env->GetArrayLength(infos);
-    cse_slave_info* _infos = (cse_slave_info*) malloc(sizeof(cse_slave_info)*size);
+    auto* _infos = (cse_slave_info*) malloc(sizeof(cse_slave_info)*size);
     jboolean status = cse_execution_get_slave_infos((cse_execution*) execution, _infos, size) == 0;
 
     if (status) {
@@ -261,10 +259,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     }
 
     const jsize size = env->GetArrayLength(vr);
-    jlong *_vr = env->GetLongArrayElements(vr, 0);
-    jdouble *_values = env->GetDoubleArrayElements(values, 0);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+    jdouble *_values = env->GetDoubleArrayElements(values, nullptr);
 
-    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
     for (unsigned int i = 0; i < size; ++i) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
@@ -286,10 +284,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     }
 
     const jsize size = env->GetArrayLength(vr);
-    jlong *_vr = env->GetLongArrayElements(vr, 0);
-    jint *_values = env->GetIntArrayElements(values, 0);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+    jint *_values = env->GetIntArrayElements(values, nullptr);
 
-    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
     for (unsigned int i = 0; i < size; ++i) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
@@ -304,6 +302,31 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv *env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jbooleanArray values) {
+    if (manipulator == 0) {
+       std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
+       return false;
+    }
+
+    const jsize size = env->GetArrayLength(vr);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+    jboolean *_values = env->GetBooleanArrayElements(values, nullptr);
+
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    for (unsigned int i = 0; i < size; ++i) {
+        __vr[i] = (cse_variable_index) _vr[i];
+    }
+
+    jboolean status = cse_manipulator_slave_set_boolean((cse_manipulator*) manipulator, slaveIndex, __vr, size, (bool*)_values) == 0;
+
+    env->ReleaseLongArrayElements(vr, _vr, 0);
+    env->ReleaseBooleanArrayElements(values, _values, 0);
+
+    free(__vr);
+
+    return status;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
@@ -311,10 +334,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
     }
 
     const jsize size = env->GetArrayLength(vr);
-    jlong *_vr = env->GetLongArrayElements(vr, 0);
-    double* _ref = (double*) malloc(sizeof(double) * size);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+    auto* _ref = (double*) malloc(sizeof(double) * size);
 
-    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
     for (unsigned int i = 0; i < size; ++i) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
@@ -337,10 +360,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
     }
 
     const jsize size = env->GetArrayLength(vr);
-    jlong *_vr = env->GetLongArrayElements(vr, 0);
-    int* _ref = (int*) malloc(sizeof(int) * size);
+    jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+    auto* _ref = (int*) malloc(sizeof(int) * size);
 
-    cse_variable_index* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
     for (unsigned int i = 0; i < size; ++i) {
         __vr[i] = (cse_variable_index) _vr[i];
     }
@@ -368,17 +391,41 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 //    return cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, nvr, _ref) == 0;
 //}
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jbooleanArray ref) {
+  if (observer == 0) {
+    std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
+    return false;
+  }
+
+  const jsize size = env->GetArrayLength(vr);
+  jlong *_vr = env->GetLongArrayElements(vr, nullptr);
+  auto _ref = (bool*) malloc(sizeof(bool) * size);
+
+  auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+  for (unsigned int i = 0; i < size; ++i) {
+    __vr[i] = (cse_variable_index) _vr[i];
+  }
+
+  jboolean status = cse_observer_slave_get_boolean((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
+
+  env->SetBooleanArrayRegion(ref, 0, size, (jboolean *)_ref);
+
+  free(_ref);
+  free(__vr);
+  env->ReleaseLongArrayElements(vr, _vr, 0);
+
+  return status;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
     if (observer == 0) {
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return NULL;
     }
 
-std::cerr << "hello" << std::endl;
-
-    double* values = (double*) malloc(sizeof(double) * nSamples);
-    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
-    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+    auto* values = (double*) malloc(sizeof(double) * nSamples);
+    auto* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    auto* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
     jboolean success = numSamplesRead != -1;
@@ -392,7 +439,7 @@ std::cerr << "hello" << std::endl;
         env->SetDoubleArrayRegion(_values, 0, numSamplesRead, values);
 
         for (int i = 0; i < numSamplesRead; i++) {
-            jlong step = (jlong) steps[i];
+            auto step = (jlong) steps[i];
             double time = to_seconds(times[i]);
 
             env->SetDoubleArrayRegion(_times, i, 1, &time);
@@ -449,8 +496,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
     }
 
     int* values = (int*) malloc(sizeof(int) * nSamples);
-    cse_step_number* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
-    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
+    auto* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
+    auto* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
     jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
     jboolean success = numSamplesRead != -1;
@@ -464,7 +511,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
         env->SetIntArrayRegion(_values, 0, numSamplesRead, (jint*) values);
 
         for (int i = 0; i < numSamplesRead; i++) {
-            jlong step = (jlong) steps[i];
+            auto step = (jlong) steps[i];
             double time = to_seconds(times[i]);
 
             env->SetDoubleArrayRegion(_times, i, 1, &time);
@@ -519,12 +566,12 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDura
     }
 
      const size_t size = 2;
-     cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
+     auto* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
 
     jboolean status = cse_observer_get_step_numbers_for_duration((cse_observer*) observer, slaveIndex, to_cse_duration(duration), _steps);
 
     for (int i = 0; i < size; i++) {
-        jlong step = (jlong) _steps[i];
+        auto step = (jlong) _steps[i];
         env->SetLongArrayRegion(steps, i, 1, &step);
     }
 
@@ -540,12 +587,12 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv
     }
 
     const size_t size = 2;
-    cse_step_number* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
+    auto* _steps = (cse_step_number*) malloc(sizeof(cse_step_number) * size);
 
     jboolean status = cse_observer_get_step_numbers((cse_observer*) observer, slaveIndex, to_cse_time_point(begin), to_cse_time_point(end), _steps);
 
     for (int i = 0; i < size; i++) {
-        jlong step = (jlong) _steps[i];
+        auto step = (jlong) _steps[i];
         env->SetLongArrayRegion(steps, i, 1, &step);
     }
 
@@ -575,10 +622,10 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLastValueObserver(
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEnv *env, jobject obj, jstring logDir) {
-    const char* _logDir = env->GetStringUTFChars(logDir, 0);
+    const char* _logDir = env->GetStringUTFChars(logDir, nullptr);
     cse_observer* observer = cse_file_observer_create(_logDir);
     env->ReleaseStringUTFChars(logDir, _logDir);
-    if (observer == 0) {
+    if (observer == nullptr) {
         std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
@@ -586,12 +633,12 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCfg(JNIEnv *env, jobject obj, jstring logDir, jstring cfgPath) {
-    const char* _logDir = env->GetStringUTFChars(logDir, 0);
-    const char* _cfgPath = env->GetStringUTFChars(cfgPath, 0);
+    const char* _logDir = env->GetStringUTFChars(logDir, nullptr);
+    const char* _cfgPath = env->GetStringUTFChars(cfgPath, nullptr);
     cse_observer* observer = cse_file_observer_create_from_cfg(_logDir, _cfgPath);
     env->ReleaseStringUTFChars(logDir, _logDir);
     env->ReleaseStringUTFChars(cfgPath, _cfgPath);
-    if (observer == 0) {
+    if (observer == nullptr) {
         std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
@@ -680,7 +727,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_loadScenario(JNIEnv *
         std::cerr << "[JNI-wrapper] Error: manipulator is NULL" << std::endl;
         return false;
     }
-    const char* _scenarioFile = env->GetStringUTFChars(scenarioFile, 0);
+    const char* _scenarioFile = env->GetStringUTFChars(scenarioFile, nullptr);
     jboolean status = cse_execution_load_scenario((cse_execution*) execution, (cse_manipulator*) manipulator, _scenarioFile) == 0;
     env->ReleaseStringUTFChars(scenarioFile, _scenarioFile);
     return status;

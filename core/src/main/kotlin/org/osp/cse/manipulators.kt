@@ -50,6 +50,20 @@ class CseOverrideManipulator(
         return setInteger(slave.index, vr, values)
     }
 
+    fun setBoolean(slave: CseSlave, vr: Long, value: Boolean)
+            = setBoolean(slave.index, vr, value)
+
+    fun setBoolean(slaveIndex: Int, vr: Long, value: Boolean)
+            = CseLibrary.setBoolean(manipulator, slaveIndex, longArrayOf(vr), booleanArrayOf(value))
+
+    fun setBoolean(slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean {
+        return CseLibrary.setBoolean(manipulator, slaveIndex, vr, values)
+    }
+
+    fun setBoolean(slave: CseSlave, vr: LongArray, values: BooleanArray): Boolean {
+        return setBoolean(slave.index, vr, values)
+    }
+
 }
 
 class CseScenario(
