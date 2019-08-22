@@ -2,7 +2,6 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.cse_execution
-import org.osp.cse.jni.cse_slave
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -106,14 +105,14 @@ class CseExecution private constructor(
     }
 
     @JvmOverloads
-    fun addFileObserver(logDir: File, cfgDir: File? = null): CseFileObserver {
+    fun addFileObserver(logDir: File, cfgFile: File? = null): CseFileObserver {
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
-        val observer = if (cfgDir == null) {
+        val observer = if (cfgFile == null) {
             CseLibrary.createFileObserver(logDir.absolutePath)
         } else {
-            CseLibrary.createFileObserverFromCfg(logDir.absolutePath, cfgDir.absolutePath)
+            CseLibrary.createFileObserverFromCfg(logDir.absolutePath, cfgFile.absolutePath)
         }
         CseLibrary.addObserver(execution, observer)
         return CseFileObserver(observer, logDir).also {

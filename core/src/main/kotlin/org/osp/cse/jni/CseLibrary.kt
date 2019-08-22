@@ -479,10 +479,10 @@ object CseLibrary {
      * are specified in the supplied log config xml file.
      *
      * @param logDir The directory where log files will be created.
-     * @param cfgDir The path to the provided config xml file.
+     * @param cfgFile The path to the provided config xml file.
      * @return The created observer.
      */
-    external fun createFileObserverFromCfg(logDir: String, cfgDir: String): cse_observer
+    external fun createFileObserverFromCfg(logDir: String, cfgFile: String): cse_observer
 
     /**
      * Creates an observer which buffers variable values in memory.
