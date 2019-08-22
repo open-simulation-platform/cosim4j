@@ -50,7 +50,8 @@ class CseExecution private constructor(
         return CseLibrary.start(execution)
     }
 
-    fun step(numSteps: Long): Boolean {
+    @JvmOverloads
+    fun step(numSteps: Long = 1): Boolean {
         return CseLibrary.step(execution, numSteps)
     }
 
@@ -59,7 +60,7 @@ class CseExecution private constructor(
         val td = t.toDouble()
         do {
 
-            if (!step(1)) {
+            if (!step()) {
                 return false
             }
 
