@@ -62,6 +62,7 @@ object CseLibrary {
             }
 
             setupSimpleConsoleLogging()
+            setLogLevel(CseLogLevel.CSE_LOG_SEVERITY_INFO)
 
         } catch (ex: Exception) {
             tempDir.deleteRecursively()
