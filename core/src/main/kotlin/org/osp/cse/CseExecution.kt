@@ -55,7 +55,7 @@ class CseExecution private constructor(
         return CseLibrary.step(execution, numSteps)
     }
 
-    fun stepUntil(t: Number): Boolean {
+    fun simulateUntil(t: Number): Boolean {
 
         val td = t.toDouble()
         do {
