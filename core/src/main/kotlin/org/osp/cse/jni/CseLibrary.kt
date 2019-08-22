@@ -170,6 +170,18 @@ object CseLibrary {
      */
     external fun step(execution: cse_execution, numSteps: Long): Boolean
 
+    /**
+     *  Advances an execution to a specific point in time.
+     *
+     *  \param [in] execution
+     *      The execution to be stepped.
+     *  \param [in] targetTime
+     *      The point in time, which to advance the simulation execution.
+     *
+     *  \returns
+     *      0 on success and -1 on error.
+     */
+    external fun simulateUntil(execution: cse_execution, targetTime: Double): Boolean
 
     /**
      * Starts an execution.

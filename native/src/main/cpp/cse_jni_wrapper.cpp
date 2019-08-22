@@ -105,6 +105,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_step(JNIEnv *env, job
     return cse_execution_step((cse_execution*) execution, numSteps) == 0;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_simulateUntil(JNIEnv *env, jobject obj, jlong execution, jdouble targetTime) {
+    return cse_execution_simulate_until((cse_execution*) execution, to_cse_time_point(targetTime)) == 0;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stop(JNIEnv *env, jobject obj, jlong execution) {
     return cse_execution_stop((cse_execution*) execution) == 0;
 }

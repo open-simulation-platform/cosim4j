@@ -218,6 +218,20 @@ int cse_execution_step(cse_execution* execution, size_t numSteps);
 
 
 /**
+ *  Advances an execution to a specific point in time.
+ *
+ *  \param [in] execution
+ *      The execution to be stepped.
+ *  \param [in] targetTime
+ *      The point in time, which to advance the simulation execution.
+ *
+ *  \returns
+ *      0 on success and -1 on error.
+ */
+int cse_execution_simulate_until(cse_execution* execution, cse_time_point targetTime);
+
+
+/**
  *  Starts an execution.
  *
  *  The execution will run until `cse_execution_stop()` is called.

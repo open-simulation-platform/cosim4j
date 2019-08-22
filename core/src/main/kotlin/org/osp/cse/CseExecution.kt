@@ -55,18 +55,8 @@ class CseExecution private constructor(
         return CseLibrary.step(execution, numSteps)
     }
 
-    fun simulateUntil(t: Double): Boolean {
-
-        do {
-
-            if (!step()) {
-                return false
-            }
-
-        } while (t >= status.currentTime)
-
-        return true
-
+    fun simulateUntil(targetTime: Double): Boolean {
+        return CseLibrary.simulateUntil(execution, targetTime)
     }
 
     fun stop(): Boolean {
@@ -155,8 +145,13 @@ class CseExecution private constructor(
     fun loadScenario(scenarioFile: File): CseScenario {
         val scenarioManager = CseLibrary.createScenarioManager()
         CseLibrary.addManipulator(execution, scenarioManager)
-        CseLibrary.loadScenario(execution, scenarioManager, scenarioFile.absolutePath).also {
-            LOG.debug("Loaded scenario ${scenarioFile.name} with success: $it")
+        CseLibrary.loadScenario(execution, scenarioManager, scenarioFile.absolutePath).also { success ->
+            if (success) {
+                LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
+            } else {
+                LOG.error("Error loading scenario '${scenarioFile.name}'!")
+            }
+
         }
         return CseScenario(scenarioManager).also {
             manipulators.add(it)
@@ -173,8 +168,12 @@ class CseExecution private constructor(
         slaves.forEach {
             it.close()
         }
-        CseLibrary.destroyExecution(execution).also {
-            LOG.debug("Destroyed execution successfully: $it")
+        CseLibrary.destroyExecution(execution).also { success ->
+            if (success) {
+                LOG.debug("Destroyed execution successfully!")
+            } else {
+                LOG.error("Error destroying execution!")
+            }
         }
     }
 
