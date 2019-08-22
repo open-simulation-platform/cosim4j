@@ -55,16 +55,15 @@ class CseExecution private constructor(
         return CseLibrary.step(execution, numSteps)
     }
 
-    fun simulateUntil(t: Number): Boolean {
+    fun simulateUntil(t: Double): Boolean {
 
-        val td = t.toDouble()
         do {
 
             if (!step()) {
                 return false
             }
 
-        } while (td >= status.currentTime)
+        } while (t >= status.currentTime)
 
         return true
 
@@ -157,7 +156,7 @@ class CseExecution private constructor(
         val scenarioManager = CseLibrary.createScenarioManager()
         CseLibrary.addManipulator(execution, scenarioManager)
         CseLibrary.loadScenario(execution, scenarioManager, scenarioFile.absolutePath).also {
-            LOG.info("Loaded scenario ${scenarioFile.name} with success: $it")
+            LOG.debug("Loaded scenario ${scenarioFile.name} with success: $it")
         }
         return CseScenario(scenarioManager).also {
             manipulators.add(it)
