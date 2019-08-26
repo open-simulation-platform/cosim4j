@@ -9,70 +9,13 @@ import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 
-typealias cse_error_code = Int
-typealias cse_execution = Long
-typealias cse_slave = Long
-typealias cse_observer = Long
-typealias cse_manipulator = Long
+internal typealias cse_error_code = Int
+internal typealias cse_execution = Long
+internal typealias cse_slave = Long
+internal typealias cse_observer = Long
+internal typealias cse_manipulator = Long
 
 object CseLibrary {
-
-    init {
-
-        val platform = if (isLinux) "linux" else "win64"
-        val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
-            it.deleteOnExit()
-        }
-        try {
-
-            val libNames = mutableListOf(
-                    "${libPrefix}csecorecpp.$sharedLibExtension",
-                    "${libPrefix}csecorec.$sharedLibExtension",
-                    "${libPrefix}csecorejni.$sharedLibExtension"
-            )
-
-            if (isWindows) {
-                val prefix = "boost_"
-                val postfix = "-vc141-mt-x64-1_66.dll"
-                var i = 0
-                with(libNames) {
-                    add(i++, "${prefix}context$postfix")
-                    add(i++, "${prefix}date_time$postfix")
-                    add(i++, "${prefix}fiber$postfix")
-                    add(i++, "${prefix}system$postfix")
-                    add(i++, "${prefix}filesystem$postfix")
-                    add(i++, "${prefix}chrono$postfix")
-                    add(i++, "${prefix}thread$postfix")
-                    add(i, "${prefix}log$postfix")
-                }
-            }
-
-            libNames.forEach { libName ->
-
-                val lib = File(tempDir, libName).also {
-                    it.deleteOnExit()
-                }
-                val relativeLibPath = "native/$platform/$libName"
-                CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath).use {
-                    FileOutputStream(lib).use { fos ->
-                        it.copyTo(fos)
-                    }
-                }
-                System.load(lib.absolutePath)
-            }
-
-            setupSimpleConsoleLogging()
-            setLogLevel(CseLogLevel.CSE_LOG_SEVERITY_INFO)
-
-        } catch (ex: Exception) {
-            tempDir.deleteRecursively()
-            throw ex
-        }
-
-    }
-
-
-    private external fun getLastErrorCode_(): cse_error_code
 
     /**
      *  Returns the error code associated with the last reported error.
@@ -144,7 +87,7 @@ object CseLibrary {
     /**
      *  Destroys a local slave.
      *
-     *  @returns 0 on success and -1 on error.
+     *  @returns true on success and false on error.
      */
     external fun destroySlave(slave: cse_slave): Boolean
 
@@ -167,20 +110,17 @@ object CseLibrary {
      * @param execution The execution to be stepped.
      * @param numSteps The number of steps to advance the simulation execution.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun step(execution: cse_execution, numSteps: Long): Boolean
 
     /**
      *  Advances an execution to a specific point in time.
      *
-     *  \param [in] execution
-     *      The execution to be stepped.
-     *  \param [in] targetTime
-     *      The point in time, which to advance the simulation execution.
+     *  @param execution The execution to be stepped.
+     *  @param targetTime The point in time, which to advance the simulation execution.
      *
-     *  \returns
-     *      0 on success and -1 on error.
+     *  @return true on success and false on error.
      */
     external fun simulateUntil(execution: cse_execution, targetTime: Double): Boolean
 
@@ -190,7 +130,7 @@ object CseLibrary {
      *
      * @param execution The execution to be started.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun start(execution: cse_execution): Boolean
 
@@ -199,7 +139,7 @@ object CseLibrary {
      *
      * @param execution  The execution to be stopped.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun stop(execution: cse_execution): Boolean
 
@@ -224,7 +164,7 @@ object CseLibrary {
      * @param execution The execution to get status create.
      * @param status A pointer to a cse_execution_status that will be filled with actual execution status.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun getStatus(execution: cse_execution, status: CseExecutionStatus): Boolean
 
@@ -259,93 +199,63 @@ object CseLibrary {
      * @param execution The execution to get slave infos from.
      * @param infos A pointer to an array of length `num_slaves` which will be filled with actual `slave_info` values.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
 
     /**
      * Retrieves the values of real variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
-
-//    /**
-//     * Retrieves the values of real variables for one slave.
-//     *
-//     * @return  0 on success and -1 on error.
-//     */
-//    external fun getRealDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
 
     /**
      * Retrieves the values of integer variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
 
     /**
      * Retrieves the values of boolean variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
 
     /**
      * Retrieves the values of boolean variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun getString(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean
-
-
-//    /**
-//     * Retrieves the values of integer variables for one slave.
-//     *
-//     * @return  0 on success and -1 on error.
-//     */
-//    external fun getIntegerDirect(observer: cse_observer, slaveIndex: Int, vr: ByteBuffer, nvr: Int, ref: ByteBuffer): Boolean
-
-//    /**
-//     * Retrieves the values of integer variables for one slave.
-//     *
-//     * @return  0 on success and -1 on error.
-//     */
-//    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
 
     /**
      * Sets the values of real variables for one slave.
      *
-     * @return  0 on success and -1 on error.
+     * @return  true on success and false on error.
      */
     external fun setReal(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
-
-//    /**
-//     * Sets the values of real variables for one slave.
-//     *
-//     * @return  0 on success and -1 on error.
-//     */
-//    external fun setRealDirect(execution: cse_execution, slaveIndex: Int, vr: ByteBuffer, nvr: Int, values: ByteBuffer): Boolean
-
 
     /**
      *  Sets the values of integer variables for one slave.
      *
-     *  @return  0 on success and -1 on error.
+     *  @return  true on success and false on error.
      */
     external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
     /**
      *  Sets the values of boolean variables for one slave.
      *
-     *  @return  0 on success and -1 on error.
+     *  @return  true on success and false on error.
      */
     external fun setBoolean(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean
 
     /**
      *  Sets the values of string variables for one slave.
      *
-     *  @return  0 on success and -1 on error.
+     *  @return  true on success and false on error.
      */
     external fun setString(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean
 
@@ -361,19 +271,6 @@ object CseLibrary {
      */
     external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
 
-//    /**
-//     * Retrieves a series of observed values, step numbers and times for a real variable.
-//     *
-//     * @param observer the observer
-//     * @param slaveIndex  index of the slave
-//     * @param vr the variable index
-//     * @param stepNumber the step number to start from
-//     * @param nSamples the number of samples to read
-//     *
-//     */
-//    external fun getRealSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamplesDirect)
-
-
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
      *
@@ -385,18 +282,6 @@ object CseLibrary {
      *
      */
     external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
-
-//    /**
-//     * Retrieves a series of observed values, step numbers and times for a real variable.
-//     *
-//     * @param observer the observer
-//     * @param slaveIndex  index of the slave
-//     * @param vr the variable index
-//     * @param stepNumber the step number to start from
-//     * @param nSamples the number of samples to read
-//     *
-//     */
-//    external fun getIntegerSamplesDirect(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamplesDirect)
 
     /**
      * Retrieves the step numbers for a range given by a duration.
@@ -411,7 +296,7 @@ object CseLibrary {
      * @param duration duration the duration to get step numbers for
      * @param steps the corresponding step numbers
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun getStepNumbersForDuration(observer: cse_observer, slaveIndex: Int, duration: Double, steps: LongArray): Boolean
 
@@ -429,7 +314,7 @@ object CseLibrary {
      * @param end the end of the range
      * @param steps the corresponding step numbers
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
 
@@ -443,7 +328,7 @@ object CseLibrary {
      * @param inputSlaveIndex The destination slave.
      * @param inputValueRef The destination variable.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun connectIntegers(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
@@ -456,7 +341,7 @@ object CseLibrary {
      * @param inputSlaveIndex The destination slave.
      * @param inputValueRef The destination variable.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
@@ -470,7 +355,7 @@ object CseLibrary {
      *
      * @param logDir The directory where log files will be created.
      *
-     * @return  The created observer.
+     * @return The created observer.
      */
     external fun createFileObserver(logDir: String): cse_observer
 
@@ -520,7 +405,7 @@ object CseLibrary {
      * @param observer A pointer to an observer, which may not be null.
      * The observer may not previously have been added to any execution.
      *
-     * @return 0 on success and -1 on error.
+     * @return true on success and false on error.
      */
     external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
 
@@ -536,7 +421,7 @@ object CseLibrary {
      *  @param manipulator  A pointer to a manipulator, which may not be null.
      *  The manipulator may not previously have been added to any execution.
      *
-     *  @return 0 on success and -1 on error.
+     *  @return true on success and false on error.
      */
     external fun addManipulator(execution: cse_execution, manipulator: cse_manipulator): Boolean
 
@@ -566,31 +451,85 @@ object CseLibrary {
     external fun abortScenario(manipulator: cse_manipulator): Boolean
 
     /**
+     *  Installs a global severity level filter for log messages.
+     *
+     *  This function sets up a log message filter which ensures that only messages
+     *  whose severity level is at least `level` will be printed.
+     *
+     *  @param level The minimum visible severity level.
+     */
+    fun setLogLevel(level: CseLogLevel) {
+        setLogLevel(level.code)
+    }
+
+    private external fun getLastErrorCode_(): cse_error_code
+
+    /**
      *  Configures simple console logging.
      *
      *  Note that the library may produce log messages before this function is
      *  called, but then it uses the default or existing settings of the underlying
      *  logging framework (Boost.Log).
      *
-     *  \returns
-     *      0 on success and -1 on error.
+     *  @return true on success and false on error.
      */
     private external fun setupSimpleConsoleLogging(): Boolean
 
-
     private external fun setLogLevel(level: Int): Boolean
 
-    /**
-     *  Installs a global severity level filter for log messages.
-     *
-     *  This function sets up a log message filter which ensures that only messages
-     *  whose severity level is at least `level` will be printed.
-     *
-     *  \param [in] level
-     *      The minimum visible severity level.
-     */
-    fun setLogLevel(level: CseLogLevel) {
-        CseLibrary.setLogLevel(level.code)
+
+    init {
+
+        val platform = if (isLinux) "linux" else "win64"
+        val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
+            it.deleteOnExit()
+        }
+        try {
+
+            val libNames = mutableListOf(
+                    "${libPrefix}csecorecpp.$sharedLibExtension",
+                    "${libPrefix}csecorec.$sharedLibExtension",
+                    "${libPrefix}csecorejni.$sharedLibExtension"
+            )
+
+            if (isWindows) {
+                val prefix = "boost_"
+                val postfix = "-vc141-mt-x64-1_66.dll"
+                var i = 0
+                with(libNames) {
+                    add(i++, "${prefix}context$postfix")
+                    add(i++, "${prefix}date_time$postfix")
+                    add(i++, "${prefix}fiber$postfix")
+                    add(i++, "${prefix}system$postfix")
+                    add(i++, "${prefix}filesystem$postfix")
+                    add(i++, "${prefix}chrono$postfix")
+                    add(i++, "${prefix}thread$postfix")
+                    add(i, "${prefix}log$postfix")
+                }
+            }
+
+            libNames.forEach { libName ->
+
+                val lib = File(tempDir, libName).also {
+                    it.deleteOnExit()
+                }
+                val relativeLibPath = "native/$platform/$libName"
+                CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath).use {
+                    FileOutputStream(lib).use { fos ->
+                        it.copyTo(fos)
+                    }
+                }
+                System.load(lib.absolutePath)
+            }
+
+            setupSimpleConsoleLogging()
+            setLogLevel(CseLogLevel.CSE_LOG_SEVERITY_INFO)
+
+        } catch (ex: Exception) {
+            tempDir.deleteRecursively()
+            throw ex
+        }
+
     }
 
 }
