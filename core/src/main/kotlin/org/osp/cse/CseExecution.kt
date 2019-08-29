@@ -180,6 +180,8 @@ class CseExecution private constructor(
 
         private val LOG: Logger = LoggerFactory.getLogger(CseExecution::class.java)
 
+        private const val sspFileName = "SystemStructure.ssd"
+
         @JvmStatic
         fun create(stepSize: Double): CseExecution {
             return create(0.0, stepSize)
@@ -193,6 +195,13 @@ class CseExecution private constructor(
         @JvmStatic
         @JvmOverloads
         fun createFromSsp(sspDir: File, startTime: Double = 0.0): CseExecution {
+            if (!sspDir.exists()) {
+                throw NoSuchFileException(sspDir)
+            }
+            sspDir.listFiles()?.find {
+                println(it.name)
+                it.name == sspFileName
+            } ?: throw IllegalArgumentException("Directory $sspDir contains no $sspFileName")
             return CseExecution((CseLibrary.createSspExecution(sspDir.absolutePath, startTime)))
         }
 
