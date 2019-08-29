@@ -199,7 +199,6 @@ class CseExecution private constructor(
                 throw NoSuchFileException(sspDir)
             }
             sspDir.listFiles()?.find {
-                println(it.name)
                 it.name == sspFileName
             } ?: throw IllegalArgumentException("Directory $sspDir contains no $sspFileName")
             return CseExecution((CseLibrary.createSspExecution(sspDir.absolutePath, startTime)))
