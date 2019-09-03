@@ -1,3 +1,5 @@
+@file: JvmName("SSPUtil")
+
 package org.osp.util
 
 import java.io.File
