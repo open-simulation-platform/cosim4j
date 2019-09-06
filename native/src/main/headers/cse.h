@@ -6,7 +6,9 @@
 #ifndef CSE_H
 #define CSE_H
 
-#include <stdbool.h>
+#ifndef __cplusplus
+#    include <stdbool.h>
+#endif
 #include <stddef.h>
 #include <stdint.h>
 
@@ -24,8 +26,8 @@ typedef int64_t cse_time_point;
 /// The type used to specify (simulation) time durations. The time unit is nanoseconds.
 typedef int64_t cse_duration;
 
-/// Variable index.
-typedef uint32_t cse_variable_index;
+/// value reference.
+typedef uint32_t cse_value_reference;
 
 /// Slave index.
 typedef int cse_slave_index;
@@ -48,6 +50,9 @@ typedef enum
 
     /// Invalid function argument.
     CSE_ERRC_INVALID_ARGUMENT,
+
+    /// Function may not be called while in this state.
+    CSE_ERRC_ILLEGAL_STATE,
 
     /// Index out of range.
     CSE_ERRC_OUT_OF_RANGE,
@@ -216,7 +221,6 @@ cse_slave_index cse_execution_add_slave(
  */
 int cse_execution_step(cse_execution* execution, size_t numSteps);
 
-
 /**
  *  Advances an execution to a specific point in time.
  *
@@ -226,7 +230,8 @@ int cse_execution_step(cse_execution* execution, size_t numSteps);
  *      The point in time, which to advance the simulation execution.
  *
  *  \returns
- *      0 on success and -1 on error.
+ *      -1 on error, 0 if the simulation was stopped prior to reaching the specified targetTime
+ *      and 1 if the simulation was successfully advanced to the specified targetTime.
  */
 int cse_execution_simulate_until(cse_execution* execution, cse_time_point targetTime);
 
@@ -347,8 +352,8 @@ typedef struct
 {
     /// The name of the variable.
     char name[SLAVE_NAME_MAX_SIZE];
-    /// The variable index.
-    cse_variable_index index;
+    /// The value reference.
+    cse_value_reference reference;
     /// The variable type.
     cse_variable_type type;
     /// The variable causality.
@@ -377,6 +382,9 @@ int cse_slave_get_num_variables(cse_execution* execution, cse_slave_index slave)
  */
 int cse_slave_get_variables(cse_execution* execution, cse_slave_index slave, cse_variable_description variables[], size_t numVariables);
 
+/// Returns the number of variables in the execution that currently has an active modifier (all slaves).
+int cse_get_num_modified_variables(cse_execution* execution);
+
 /// A struct containing information about a slave which has been added to an execution.
 typedef struct
 {
@@ -391,13 +399,14 @@ typedef struct
 /// A struct containing variable information.
 typedef struct
 {
-  /// The index of the slave containing the variable.
-  cse_slave_index slave_index;
-  /// The type of the variable.
-  cse_variable_type type;
-  /// The index of the variable.
-  cse_variable_index variable_index;
+    /// The index of the slave containing the variable.
+    cse_slave_index slave_index;
+    /// The type of the variable.
+    cse_variable_type type;
+    /// The variable's value reference.
+    cse_value_reference value_reference;
 } cse_variable_id;
+
 
 /// Returns the number of slaves which have been added to an execution.
 size_t cse_execution_get_num_slaves(cse_execution* execution);
@@ -440,7 +449,7 @@ typedef struct cse_manipulator_s cse_manipulator;
  *      The slave.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to set.
+ *      value references of variables to set.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -453,7 +462,7 @@ typedef struct cse_manipulator_s cse_manipulator;
 int cse_manipulator_slave_set_real(
     cse_manipulator* manipulator,
     cse_slave_index slaveIndex,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     const double values[]);
 
@@ -466,7 +475,7 @@ int cse_manipulator_slave_set_real(
  *      The slave.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to set.
+ *      value references of variables to set.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -479,7 +488,7 @@ int cse_manipulator_slave_set_real(
 int cse_manipulator_slave_set_integer(
     cse_manipulator* manipulator,
     cse_slave_index slaveIndex,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     const int values[]);
 
@@ -492,7 +501,7 @@ int cse_manipulator_slave_set_integer(
  *      The slave.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to set.
+ *      value references of variables to set.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -505,7 +514,7 @@ int cse_manipulator_slave_set_integer(
 int cse_manipulator_slave_set_boolean(
     cse_manipulator* manipulator,
     cse_slave_index slaveIndex,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     const bool values[]);
 
@@ -518,7 +527,7 @@ int cse_manipulator_slave_set_boolean(
  *      The slave.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to set.
+ *      value references of variables to set.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -531,7 +540,7 @@ int cse_manipulator_slave_set_boolean(
 int cse_manipulator_slave_set_string(
     cse_manipulator* manipulator,
     cse_slave_index slaveIndex,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     const char* values[]);
 
@@ -546,7 +555,7 @@ int cse_manipulator_slave_set_string(
  *      The variable type.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to reset.
+ *      value references of variables to reset.
  *  \param [in] nv
  *      The length of the `variables` array.
  *
@@ -557,7 +566,7 @@ int cse_manipulator_slave_reset(
     cse_manipulator* manipulator,
     cse_slave_index slaveIndex,
     cse_variable_type type,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv);
 
 /**
@@ -569,7 +578,7 @@ int cse_manipulator_slave_reset(
  *      The slave.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to retrieve.
+ *      value references of variables to retrieve.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -582,7 +591,7 @@ int cse_manipulator_slave_reset(
 int cse_observer_slave_get_real(
     cse_observer* observer,
     cse_slave_index slave,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     double values[]);
 
@@ -595,7 +604,7 @@ int cse_observer_slave_get_real(
  *      The slave index.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to retrieve.
+ *      value references of variables to retrieve.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -608,7 +617,7 @@ int cse_observer_slave_get_real(
 int cse_observer_slave_get_integer(
     cse_observer* observer,
     cse_slave_index slave,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     int values[]);
 
@@ -621,7 +630,7 @@ int cse_observer_slave_get_integer(
  *      The slave index.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to retrieve.
+ *      value references of variables to retrieve.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -634,7 +643,7 @@ int cse_observer_slave_get_integer(
 int cse_observer_slave_get_boolean(
     cse_observer* observer,
     cse_slave_index slave,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     bool values[]);
 
@@ -647,7 +656,7 @@ int cse_observer_slave_get_boolean(
  *      The slave index.
  *  \param [in] variables
  *      A pointer to an array of length `nv` that contains the (slave-specific)
- *      indices of variables to retrieve.
+ *      value references of variables to retrieve.
  *  \param [in] nv
  *      The length of the `variables` and `values` arrays.
  *  \param [out] values
@@ -661,7 +670,7 @@ int cse_observer_slave_get_boolean(
 int cse_observer_slave_get_string(
     cse_observer* observer,
     cse_slave_index slave,
-    const cse_variable_index variables[],
+    const cse_value_reference variables[],
     size_t nv,
     const char* values[]);
 
@@ -670,7 +679,7 @@ int cse_observer_slave_get_string(
  *
  * \param [in] observer the observer
  * \param [in] slave index of the slave
- * \param [in] variableIndex the variable index
+ * \param [in] valueReference the value reference
  * \param [in] fromStep the step number to start from
  * \param [in] nSamples the number of samples to read
  * \param [out] values the series of observed values
@@ -683,7 +692,7 @@ int cse_observer_slave_get_string(
 int64_t cse_observer_slave_get_real_samples(
     cse_observer* observer,
     cse_slave_index slave,
-    cse_variable_index variableIndex,
+    cse_value_reference valueReference,
     cse_step_number fromStep,
     size_t nSamples,
     double values[],
@@ -695,7 +704,7 @@ int64_t cse_observer_slave_get_real_samples(
  *
  * \param [in] observer the observer
  * \param [in] slave index of the slave
- * \param [in] variableIndex the variable index
+ * \param [in] valueReference the value reference
  * \param [in] fromStep the step number to start from
  * \param [in] nSamples the number of samples to read
  * \param [out] values the series of observed values
@@ -708,7 +717,7 @@ int64_t cse_observer_slave_get_real_samples(
 int64_t cse_observer_slave_get_integer_samples(
     cse_observer* observer,
     cse_slave_index slave,
-    cse_variable_index variableIndex,
+    cse_value_reference valueReference,
     cse_step_number fromStep,
     size_t nSamples,
     int values[],
@@ -720,9 +729,9 @@ int64_t cse_observer_slave_get_integer_samples(
  *
  * \param [in] observer the observer
  * \param [in] slave1 index of the first slave
- * \param [in] variableIndex1 the first variable index
+ * \param [in] valueReference the first value reference
  * \param [in] slave2 index of the second slave
- * \param [in] variableIndex2 the second variable index
+ * \param [in] valueReference the second value reference
  * \param [in] fromStep the step number to start from
  * \param [in] nSamples the number of samples to read
  * \param [out] values1 the first series of observed values
@@ -734,9 +743,9 @@ int64_t cse_observer_slave_get_integer_samples(
 int64_t cse_observer_slave_get_real_synchronized_series(
     cse_observer* observer,
     cse_slave_index slave1,
-    cse_variable_index variableIndex1,
+    cse_value_reference valueReference1,
     cse_slave_index slave2,
-    cse_variable_index variableIndex2,
+    cse_value_reference valueReference2,
     cse_step_number fromStep,
     size_t nSamples,
     double values1[],
@@ -791,11 +800,11 @@ int cse_observer_get_step_numbers(
  *      The execution.
  *  \param [in] outputSlaveIndex
  *      The source slave.
- *  \param [in] outputVariableIndex
+ *  \param [in] outputValueReference
  *      The source variable.
  *  \param [in] inputSlaveIndex
  *      The destination slave.
- *  \param [in] inputVariableIndex
+ *  \param [in] inputValueReference
  *      The destination variable.
  *
  *  \returns
@@ -804,9 +813,9 @@ int cse_observer_get_step_numbers(
 int cse_execution_connect_real_variables(
     cse_execution* execution,
     cse_slave_index outputSlaveIndex,
-    cse_variable_index outputVariableIndex,
+    cse_value_reference outputValueReference,
     cse_slave_index inputSlaveIndex,
-    cse_variable_index inputVariableIndex);
+    cse_value_reference inputValueReference);
 
 /**
  *  Connects one integer output variable to one integer input variable.
@@ -815,11 +824,11 @@ int cse_execution_connect_real_variables(
  *      The execution.
  *  \param [in] outputSlaveIndex
  *      The source slave.
- *  \param [in] outputVariableIndex
+ *  \param [in] outputValueReference
  *      The source variable.
  *  \param [in] inputSlaveIndex
  *      The destination slave.
- *  \param [in] inputVariableIndex
+ *  \param [in] inputValueReference
  *      The destination variable.
  *
  *  \returns
@@ -828,9 +837,9 @@ int cse_execution_connect_real_variables(
 int cse_execution_connect_integer_variables(
     cse_execution* execution,
     cse_slave_index outputSlaveIndex,
-    cse_variable_index outputVariableIndex,
+    cse_value_reference outputValueReference,
     cse_slave_index inputSlaveIndex,
-    cse_variable_index inputVariableIndex);
+    cse_value_reference inputValueReference);
 
 
 /// Creates an observer which stores the last observed value for all variables.
@@ -874,10 +883,10 @@ cse_observer* cse_time_series_observer_create();
 cse_observer* cse_buffered_time_series_observer_create(size_t bufferSize);
 
 /// Start observing a variable with a `time_series_observer`.
-int cse_observer_start_observing(cse_observer* observer, cse_slave_index slave, cse_variable_type type, cse_variable_index index);
+int cse_observer_start_observing(cse_observer* observer, cse_slave_index slave, cse_variable_type type, cse_value_reference reference);
 
 /// Stop observing a variable with a `time_series_observer`.
-int cse_observer_stop_observing(cse_observer* observer, cse_slave_index slave, cse_variable_type type, cse_variable_index index);
+int cse_observer_stop_observing(cse_observer* observer, cse_slave_index slave, cse_variable_type type, cse_value_reference reference);
 
 /// Destroys an observer
 int cse_observer_destroy(cse_observer* observer);
@@ -951,15 +960,16 @@ int cse_scenario_abort(cse_manipulator* manipulator);
  */
 int cse_get_modified_variables(cse_execution* execution, cse_variable_id ids[], size_t numVariables);
 
+
 /// Severity levels for log messages.
 typedef enum
 {
-  CSE_LOG_SEVERITY_TRACE,
-  CSE_LOG_SEVERITY_DEBUG,
-  CSE_LOG_SEVERITY_INFO,
-  CSE_LOG_SEVERITY_WARNING,
-  CSE_LOG_SEVERITY_ERROR,
-  CSE_LOG_SEVERITY_FATAL
+    CSE_LOG_SEVERITY_TRACE,
+    CSE_LOG_SEVERITY_DEBUG,
+    CSE_LOG_SEVERITY_INFO,
+    CSE_LOG_SEVERITY_WARNING,
+    CSE_LOG_SEVERITY_ERROR,
+    CSE_LOG_SEVERITY_FATAL
 } cse_log_severity_level;
 
 
