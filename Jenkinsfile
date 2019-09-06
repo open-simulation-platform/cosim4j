@@ -45,6 +45,8 @@ pipeline {
                         }
                     }
 
+                    tools { jdk 'jdk8' }
+
                     environment {
                         CONAN_USER_HOME = '/conan_repo'
                     }
