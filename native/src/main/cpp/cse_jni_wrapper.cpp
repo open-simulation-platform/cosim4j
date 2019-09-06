@@ -193,7 +193,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv *
 
         for (int i = 0; i < size; i++) {
             jobject var = env->GetObjectArrayElement(vars, i);
-            env->SetLongField(var, vrId, (jlong) _vars[i].index);
+            env->SetLongField(var, vrId, (jlong) _vars[i].reference);
             env->SetObjectField(var, nameId, env->NewStringUTF(_vars[i].name));
             env->SetIntField(var, typeId, (jint) _vars[i].type);
             env->SetIntField(var, causalityId, (jint) _vars[i].causality);
@@ -267,9 +267,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv *env, 
     jlong *_vr = env->GetLongArrayElements(vr, nullptr);
     jdouble *_values = env->GetDoubleArrayElements(values, nullptr);
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_manipulator_slave_set_real((cse_manipulator*) manipulator, slaveIndex, __vr, size, _values) == 0;
@@ -292,9 +292,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv *en
     jlong *_vr = env->GetLongArrayElements(vr, nullptr);
     jint *_values = env->GetIntArrayElements(values, nullptr);
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_manipulator_slave_set_integer((cse_manipulator*) manipulator, slaveIndex, __vr, size, (int*)_values) == 0;
@@ -317,9 +317,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv *en
     jlong *_vr = env->GetLongArrayElements(vr, nullptr);
     jboolean *_values = env->GetBooleanArrayElements(values, nullptr);
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_manipulator_slave_set_boolean((cse_manipulator*) manipulator, slaveIndex, __vr, size, (bool*)_values) == 0;
@@ -347,9 +347,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv *env
        _values[i] = env->GetStringUTFChars(str, nullptr);
     }
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_manipulator_slave_set_string((cse_manipulator*) manipulator, slaveIndex, __vr, size, _values.data()) == 0;
@@ -371,9 +371,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv *env, 
     jlong *_vr = env->GetLongArrayElements(vr, nullptr);
     auto* _ref = (double*) malloc(sizeof(double) * size);
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_observer_slave_get_real((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
@@ -397,9 +397,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
     jlong *_vr = env->GetLongArrayElements(vr, nullptr);
     auto* _ref = (int*) malloc(sizeof(int) * size);
 
-    auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+    auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
     for (unsigned int i = 0; i < size; ++i) {
-        __vr[i] = (cse_variable_index) _vr[i];
+        __vr[i] = (cse_value_reference) _vr[i];
     }
 
     jboolean status = cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
@@ -422,7 +422,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv *en
 //    jlong *_vr = (jlong*) env->GetDirectBufferAddress(vr);
 //    int* _ref = (int*) env->GetDirectBufferAddress(ref);
 //
-//    return cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_variable_index*) _vr, nvr, _ref) == 0;
+//    return cse_observer_slave_get_integer((cse_observer*) observer, slaveIndex, (cse_value_reference*) _vr, nvr, _ref) == 0;
 //}
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jbooleanArray ref) {
@@ -435,9 +435,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv *en
   jlong *_vr = env->GetLongArrayElements(vr, nullptr);
   auto _ref = (bool*) malloc(sizeof(bool) * size);
 
-  auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+  auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
   for (unsigned int i = 0; i < size; ++i) {
-    __vr[i] = (cse_variable_index) _vr[i];
+    __vr[i] = (cse_value_reference) _vr[i];
   }
 
   jboolean status = cse_observer_slave_get_boolean((cse_observer*) observer, slaveIndex, __vr, size, _ref) == 0;
@@ -466,9 +466,9 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv *env
     _ref[i] = env->GetStringUTFChars(str, nullptr);
   }
 
-  auto* __vr = (cse_variable_index*) malloc(sizeof(cse_variable_index) * size);
+  auto* __vr = (cse_value_reference*) malloc(sizeof(cse_value_reference) * size);
   for (unsigned int i = 0; i < size; ++i) {
-    __vr[i] = (cse_variable_index) _vr[i];
+    __vr[i] = (cse_value_reference) _vr[i];
   }
 
   jboolean status = cse_observer_slave_get_string((cse_observer*) observer, slaveIndex, __vr, size, _ref.data()) == 0;
@@ -494,7 +494,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv
     auto* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
     auto* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
-    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
     jboolean success = numSamplesRead != -1;
 
     if (success) {
@@ -543,7 +543,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv
 //    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
 //    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
 //
-//    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+//    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
 //
 //    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
 //    for (int i = 0; i < numSamplesRead; i++) {
@@ -566,7 +566,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
     auto* steps = (cse_step_number*) malloc(sizeof(cse_step_number*) * nSamples);
     auto* times = (cse_time_point*) malloc(sizeof(cse_time_point*) * nSamples);
 
-    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
     jboolean success = numSamplesRead != -1;
 
     if (success) {
@@ -613,7 +613,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
 //    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
 //    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
 //
-//    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_variable_index) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
+//    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
 //
 //    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
 //    for (int i = 0; i < numSamplesRead; i++) {
@@ -673,7 +673,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectIntegers(JNIEn
        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
-    return cse_execution_connect_integer_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
+    return cse_execution_connect_integer_variables((cse_execution*) execution, outputSlaveIndex, (cse_value_reference) outputSlaveIndex, inputSlaveIndex, (cse_value_reference) inputSlaveIndex);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *env, jobject obj, jlong execution, jint outputSlaveIndex, jlong outputValueRef, jint inputSlaveIndex, jlong inputValueRef) {
@@ -681,7 +681,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv *
        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
        return false;
     }
-    return cse_execution_connect_real_variables((cse_execution*) execution, outputSlaveIndex, (cse_variable_index) outputSlaveIndex, inputSlaveIndex, (cse_variable_index) inputSlaveIndex);
+    return cse_execution_connect_real_variables((cse_execution*) execution, outputSlaveIndex, (cse_value_reference) outputSlaveIndex, inputSlaveIndex, (cse_value_reference) inputSlaveIndex);
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLastValueObserver(JNIEnv *env, jobject obj) {
@@ -725,7 +725,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
-    return cse_observer_start_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_variable_index) vr) == 0;
+    return cse_observer_start_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_value_reference) vr) == 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jint variableType, jlong vr) {
@@ -733,7 +733,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv 
        std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
        return false;
     }
-    return cse_observer_stop_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_variable_index) vr) == 0;
+    return cse_observer_stop_observing((cse_observer*) observer, slaveIndex, (cse_variable_type) variableType, (cse_value_reference) vr) == 0;
 }
 
 
