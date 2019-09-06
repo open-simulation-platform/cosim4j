@@ -1,8 +1,10 @@
 [requires]
 cse-core/0.5.0@osp/markaren_testing
 
-[imports]
+[options]
+cse-core:fmuproxy=True
 
+[imports]
 include, cse.h -> ../native/src/main/headers
 include, cse* -> ../native/src/main/headers
 
