@@ -63,6 +63,7 @@ pipeline {
                         stage('Build') {
                             steps {
                                 sh 'conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing'
+                                sh './gradlew copyNativeLibs'
                                 sh './gradlew clean build'
                             }
                         }
