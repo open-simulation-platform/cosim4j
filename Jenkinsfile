@@ -26,6 +26,7 @@ pipeline {
                         stage('Build') {
                             steps {
                                 bat 'conan install . -s build_type=Release --install-folder=build --build=missing'
+                                bat 'gradlew copyNativeLibs'
                                 bat 'gradlew.bat clean build'
                             }
                         }
