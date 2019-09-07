@@ -163,6 +163,11 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
     if (os.isLinux()) {
 
+        exec {
+            commandLine "execstack", "-c", findLibrary("csecorec")
+            commandLine "execstack", "-c", findLibrary("csecorecpp")
+        }
+
         from "$buildDir/lib/main/release/linux"
         include "*.so"
 
@@ -173,18 +178,6 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
     } else {
         throw Exception("Unsupported OS: " + OperatingSystem.current().name)
-    }
-
-    if (os.isLinux()) {
-
-        def libcsecorec = findLibrary("csecorec")
-        def libcsecorecpp = findLibrary("csecorecpp")
-
-        exec {
-            commandLine "execstack", "-c", libcsecorec
-            commandLine "execstack", "-c", libcsecorecpp
-        }
-
     }
 
 }
