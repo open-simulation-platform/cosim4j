@@ -8,39 +8,6 @@ plugins {
 def os = OperatingSystem.current()
 def conanBuildInfo = new File(buildDir, "conanbuildinfo.txt");
 
-task runConan {
-
-    if (!conanBuildInfo.exists()) {
-
-        def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
-        def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
-
-        if (os.isWindows()) {
-            cmd1 = ("cmd /c" + cmd1).split(" ")
-            exec {
-                commandLine cmd1
-                commandLine cmd2
-                commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
-            }
-        } else if (os.isLinux()) {
-            exec {
-                commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
-            }
-        } else {
-            throw GradleException("OS $os not supported!");
-        }
-
-    }
-
-}
-
-task forceRunConan {
-    doLast {
-        conanBuildInfo.delete()
-    }
-    finalizedBy runConan
-}
-
 ext.collectDependency = { String type ->
 
     if (conanBuildInfo.exists()) {
@@ -101,6 +68,40 @@ ext.findLibrary = { String... names ->
 
 }
 
+task runConan {
+
+    if (!conanBuildInfo.exists()) {
+
+        def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
+        def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
+
+        if (os.isWindows()) {
+            cmd1 = ("cmd /c" + cmd1).split(" ")
+            exec {
+                commandLine cmd1
+                commandLine cmd2
+                commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
+            }
+        } else if (os.isLinux()) {
+            exec {
+                commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
+                commandLine "execstack", "-c", findLibrary("csecorec")
+                commandLine "execstack", "-c", findLibrary("csecorecpp")
+            }
+        } else {
+            throw GradleException("OS $os not supported!");
+        }
+
+    }
+
+}
+
+task forceRunConan {
+    doLast {
+        conanBuildInfo.delete()
+    }
+    finalizedBy runConan
+}
 
 library { CppLibrary lib ->
 
@@ -162,11 +163,6 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
     into "$rootDir/core/src/main/resources/native/${os.isLinux() ? "linux" : "win64"}"
 
     if (os.isLinux()) {
-
-        exec {
-            commandLine "execstack", "-c", findLibrary("csecorec")
-            commandLine "execstack", "-c", findLibrary("csecorecpp")
-        }
 
         from "$buildDir/lib/main/release/linux"
         include "*.so"
