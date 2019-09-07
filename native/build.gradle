@@ -38,10 +38,11 @@ task runConan {
 }
 
 task forceRunConan {
-    new File(buildDir, "conanbuildinfo.txt").delete()
+    doLast {
+        new File(buildDir, "conanbuildinfo.txt").delete()
+    }
     finalizedBy runConan
 }
-
 
 def isLinux = os.isLinux()
 def platform = isLinux ? "linux" : "win64"
