@@ -85,11 +85,12 @@ tasks.all {
     if (it.name.contains("assembleRelease")) {
         assembleAllRelease.add(it)
     }
+    if (it.name.contains("compileRelease")) {
+        it.dependsOn runConan
+    }
 }
 
-tasks.register("assembleAllRelease") {
-    dependsOn runConan
-}
+tasks.register("assembleAllRelease")
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
