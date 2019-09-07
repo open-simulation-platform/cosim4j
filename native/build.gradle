@@ -109,4 +109,17 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
         throw Exception("Unsupported OS: " + OperatingSystem.current().name)
     }
 
+    if (os.isLinux()) {
+
+        exec {
+            workingDir cseLibDir
+            commandLine "execstack", "-c", "libcsecorecpp.so"
+        }
+        exec {
+            workingDir cseLibDir
+            commandLine "execstack", "-c", "libcsecorec.so"
+        }
+
+    }
+
 }
