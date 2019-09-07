@@ -119,7 +119,11 @@ library { CppLibrary lib ->
     ]
 
     lib.binaries.configureEach {
-        compileTask.get().compilerArgs = ["-std:c++17"]
+       if (os.isLinux()) {
+           compileTask.get().compilerArgs = ["-std=c++17"]
+       } else if (os.isWindows()) {
+           compileTask.get().compilerArgs = ["-std:c++17"]
+       }
     }
 
     lib.binaries.whenElementFinalized { CppBinary binary ->
