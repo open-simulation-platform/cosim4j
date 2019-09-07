@@ -94,7 +94,6 @@ ext.findLibrary = { String... names ->
 
         for (File file : includeDirs.listFiles()) {
             for (String nameToFind : names) {
-                println file.getName() + " : " + os.getLinkLibraryName(nameToFind)
                 if (file.getName() == os.getLinkLibraryName(nameToFind)) {
                     return file.getAbsolutePath()
                 }
@@ -105,6 +104,10 @@ ext.findLibrary = { String... names ->
     return null
 
 }
+
+def javaHome = Jvm.current().javaHome
+def libcsecorec = findLibrary("csecorec")
+def libcsecorecpp = findLibrary("csecorecpp")
 
 library { CppLibrary lib ->
 
@@ -121,12 +124,8 @@ library { CppLibrary lib ->
 
     lib.binaries.whenElementFinalized { CppBinary binary ->
 
-        def javaHome = Jvm.current().javaHome
-
         project.dependencies {
 
-            def libcsecorec = findLibrary("csecorec")
-            def libcsecorecpp = findLibrary("csecorecpp")
             add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
             
             def cseIncludeDir = findPath("cse.h")
@@ -178,9 +177,8 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
     if (os.isLinux()) {
 
         exec {
-            workingDir cseLibDir
-            commandLine "execstack", "-c", "libcsecorecpp.so"
-            commandLine "execstack", "-c", "libcsecorec.so"
+            commandLine "execstack", "-c", libcsecorec
+            commandLine "execstack", "-c", libcsecorecpp
         }
 
     }
