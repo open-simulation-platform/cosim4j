@@ -82,3 +82,5 @@ publishing {
    }
 
 }
+
+tasks.compileKotlin.dependsOn ':native:copyNativeLibs'

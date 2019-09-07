@@ -5,7 +5,39 @@ plugins {
     id 'cpp-library'
 }
 
-def isLinux = OperatingSystem.current().isLinux()
+def os =  OperatingSystem.current()
+
+task runConan {
+
+    doLast {
+
+        if (!new File(buildDir, "conanbuildinfo.txt").exists()) {
+
+            def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
+            def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
+
+            if (os.isWindows()) {
+                cmd1 = ("cmd /c" + cmd1).split(" ")
+                exec {
+                    commandLine cmd1
+                    commandLine cmd2
+                    commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
+                }
+            } else if (os.isLinux()) {
+                exec {
+                    commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
+                }
+            } else {
+                throw GradleException("OS $os not supported!");
+            }
+
+        }
+
+    }
+
+}
+
+def isLinux = os.isLinux()
 def platform = isLinux ? "linux" : "win64"
 def cseLibDir = isLinux ? "${rootDir}/core/src/main/resources/native/${platform}" : "${rootDir}/native/lib/${platform}"
 
@@ -49,7 +81,9 @@ tasks.all {
     }
 }
 
-tasks.register("assembleAllRelease")
+tasks.register("assembleAllRelease") {
+    dependsOn runConan
+}
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
