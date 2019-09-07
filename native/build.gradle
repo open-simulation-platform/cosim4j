@@ -10,28 +10,24 @@ def conanBuildInfo = new File(buildDir, "conanbuildinfo.txt");
 
 task runConan {
 
-    doLast {
+    if (!conanBuildInfo.exists()) {
 
-        if (!conanBuildInfo.exists()) {
+        def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
+        def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
 
-            def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
-            def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
-
-            if (os.isWindows()) {
-                cmd1 = ("cmd /c" + cmd1).split(" ")
-                exec {
-                    commandLine cmd1
-                    commandLine cmd2
-                    commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
-                }
-            } else if (os.isLinux()) {
-                exec {
-                    commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
-                }
-            } else {
-                throw GradleException("OS $os not supported!");
+        if (os.isWindows()) {
+            cmd1 = ("cmd /c" + cmd1).split(" ")
+            exec {
+                commandLine cmd1
+                commandLine cmd2
+                commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
             }
-
+        } else if (os.isLinux()) {
+            exec {
+                commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
+            }
+        } else {
+            throw GradleException("OS $os not supported!");
         }
 
     }
@@ -105,9 +101,6 @@ ext.findLibrary = { String... names ->
 
 }
 
-def javaHome = Jvm.current().javaHome
-def libcsecorec = findLibrary("csecorec")
-def libcsecorecpp = findLibrary("csecorecpp")
 
 library { CppLibrary lib ->
 
@@ -119,19 +112,23 @@ library { CppLibrary lib ->
     ]
 
     lib.binaries.configureEach {
-       if (os.isLinux()) {
-           compileTask.get().compilerArgs = ["-std=c++17"]
-       } else if (os.isWindows()) {
-           compileTask.get().compilerArgs = ["-std:c++17"]
-       }
+        if (os.isLinux()) {
+            compileTask.get().compilerArgs = ["-std=c++17"]
+        } else if (os.isWindows()) {
+            compileTask.get().compilerArgs = ["-std:c++17"]
+        }
     }
+
+    def javaHome = Jvm.current().javaHome
 
     lib.binaries.whenElementFinalized { CppBinary binary ->
 
         project.dependencies {
 
+            def libcsecorec = findLibrary("csecorec")
+            def libcsecorecpp = findLibrary("csecorecpp")
             add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
-            
+
             def cseIncludeDir = findPath("cse.h")
             add(binary.includePathConfiguration.name, files("$javaHome/include", cseIncludeDir))
 
@@ -179,6 +176,9 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
     }
 
     if (os.isLinux()) {
+
+        def libcsecorec = findLibrary("csecorec")
+        def libcsecorecpp = findLibrary("csecorecpp")
 
         exec {
             commandLine "execstack", "-c", libcsecorec
