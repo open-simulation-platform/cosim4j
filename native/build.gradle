@@ -37,6 +37,12 @@ task runConan {
 
 }
 
+task forceRunConan {
+    new File(buildDir, "conanbuildinfo.txt").delete()
+    finalizedBy runConan
+}
+
+
 def isLinux = os.isLinux()
 def platform = isLinux ? "linux" : "win64"
 def cseLibDir = isLinux ? "${rootDir}/core/src/main/resources/native/${platform}" : "${rootDir}/native/lib/${platform}"
