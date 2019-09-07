@@ -116,9 +116,6 @@ task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
         exec {
             workingDir cseLibDir
             commandLine "execstack", "-c", "libcsecorecpp.so"
-        }
-        exec {
-            workingDir cseLibDir
             commandLine "execstack", "-c", "libcsecorec.so"
         }
 
