@@ -15,18 +15,9 @@ pipeline {
                     }
 
                     stages {
-                        stage('Configure Conan') {
-                            steps {
-                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
-                                sh 'conan remote add helmesjo https://api.bintray.com/conan/helmesjo/public-conan --force'
-                                sh 'conan user -p "Open Simulation Platform" -r osp osp'
-                            }
-                        }
 
                         stage('Build') {
                             steps {
-                                bat 'conan install . -s build_type=Release --install-folder=build --build=missing'
-                                bat 'gradlew copyNativeLibs'
                                 bat 'gradlew.bat clean build'
                             }
                         }
@@ -53,20 +44,8 @@ pipeline {
 
                     stages {
 
-                        stage('Configure Conan') {
-                            steps {
-                                sh 'conan --version'
-                                sh 'cmake --version'
-                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
-                                sh 'conan remote add helmesjo https://api.bintray.com/conan/helmesjo/public-conan --force'
-                                sh 'conan user -p "Open Simulation Platform" -r osp osp'
-                            }
-                        }
-
                         stage('Build') {
                             steps {
-                                sh 'conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing'
-                                sh './gradlew copyNativeLibs'
                                 sh './gradlew clean build'
                             }
                         }
