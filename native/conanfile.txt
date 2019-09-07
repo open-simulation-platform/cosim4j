@@ -5,12 +5,6 @@ cse-core/0.5.0@osp/markaren_testing
 cse-core:fmuproxy=True
 
 [imports]
-include, cse.h -> ../../native/src/main/headers
-include, cse* -> ../../native/src/main/headers
-
-lib, cse*.lib -> ../../native/lib/win64
-lib, libcse*.so -> ../../core/src/main/resources/native/linux
-
 bin, cse*.dll -> ../../core/src/main/resources/native/win64
 bin, boost_chrono-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
 bin, boost_context-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64

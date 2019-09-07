@@ -5,13 +5,14 @@ plugins {
     id 'cpp-library'
 }
 
-def os =  OperatingSystem.current()
+def os = OperatingSystem.current()
+def conanBuildInfo = new File(buildDir, "conanbuildinfo.txt");
 
 task runConan {
 
     doLast {
 
-        if (!new File(buildDir, "conanbuildinfo.txt").exists()) {
+        if (!conanBuildInfo.exists()) {
 
             def cmd1 = "conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f"
             def cmd2 = "conan user -p 'Open Simulation Platform' -r osp osp".split(" ")
@@ -39,38 +40,101 @@ task runConan {
 
 task forceRunConan {
     doLast {
-        new File(buildDir, "conanbuildinfo.txt").delete()
+        conanBuildInfo.delete()
     }
     finalizedBy runConan
 }
 
-def isLinux = os.isLinux()
-def platform = isLinux ? "linux" : "win64"
-def cseLibDir = isLinux ? "${rootDir}/core/src/main/resources/native/${platform}" : "${rootDir}/native/lib/${platform}"
+ext.collectDependency = { String type ->
+
+    if (conanBuildInfo.exists()) {
+        def collect = []
+        conanBuildInfo.withReader { reader ->
+            def line
+            def read = false
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("[${type}dirs]")) {
+                    read = true
+                } else if (read) {
+                    if (line.isEmpty()) {
+                        break
+                    }
+                    collect += line
+                }
+            }
+        }
+
+        return collect
+    }
+
+}
+
+ext.findPath = { String... names ->
+
+    def includeDirs = collectDependency("include").collect { new File(it) }
+    for (File includeDir : includeDirs) {
+
+        for (String fileName : includeDir.list()) {
+            for (String nameToFind : names) {
+                if (fileName == nameToFind) {
+                    return includeDir.absolutePath
+                }
+            }
+        }
+
+    }
+    return null
+
+}
+
+ext.findLibrary = { String... names ->
+
+    def libDirs = collectDependency("lib").collect { new File(it) }
+    for (File includeDirs : libDirs) {
+
+        for (File file : includeDirs.listFiles()) {
+            for (String nameToFind : names) {
+                println file.getName() + " : " + os.getLinkLibraryName(nameToFind)
+                if (file.getName() == os.getLinkLibraryName(nameToFind)) {
+                    return file.getAbsolutePath()
+                }
+            }
+        }
+
+    }
+    return null
+
+}
 
 library { CppLibrary lib ->
 
-    baseName = "csecorejni"
+    baseName.set("csecorejni")
 
     targetMachines = [
             machines.windows.x86_64,
             machines.linux.x86_64,
     ]
 
+    lib.binaries.configureEach {
+        compileTask.get().compilerArgs = ["-std:c++17"]
+    }
+
     lib.binaries.whenElementFinalized { CppBinary binary ->
 
         def javaHome = Jvm.current().javaHome
-        def libcsecorec = file(OperatingSystem.current().getLinkLibraryName("${cseLibDir}/csecorec"))
-        def libcsecorecpp = file(OperatingSystem.current().getLinkLibraryName("${cseLibDir}/csecorecpp"))
-        
+
         project.dependencies {
-            
+
+            def libcsecorec = findLibrary("csecorec")
+            def libcsecorecpp = findLibrary("csecorecpp")
             add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
-            add(binary.includePathConfiguration.name, files("$javaHome/include"))
             
-            if (OperatingSystem.current().isLinux()) {
+            def cseIncludeDir = findPath("cse.h")
+            add(binary.includePathConfiguration.name, files("$javaHome/include", cseIncludeDir))
+
+            if (os.isLinux()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
-            } else if (OperatingSystem.current().isWindows()) {
+            } else if (os.isWindows()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/win32"))
             }
 
@@ -95,17 +159,17 @@ tasks.register("assembleAllRelease")
 
 task copyNativeLibs(type: Copy, dependsOn: assembleAllRelease) {
 
-    into "$rootDir/core/src/main/resources/native/${platform}"
+    into "$rootDir/core/src/main/resources/native/${os.isLinux() ? "linux" : "win64"}"
 
-    if (OperatingSystem.current().isLinux()) {
+    if (os.isLinux()) {
 
-            from "$buildDir/lib/main/release/linux"
-            include "*.so"
+        from "$buildDir/lib/main/release/linux"
+        include "*.so"
 
-    } else if (OperatingSystem.current().isWindows()) {
+    } else if (os.isWindows()) {
 
-            from "$buildDir/lib/main/release/windows"
-            include "*.dll"
+        from "$buildDir/lib/main/release/windows"
+        include "*.dll"
 
     } else {
         throw Exception("Unsupported OS: " + OperatingSystem.current().name)
