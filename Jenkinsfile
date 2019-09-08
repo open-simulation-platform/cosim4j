@@ -2,10 +2,10 @@ pipeline {
     agent none
 
      environment {
-            CONAN_USER_HOME_SHORT = 'None'
-            OSP_CONAN_CREDS = credentials('jenkins-osp-conan-creds')
-            CSE_CONAN_CHANNEL = "${env.BRANCH_NAME}".take(51).replaceAll("/", "_")
-        }
+        CONAN_USER_HOME_SHORT = 'None'
+        OSP_CONAN_CREDS = credentials('jenkins-osp-conan-creds')
+        CSE_CONAN_CHANNEL = "${env.BRANCH_NAME}".take(51).replaceAll("/", "_")
+    }
 
     stages {
 
@@ -29,13 +29,15 @@ pipeline {
                                 sh 'conan user -p $OSP_CONAN_CREDS_PSW -r osp $OSP_CONAN_CREDS_USR'
                             }
                         }
-                        stage('Build') {
+                        stage('Build-native') {
                             steps {
-                                dir('native/build'){
-                                    bat 'conan install .. -s build_type=Release -build=missing'
-                                    bat 'cmake .. -A x64'
-                                    bat 'cmake --build .'
-                                }
+                                bat 'cd native && conan install native -s build_type=Release --install-folder=build -build=missing'
+                                bat 'cd native/build && cmake .. -A x64'
+                                bat 'cd native/build && cmake --build .'
+                            }
+                        }
+                        stage('Build-jvm') {
+                            steps {
                                 bat 'gradlew.bat clean build'
                             }
                         }
@@ -54,14 +56,14 @@ pipeline {
                     }
 
                     stages {
-                        stage('Build') {
+                        stage('Build-native') {
                             steps {
-                                dir('native/build') {
-                                    sh 'cmake -H. -Bbuild -DCSECOREJNI_USING_CONAN=OFF'
-                                    sh 'cmake --build build'
-                                }
-                                sh './gradlew clean build'
+                                sh 'cd native && cmake -H. -Bbuild -DCSECOREJNI_USING_CONAN=OFF'
+                                sh 'cmake --build build'
                             }
+                        }
+                        stage('Build-jvm') {
+                            sh './gradlew clean build'
                         }
 
                     }
