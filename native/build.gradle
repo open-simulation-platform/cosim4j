@@ -83,7 +83,13 @@ task runConan {
                 commandLine "conan install . -s build_type=Release --install-folder=build --build=missing".split(" ")
             }
         } else if (os.isLinux()) {
+            def binDir = new File("../../natives-linux/src/main/resources/native/linux")
+            if (!binDir.exists()) {
+                binDir.mkDirs();
+            }
             exec {
+                commandLine cmd1.split(" ")
+                commandLine cmd2
                 commandLine "conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=build --build=missing".split(" ")
             }
         } else {
@@ -126,10 +132,13 @@ library { CppLibrary lib ->
 
             def libcsecorec = findLibrary("csecorec")
             def libcsecorecpp = findLibrary("csecorecpp")
-            add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec))
+            def boost_fiber = findLibrary("boost_fiber")
+            add(binary.linkLibraries.name, files(libcsecorecpp, libcsecorec, boost_fiber))
 
             def cseIncludeDir = findPath("cse.h")
-            add(binary.includePathConfiguration.name, files("$javaHome/include", cseIncludeDir))
+            def gslIncludeDir = findPath("gsl")
+            def boostIncludeDir = findPath("boost")
+            add(binary.includePathConfiguration.name, files("$javaHome/include", cseIncludeDir, gslIncludeDir, boostIncludeDir))
 
             if (os.isLinux()) {
                 add(binary.includePathConfiguration.name, files("$javaHome/include/linux"))
