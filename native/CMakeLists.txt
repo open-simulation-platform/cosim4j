@@ -6,7 +6,7 @@ project(csecorejni VERSION 0.0.1)
 # ==============================================================================
 
 option(BUILD_SHARED_LIBS "Build shared libraries instead of static libraries" ON)
-option(CSECORE_USING_CONAN "Whether Conan is used for package management" ON)
+option(CSECOREJNI_USING_CONAN "Whether Conan is used for package management" ON)
 
 # ==============================================================================
 # Global internal configuration
@@ -19,11 +19,13 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # Dependencies
 # ==============================================================================
 
-if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup(NO_OUTPUT_DIRS)
-else()
-    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first!")
+if(CSECOREJNI_USING_CONAN)
+    if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+        include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+        conan_basic_setup(NO_OUTPUT_DIRS)
+    else()
+        message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first!")
+    endif()
 endif()
 
 find_package(JNI REQUIRED)
