@@ -1,0 +1,18 @@
+[requires]
+cse-core/0.5.0@osp/master
+
+[generators]
+cmake
+
+[imports]
+bin, cse*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_chrono-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_context-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_date_time-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_fiber-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_filesystem-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_log-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_system-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, boost_thread-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+
+lib, libcse*.so-> ../../natives-linux/src/main/resources/native/linux

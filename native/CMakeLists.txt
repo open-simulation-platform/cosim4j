@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.12)
+project(csecorejni VERSION 0.0.1)
+
+# ==============================================================================
+# Build settings
+# ==============================================================================
+
+option(BUILD_SHARED_LIBS "Build shared libraries instead of static libraries" ON)
+option(CSECORE_USING_CONAN "Whether Conan is used for package management" ON)
+
+# ==============================================================================
+# Global internal configuration
+# ==============================================================================
+
+# Automatically export all symbols in Windows DLLs.
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+# ==============================================================================
+# Dependencies
+# ==============================================================================
+
+if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
+    conan_basic_setup(NO_OUTPUT_DIRS)
+else()
+    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first!")
+endif()
+
+find_package(JNI REQUIRED)
+find_package(csecore REQUIRED)
+
+add_subdirectory(src)
