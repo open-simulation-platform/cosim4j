@@ -62,8 +62,9 @@ pipeline {
                         }
                         stage('Build') {
                             steps {
-                                dir('native') {
-                                    sh 'cmake -H. -Bbuild'
+                                dir('native/build') {
+                                    sh 'cmake -H. -Bbuild -DCSECOREJNI_USING_CONAN=OFF'
+                                    sh 'cmake --build build'
                                 }
                                 sh './gradlew clean build'
                             }
