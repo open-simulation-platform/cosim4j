@@ -492,20 +492,22 @@ object CseLibrary {
                     "${libPrefix}csecorejni.$sharedLibExtension"
             )
 
-            if (isWindows) {
-                val prefix = "boost_"
-                val postfix = "-vc141-mt-x64-1_66.dll"
-                var i = 0
-                with(libNames) {
-                    add(i++, "${prefix}context$postfix")
-                    add(i++, "${prefix}date_time$postfix")
-                    add(i++, "${prefix}fiber$postfix")
-                    add(i++, "${prefix}system$postfix")
-                    add(i++, "${prefix}filesystem$postfix")
-                    add(i++, "${prefix}chrono$postfix")
-                    add(i++, "${prefix}thread$postfix")
-                    add(i, "${prefix}log$postfix")
-                }
+            val postfix = when {
+                isLinux -> ""
+                isWindows -> "-vc141-mt-x64-1_66"
+                else -> TODO("Unsupported OS")
+            }
+
+            var i = 0
+            with(libNames) {
+                add(i++, "${libPrefix}boost_context$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_date_time$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_fiber$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_system$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_filesystem$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_chrono$postfix.$sharedLibExtension")
+                add(i++, "${libPrefix}boost_thread$postfix.$sharedLibExtension")
+                add(i, "${libPrefix}boost_log$postfix.$sharedLibExtension")
             }
 
             libNames.forEach { libName ->
