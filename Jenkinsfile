@@ -44,7 +44,6 @@ pipeline {
                             filename 'Dockerfile.build'
                             dir '.dockerfiles'
                             label 'linux && docker'
-                            args '-v ${SLAVE_HOME}/conan-repositories/${EXECUTOR_NUMBER}:/conan_repo'
                         }
                     }
 
