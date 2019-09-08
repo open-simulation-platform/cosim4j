@@ -26,6 +26,7 @@ pipeline {
                         stage('Build') {
                             steps {
                                 dir('native/build'){
+                                    bat 'conan install .. -s build_type=Release -build=missing'
                                     bat 'cmake .. -A x64'
                                     bat 'cmake --build .'
                                 }
@@ -47,19 +48,7 @@ pipeline {
                         }
                     }
 
-                    environment {
-                        CONAN_USER_HOME = '/conan_repo'
-                    }
-
                     stages {
-                        stage('Configure Conan') {
-                            steps {
-                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
-                                sh 'conan remote add helmesjo https://api.bintray.com/conan/helmesjo/public-conan --force'
-                                sh 'conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan --force'
-                                sh 'conan user -p "Open Simulation Platform" -r osp osp'
-                            }
-                        }
                         stage('Build') {
                             steps {
                                 dir('native/build') {
