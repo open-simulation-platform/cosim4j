@@ -1,3 +1,4 @@
+import org.gradle.internal.os.OperatingSystem
 
 plugins {
     id 'java'
@@ -6,10 +7,9 @@ plugins {
     id "com.github.johnrengelman.shadow" version "4.0.4"
 }
 
-group 'org.osp'
-version '0.5-SNAPSHOT'
-
 sourceCompatibility = 1.8
+
+def os = OperatingSystem.current()
 
 repositories {
     mavenCentral()
@@ -18,6 +18,12 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    if (os.isLinux()) {
+        compile project(':natives-linux')
+    } else if (os.isWindows()) {
+        compile project(':natives-win')
+    }
 
     def slf4j_version = '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version

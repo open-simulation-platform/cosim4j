@@ -5,14 +5,22 @@ cse-core/0.5.0@osp/master
 cse-core:fmuproxy=True
 
 [imports]
-lib, libcse*.so -> ../../core/src/main/resources/native/linux
-bin, cse*.dll -> ../../core/src/main/resources/native/win64
+bin, cse*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_chrono-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_context-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_date_time-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_fiber-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_filesystem-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_log-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_system-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
+bin, boost_thread-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win64
 
-bin, boost_chrono-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_context-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_date_time-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_fiber-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_filesystem-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_log-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_system-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
-bin, boost_thread-vc141-mt-x64*.dll -> ../../core/src/main/resources/native/win64
+lib, libcse*.so -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_chrono.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_context*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_date_time*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_fiber*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_filesystem*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_log*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_system*.dll -> ../../natives-linux/src/main/resources/native/linux
+lib, libboost_thread*.dll -> ../../natives-linux/src/main/resources/native/linux

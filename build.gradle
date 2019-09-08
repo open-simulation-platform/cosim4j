@@ -4,3 +4,9 @@ println "Gradle version is ${gradle.getGradleVersion()}"
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
+
+subprojects {
+    group 'org.osp'
+    version '0.5-SNAPSHOT'
+
+}

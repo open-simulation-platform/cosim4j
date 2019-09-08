@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+def nativesFolder = new File(projectDir, "src/main/resources/native/win64")
+if (nativesFolder.listFiles() != null && nativesFolder.listFiles().length > 0) {
+
+    publishing {
+
+        publications {
+            maven(MavenPublication) {
+                from components.java
+            }
+        }
+
+        if (project.hasProperty("mvnUser") && project.hasProperty("mvnPw")) {
+
+            repositories {
+                maven {
+                    credentials {
+                        username mvnUser
+                        password mvnPw
+                    }
+                    url "sftp://login.stud.ntnu.no:22/web/folk/laht/mvn"
+                }
+            }
+
+        }
+
+    }
+
+}
