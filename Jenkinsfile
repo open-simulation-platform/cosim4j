@@ -15,9 +15,20 @@ pipeline {
                     }
 
                     stages {
-
+                        stage('Configure Conan') {
+                            steps {
+                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
+                                sh 'conan remote add helmesjo https://api.bintray.com/conan/helmesjo/public-conan --force'
+                                sh 'conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan --force'
+                                sh 'conan user -p "Open Simulation Platform" -r osp osp'
+                            }
+                        }
                         stage('Build') {
                             steps {
+                                dir('native/build'){
+                                    bat 'cmake .. -A x64'
+                                    bat 'cmake --build .'
+                                }
                                 bat 'gradlew.bat clean build'
                             }
                         }
@@ -41,9 +52,19 @@ pipeline {
                     }
 
                     stages {
-
+                        stage('Configure Conan') {
+                            steps {
+                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
+                                sh 'conan remote add helmesjo https://api.bintray.com/conan/helmesjo/public-conan --force'
+                                sh 'conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan --force'
+                                sh 'conan user -p "Open Simulation Platform" -r osp osp'
+                            }
+                        }
                         stage('Build') {
                             steps {
+                                dir('native') {
+                                    sh 'cmake -H. -Bbuild'
+                                }
                                 sh './gradlew clean build'
                             }
                         }
