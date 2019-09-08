@@ -7,7 +7,6 @@ RUN apt-get update && \
     default-jdk \
     build-essential \
     libboost-all-dev \
-    execstack \
     python3-setuptools \
     python3-wheel \
     python3-pip \
