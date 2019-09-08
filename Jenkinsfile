@@ -10,7 +10,7 @@ pipeline {
 
         stage('Build') {
             parallel {
-                stage('Windows') {
+                stage('Build on Windows') {
                     agent { label 'windows' }
 
                     tools { jdk 'jdk8' }
@@ -28,9 +28,11 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                bat 'cd native && conan install . -s build_type=Release --install-folder=build -build=missing'
-                                bat 'cd native/build && cmake .. -A x64'
-                                bat 'cd native/build && cmake --build .'
+                                dir('build') {
+                                   bat 'conan install ../native -s build_type=Release -build=missing'
+                                   bat 'cmake ../native -G "Visual Studio 15 2017 Win64" ../'
+                                   bat 'cmake --build . --config Release'
+                                }
                             }
                         }
                         stage('Build-jvm') {
@@ -43,7 +45,7 @@ pipeline {
 
                 }
 
-                stage('Linux') {
+                stage('Build on Linux') {
                     agent {
                         dockerfile {
                             filename 'Dockerfile.build'
