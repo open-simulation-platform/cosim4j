@@ -31,7 +31,7 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                bat 'cd native && conan install native -s build_type=Release --install-folder=build -build=missing'
+                                bat 'cd native && conan install . -s build_type=Release --install-folder=build -build=missing'
                                 bat 'cd native/build && cmake .. -A x64'
                                 bat 'cd native/build && cmake --build .'
                             }
