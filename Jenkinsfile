@@ -63,7 +63,9 @@ pipeline {
                             }
                         }
                         stage('Build-jvm') {
-                            sh './gradlew clean build'
+                            steps {
+                                sh './gradlew clean build'
+                            }
                         }
 
                     }
