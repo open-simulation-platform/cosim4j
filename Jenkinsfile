@@ -68,7 +68,7 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                sh 'conan install -s compiler.libcxx=libstdc++11 -s build_type=Release --install-folder=build -build=missing'
+                                sh 'conan install native -s compiler.libcxx=libstdc++11 -s build_type=Release --install-folder=build -build=missing'
                                 sh 'cd native && cmake -H. -Bbuild'
                                 sh 'cmake --build build'
                             }
