@@ -5,6 +5,8 @@ import org.osp.util.isLinux
 import org.osp.util.isWindows
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
@@ -16,6 +18,8 @@ internal typealias cse_observer = Long
 internal typealias cse_manipulator = Long
 
 object CseLibrary {
+
+    private val LOG: Logger = LoggerFactory.getLogger(CseLibrary::class.java)
 
     /**
      *  Returns the error code associated with the last reported error.
@@ -484,43 +488,57 @@ object CseLibrary {
         val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
             it.deleteOnExit()
         }
-        try {
 
-            val libNames = mutableListOf(
+        fun loadLib(libName: String) {
+            val lib by lazy {
+                File(tempDir, libName).also {
+                    it.deleteOnExit()
+                }
+            }
+            val relativeLibPath = "native/$platform/$libName"
+            LOG.debug("Loading library '$libName'")
+            CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath)?.use {
+                FileOutputStream(lib).use { fos ->
+                    it.copyTo(fos)
+                }
+            } ?: throw IllegalStateException("No such resource $relativeLibPath")
+
+            System.load(lib.absolutePath)
+
+        }
+
+        fun loadCse() {
+            listOf(
                     "${libPrefix}csecorecpp.$sharedLibExtension",
                     "${libPrefix}csecorec.$sharedLibExtension",
                     "${libPrefix}csecorejni.$sharedLibExtension"
-            )
+            ).forEach { loadLib(it) }
+        }
 
-            if (isWindows) {
-                val prefix = "boost_"
-                val postfix = "-vc141-mt-x64-1_66.dll"
-                var i = 0
-                with(libNames) {
-                    add(i++, "${prefix}context$postfix")
-                    add(i++, "${prefix}date_time$postfix")
-                    add(i++, "${prefix}fiber$postfix")
-                    add(i++, "${prefix}system$postfix")
-                    add(i++, "${prefix}filesystem$postfix")
-                    add(i++, "${prefix}chrono$postfix")
-                    add(i++, "${prefix}thread$postfix")
-                    add(i, "${prefix}log$postfix")
-                }
+        fun loadBoost() {
+
+            val postfix = if (isLinux) {
+                ".so.1.66.0"
+            } else {
+                "-vc141-mt-x64-1_66.dll"
             }
 
-            libNames.forEach { libName ->
+            listOf(
+                    "${libPrefix}boost_context$postfix",
+                    "${libPrefix}boost_date_time$postfix",
+                    "${libPrefix}boost_system$postfix",
+                    "${libPrefix}boost_filesystem$postfix",
+                    "${libPrefix}boost_fiber$postfix",
+                    "${libPrefix}boost_chrono$postfix",
+                    "${libPrefix}boost_thread$postfix",
+                    "${libPrefix}boost_log$postfix"
+            ).forEach { loadLib(it) }
+        }
 
-                val lib = File(tempDir, libName).also {
-                    it.deleteOnExit()
-                }
-                val relativeLibPath = "native/$platform/$libName"
-                CseLibrary::class.java.classLoader.getResourceAsStream(relativeLibPath).use {
-                    FileOutputStream(lib).use { fos ->
-                        it.copyTo(fos)
-                    }
-                }
-                System.load(lib.absolutePath)
-            }
+        try {
+
+            loadBoost()
+            loadCse()
 
             setupSimpleConsoleLogging()
             setLogLevel(CseLogLevel.CSE_LOG_SEVERITY_INFO)
