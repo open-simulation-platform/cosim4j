@@ -49,6 +49,6 @@ if(WIN32)
 elseif(UNIX)
   set_target_properties(csecorejni
           PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../natives-linux/src/main/resources/native/linux"
+          LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../natives-linux/src/main/resources/native/linux"
           )
 endif()
