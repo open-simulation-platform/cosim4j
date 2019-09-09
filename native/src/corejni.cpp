@@ -508,7 +508,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv
 {
     if (observer == 0) {
         std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-        return NULL;
+        return false;
     }
 
     auto* values = (double*)malloc(sizeof(double) * nSamples);
@@ -580,7 +580,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
 {
     if (observer == 0) {
         std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-        return NULL;
+        return false;
     }
 
     int* values = (int*)malloc(sizeof(int) * nSamples);
