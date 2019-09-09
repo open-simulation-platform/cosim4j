@@ -157,6 +157,10 @@ class CseExecution private constructor(
         }
     }
 
+    fun setString(slaveIndex: Int, vr: Long, value: String) {
+        CseLibrary.setInitialStringValue(execution,slaveIndex, vr, value);
+    }
+
     override fun close() {
         observers.forEach {
             it.close()

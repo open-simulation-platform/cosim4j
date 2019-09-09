@@ -57,6 +57,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* en
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jobjectArray values);
 
+JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value);
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_resetSlave(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref);

@@ -263,6 +263,8 @@ object CseLibrary {
      */
     external fun setString(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean
 
+    external fun setInitialStringValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: String)
+
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
      *

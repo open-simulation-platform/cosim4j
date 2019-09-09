@@ -3,9 +3,16 @@
 #include <cse/execution_status_fields.hpp>
 #include <cse/samples_fields.hpp>
 
+#include <cse/execution.hpp>
+#include <cse/model.hpp>
+#include <cse/ssp_parser.hpp>
+
 #include <iostream>
 #include <string>
 #include <vector>
+#include <thread>
+#include <memory>
+#include <atomic>
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,6 +40,15 @@ jdouble to_seconds(int64_t duration)
 }
 
 } // namespace
+
+struct cse_execution_s
+{
+    cse::simulator_map simulators;
+    std::unique_ptr<cse::execution> cpp_execution;
+    std::thread t;
+    std::atomic<cse_execution_state> state;
+    int error_code;
+};
 
 JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorCode(JNIEnv* env, jobject obj)
 {
@@ -387,6 +403,20 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env
     free(__vr);
 
     return status;
+}
+
+JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value) {
+
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return;
+    }
+
+    auto value_ = env->GetStringUTFChars(value, nullptr);
+    auto& cpp_execution = ((cse_execution*)execution)->cpp_execution;
+    cpp_execution->set_string_initial_value(slaveIndex, (cse::value_reference)vr, value_);
+    env->ReleaseStringUTFChars(value, value_);
+
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, jobject obj, jlong observer, jint slaveIndex, jlongArray vr, jdoubleArray ref)
