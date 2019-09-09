@@ -183,7 +183,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumVariables(JNIEnv* e
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
-    return (jint)cse_slave_get_num_variables((cse_execution*)execution, slaveIndex);
+    return (jint) cse_slave_get_num_variables((cse_execution*)execution, slaveIndex);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jobjectArray vars)
@@ -548,34 +548,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv
     return success;
 }
 
-//JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
-//    if (observer == 0) {
-//       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-//       return false;
-//    }
-//
-//    initCseRealSamplesDirectFields(env);
-//    jobject valueBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.valuesId);
-//    jobject timeBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.timesId);
-//    jobject stepBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.stepsId);
-//
-//    double* values = (double*) env->GetDirectBufferAddress(valueBuffer);
-//    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
-//    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
-//
-//    jint numSamplesRead = (jint) cse_observer_slave_get_real_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
-//
-//    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
-//    for (int i = 0; i < numSamplesRead; i++) {
-//        times_[i] = to_seconds(times[i]);
-//    }
-//    free(times);
-//
-//    env->SetIntField(samples, cseRealSamplesDirectFields.sizeId, numSamplesRead);
-//
-//    return true;
-//}
-
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv* env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples)
 {
     if (observer == 0) {
@@ -618,34 +590,6 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNI
 
     return success;
 }
-
-//JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamplesDirect(JNIEnv *env, jobject obj, jlong observer, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples) {
-//    if (observer == 0) {
-//       std::cerr << "[JNI-wrapper] Error: observer is NULL" << std::endl;
-//       return false;
-//    }
-//
-//    initCseRealSamplesDirectFields(env);
-//    jobject valueBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.valuesId);
-//    jobject timeBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.timesId);
-//    jobject stepBuffer = env->GetObjectField(samples, cseRealSamplesDirectFields.stepsId);
-//
-//    int* values = (int*) env->GetDirectBufferAddress(valueBuffer);
-//    cse_step_number* steps = (cse_step_number*) env->GetDirectBufferAddress(stepBuffer);
-//    cse_time_point* times = (cse_time_point*) malloc(sizeof(cse_time_point)*nSamples);
-//
-//    jint numSamplesRead = (jint) cse_observer_slave_get_integer_samples((cse_observer*) observer, slaveIndex, (cse_value_reference) vr, (cse_step_number) fromStep, nSamples, values, steps, times);
-//
-//    double* times_ = (double*) env->GetDirectBufferAddress(timeBuffer);
-//    for (int i = 0; i < numSamplesRead; i++) {
-//        times_[i] = to_seconds(times[i]);
-//    }
-//    free(times);
-//
-//    env->SetIntField(samples, cseRealSamplesDirectFields.sizeId, numSamplesRead);
-//
-//    return true;
-//}
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv* env, jobject obj, jlong observer, jint slaveIndex, jdouble duration, jlongArray steps)
 {
