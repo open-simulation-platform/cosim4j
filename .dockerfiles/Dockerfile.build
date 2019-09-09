@@ -7,8 +7,7 @@ RUN apt-get update && \
     default-jdk \
     cmake \
     build-essential \
-    libboost-all-dev \
-    libzip-dev \
-    libmsgsl-dev \
-    nlohmann-json-dev \
+    python3-setuptools \
+    python3-wheel \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*

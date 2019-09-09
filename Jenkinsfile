@@ -51,13 +51,25 @@ pipeline {
                             filename 'Dockerfile.build'
                             dir '.dockerfiles'
                             label 'linux && docker'
+                            args '-v ${SLAVE_HOME}/conan-repositories/${EXECUTOR_NUMBER}:/conan_repo'
                         }
                     }
 
+                    environment {
+                        CONAN_USER_HOME = '/conan_repo'
+                    }
+
                     stages {
+                        stage('Configure Conan') {
+                            steps {
+                                sh 'conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --force'
+                                sh 'conan user -p $OSP_CONAN_CREDS_PSW -r osp $OSP_CONAN_CREDS_USR'
+                            }
+                        }
                         stage('Build-native') {
                             steps {
-                                sh 'cd native && cmake -H. -Bbuild -DCSECOREJNI_USING_CONAN=OFF'
+                                sh 'conan install -s compiler.libcxx=libstdc++11 -s build_type=Release --install-folder=build -build=missing'
+                                sh 'cd native && cmake -H. -Bbuild'
                                 sh 'cmake --build build'
                             }
                         }
