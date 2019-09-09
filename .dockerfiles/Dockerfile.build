@@ -6,9 +6,10 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     default-jdk \
     build-essential \
-    libboost-all-dev \
-    libzip-dev \
-    libmsgsl-dev \
-    nlohmann-json-dev \
-	libyaml-cpp-dev \
+    python3-setuptools \
+    python3-wheel \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Install  Conan package manager and CMake
+RUN pip3 install conan cmake
