@@ -34,7 +34,7 @@ jdouble to_seconds(int64_t duration)
 
 } // namespace
 
-JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorCode_(JNIEnv* env, jobject obj)
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorCode(JNIEnv* env, jobject obj)
 {
     return cse_last_error_code();
 }
@@ -183,7 +183,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumVariables(JNIEnv* e
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
     }
-    return (jint) cse_slave_get_num_variables((cse_execution*)execution, slaveIndex);
+    return (jint)cse_slave_get_num_variables((cse_execution*)execution, slaveIndex);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getVariables(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jobjectArray vars)
