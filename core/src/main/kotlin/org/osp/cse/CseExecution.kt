@@ -38,7 +38,6 @@ class CseExecution private constructor(
         return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
             val index = CseLibrary.addSlave(execution, slave)
             val name = getSlaveInfos().find { it.index == index }!!.name
-            println(name)
             CseSlave(index, name, slave, execution).also {
                 slaves.add(it)
             }
