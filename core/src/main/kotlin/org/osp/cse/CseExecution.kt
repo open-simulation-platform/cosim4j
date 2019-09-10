@@ -157,7 +157,19 @@ class CseExecution private constructor(
         }
     }
 
-    fun setString(slaveIndex: Int, vr: Long, value: String) {
+    fun setInitialValue(slaveIndex: Int, vr: Long, value: Double) {
+        CseLibrary.setInitialRealValue(execution,slaveIndex, vr, value);
+    }
+
+    fun setInitialValue(slaveIndex: Int, vr: Long, value: Int) {
+        CseLibrary.setInitialIntegerValue(execution,slaveIndex, vr, value);
+    }
+
+    fun setInitialValue(slaveIndex: Int, vr: Long, value: Boolean) {
+        CseLibrary.setInitialBooleanValue(execution,slaveIndex, vr, value);
+    }
+
+    fun setInitialValue(slaveIndex: Int, vr: Long, value: String) {
         CseLibrary.setInitialStringValue(execution,slaveIndex, vr, value);
     }
 

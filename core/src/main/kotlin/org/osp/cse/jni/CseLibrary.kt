@@ -242,12 +242,16 @@ object CseLibrary {
      */
     external fun setReal(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
 
+    external fun setInitialRealValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Double): Boolean
+
     /**
      *  Sets the values of integer variables for one slave.
      *
      *  @return  true on success and false on error.
      */
     external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+
+    external fun setInitialIntegerValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Int): Boolean
 
     /**
      *  Sets the values of boolean variables for one slave.
@@ -256,6 +260,8 @@ object CseLibrary {
      */
     external fun setBoolean(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean
 
+    external fun setInitialBooleanValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Boolean): Boolean
+
     /**
      *  Sets the values of string variables for one slave.
      *
@@ -263,7 +269,7 @@ object CseLibrary {
      */
     external fun setString(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean
 
-    external fun setInitialStringValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: String)
+    external fun setInitialStringValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: String): Boolean
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
