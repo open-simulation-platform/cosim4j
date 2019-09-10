@@ -323,6 +323,20 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv* env, 
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialRealValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jdouble value) {
+
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return false;
+    }
+
+    auto& cpp_execution = ((cse_execution*)execution)->cpp_execution;
+    cpp_execution->set_real_initial_value(slaveIndex, static_cast<cse::value_reference>(vr), value);
+
+    return true;
+
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jintArray values)
 {
     if (manipulator == 0) {
@@ -349,6 +363,20 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* en
     return status;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialIntegerValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jint value) {
+
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return false;
+    }
+
+    auto& cpp_execution = ((cse_execution*)execution)->cpp_execution;
+    cpp_execution->set_integer_initial_value(slaveIndex, static_cast<cse::value_reference>(vr), value);
+
+    return true;
+
+}
+
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jbooleanArray values)
 {
     if (manipulator == 0) {
@@ -373,6 +401,20 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* en
     free(__vr);
 
     return status;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialBooleanValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jboolean value) {
+
+    if (execution == 0) {
+        std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
+        return false;
+    }
+
+    auto& cpp_execution = ((cse_execution*)execution)->cpp_execution;
+    cpp_execution->set_boolean_initial_value(slaveIndex, static_cast<cse::value_reference>(vr), value);
+
+    return true;
+
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jobjectArray values)
@@ -405,17 +447,19 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env
     return status;
 }
 
-JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value) {
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value) {
 
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
-        return;
+        return false;
     }
 
     auto value_ = env->GetStringUTFChars(value, nullptr);
     auto& cpp_execution = ((cse_execution*)execution)->cpp_execution;
-    cpp_execution->set_string_initial_value(slaveIndex, (cse::value_reference)vr, value_);
+    cpp_execution->set_string_initial_value(slaveIndex, static_cast<cse::value_reference>(vr), value_);
     env->ReleaseStringUTFChars(value, value_);
+
+    return true;
 
 }
 
