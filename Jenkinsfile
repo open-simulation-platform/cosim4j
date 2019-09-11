@@ -28,10 +28,12 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                dir('native/build') {
-                                   bat 'conan install . -s build_type=Release --build=missing'
-                                   bat 'cmake -G "Visual Studio 15 2017 Win64" ../native'
-                                   bat 'cmake --build . --config Release'
+                                dir('native') {
+                                   bat 'conan install . -s build_type=Release --install-folder=build --build=missing'
+                                   dir('build') {
+                                       bat 'cmake -G "Visual Studio 15 2017 Win64" ..'
+                                       bat 'cmake --build . --config Release'
+                                   }
                                 }
                             }
                         }
@@ -68,7 +70,7 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                dir('native/build') {
+                                dir('native') {
                                     sh 'conan install . -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing'
                                     sh 'cmake -DCMAKE_BUILD_TYPE=Release ../native'
                                     sh 'cmake --build .'
