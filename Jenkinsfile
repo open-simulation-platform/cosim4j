@@ -30,7 +30,7 @@ pipeline {
                             steps {
                                 dir('build') {
                                    bat 'conan install ../native -s build_type=Release --build=missing'
-                                   bat 'cmake ../native -G "Visual Studio 15 2017 Win64" ../'
+                                   bat 'cmake -G "Visual Studio 15 2017 Win64" ../native'
                                    bat 'cmake --build . --config Release'
                                 }
                             }
