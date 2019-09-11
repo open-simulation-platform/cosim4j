@@ -6,11 +6,13 @@ set(publicHeaders
         "corejni.hpp"
         )
 set(privateHeaders
-        "execution_status_fields.hpp"
         "samples_fields.hpp"
+        "step_event_listener.hpp"
+        "execution_status_fields.hpp"
         )
 set(sources
         "corejni.cpp"
+        "step_event_listener.cpp"
         )
 
 set(publicHeadersFull)

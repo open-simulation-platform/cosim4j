@@ -2,7 +2,6 @@ package org.osp.cse.jni
 
 import org.osp.cse.*
 import org.osp.util.isLinux
-import org.osp.util.isWindows
 import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
 import org.slf4j.Logger
@@ -461,6 +460,8 @@ object CseLibrary {
      * Aborts the execution of a running scenario
      */
     external fun abortScenario(manipulator: cse_manipulator): Boolean
+
+    external fun createStepEventListener(listener: StepEventListener): cse_observer
 
     /**
      *  Installs a global severity level filter for log messages.

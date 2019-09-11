@@ -6,7 +6,7 @@ import java.io.Closeable
 import java.io.File
 
 sealed class CseObserver(
-    protected var observer: cse_observer
+        protected var observer: cse_observer
 ) : Closeable {
 
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
@@ -32,9 +32,17 @@ sealed class CseObserver(
 
 }
 
+interface StepEventListener {
+    fun post()
+}
+
+class CseStepEventListener(
+        observer: cse_observer
+): CseObserver(observer)
+
 class CseFileObserver(
-    observer: cse_observer,
-    val logDir: File
+        observer: cse_observer,
+        val logDir: File
 ) : CseObserver(observer)
 
 class CseTimeSeriesObserver(
@@ -53,7 +61,7 @@ class CseTimeSeriesObserver(
 
 class CseLastValueObserver(
         observer: cse_observer
-): CseObserver(observer) {
+) : CseObserver(observer) {
 
     fun getReal(slaveIndex: Int, vr: Long): Double? {
         return DoubleArray(1).also {
@@ -104,7 +112,7 @@ class CseLastValueObserver(
     fun getBoolean(slave: CseSlave, vr: LongArray, ref: BooleanArray) = getBoolean(slave.index, vr, ref)
 
     fun getString(slaveIndex: Int, vr: Long): String? {
-        return Array<String>(1) {""}.also {
+        return Array<String>(1) { "" }.also {
             if (!CseLibrary.getString(observer, slaveIndex, longArrayOf(vr), it)) {
                 return null
             }

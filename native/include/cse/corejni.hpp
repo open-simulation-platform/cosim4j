@@ -123,6 +123,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setupSimpleConsoleLog
 
 JNIEXPORT void JNICALL Java_org_osp_cse_jni_CseLibrary_setLogLevel(JNIEnv* env, jobject obj, jint level);
 
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createStepEventListener(JNIEnv* env, jobject obj, jobject listener);
+
 #ifdef __cplusplus
 }
 #endif

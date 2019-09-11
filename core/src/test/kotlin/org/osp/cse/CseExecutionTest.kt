@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CseExecutionTest {
 
@@ -80,6 +81,26 @@ class CseExecutionTest {
 
         }
 
+    }
+
+    @Test
+    fun testStepEvent() {
+
+        CseExecution.create(1.0 / 100).use { execution ->
+
+            val stepCalled = AtomicBoolean(false)
+
+            execution.addStepEventListener(object: StepEventListener{
+                override fun post() {
+                   stepCalled.set(true)
+                }
+            })
+
+            execution.step(1)
+
+            Assertions.assertTrue(stepCalled.get())
+
+        }
     }
 
 }

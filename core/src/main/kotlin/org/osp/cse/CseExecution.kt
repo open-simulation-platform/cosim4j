@@ -156,6 +156,14 @@ class CseExecution private constructor(
         }
     }
 
+    fun addStepEventListener(listener: StepEventListener): CseStepEventListener {
+        val observer = CseLibrary.createStepEventListener(listener)
+        CseLibrary.addObserver(execution, observer)
+        return CseStepEventListener(observer).also {
+            observers.add(it)
+        }
+    }
+
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Double) {
         CseLibrary.setInitialRealValue(execution,slaveIndex, vr, value);
     }
