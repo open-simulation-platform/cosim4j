@@ -13,6 +13,10 @@ subprojects {
 def win = new File(rootDir, "natives-win/src/main/resources/native/win")
 if (win.exists()) {
     println(Arrays.asList(win.list()))
+    def rel = new File(win, "Release")
+    if (rel.exists()) {
+        println(Arrays.asList(rel.list()))
+    }
 }
 
 def linux = new File(rootDir, "natives-linux/src/main/resources/native/linux")
