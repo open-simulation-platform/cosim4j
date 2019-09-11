@@ -71,9 +71,11 @@ pipeline {
                         stage('Build-native') {
                             steps {
                                 dir('native') {
-                                    sh 'conan install . -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing'
-                                    sh 'cmake -DCMAKE_BUILD_TYPE=Release ../native'
-                                    sh 'cmake --build .'
+                                    sh 'conan install . -s compiler.libcxx=libstdc++11 -s build_type=Release --install-folder=build --build=missing'
+                                    dir ('build') {
+                                        sh 'cmake -DCMAKE_BUILD_TYPE=Release ..'
+                                        sh 'cmake --build .'
+                                    }
                                 }
                             }
                         }
