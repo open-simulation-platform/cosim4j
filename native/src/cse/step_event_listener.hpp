@@ -2,9 +2,16 @@
 #ifndef CSECOREJNI_STEP_EVENT_LISTENER_HPP
 #define CSECOREJNI_STEP_EVENT_LISTENER_HPP
 
-#include <cse/observer.hpp>
-
 #include <jni.h>
+
+#include <mutex>
+#include <thread>
+#include <functional>
+#include <condition_variable>
+
+#include <cse/observer.hpp>
+//#include <cse/reuseable_thread.hpp>
+
 
 namespace cse
 {
@@ -28,6 +35,17 @@ private:
     JavaVM* jvm_;
     jmethodID mid_;
     jobject listener_;
+
+    bool stop_ = false;
+    bool ready_ = false;
+    bool processed_ = false;
+
+    std::mutex m_;
+    std::thread worker_;
+    std::condition_variable cv_;
+
+    void listen();
+    void callback();
 
 };
 

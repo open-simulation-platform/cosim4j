@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicLong
 
 class CseExecutionTest {
 
@@ -88,17 +88,39 @@ class CseExecutionTest {
 
         CseExecution.create(1.0 / 100).use { execution ->
 
-            val stepCalled = AtomicBoolean(false)
-
+            val counter = AtomicLong(0)
             execution.addStepEventListener(object: StepEventListener{
                 override fun post() {
-                   stepCalled.set(true)
+                   counter.getAndIncrement()
                 }
             })
 
-            execution.step(1)
+            val numSteps = 10L
+            execution.step(numSteps)
+            Assertions.assertEquals(numSteps, counter.get())
 
-            Assertions.assertTrue(stepCalled.get())
+        }
+    }
+
+    @Test
+    fun testStepEvent2() {
+
+        CseExecution.create(1.0/100).use { execution ->
+
+            execution.addSlave(testFmu)
+
+            val counter = AtomicLong(0)
+            execution.addStepEventListener(object: StepEventListener{
+                override fun post() {
+                    counter.getAndIncrement()
+                }
+            })
+
+            execution.start()
+            Thread.sleep(100)
+            execution.stop()
+
+            Assertions.assertTrue(counter.get() > 10)
 
         }
     }
