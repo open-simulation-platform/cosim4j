@@ -6,12 +6,9 @@
 
 #include <mutex>
 #include <thread>
-#include <functional>
 #include <condition_variable>
 
 #include <cse/observer.hpp>
-//#include <cse/reuseable_thread.hpp>
-
 
 namespace cse
 {
