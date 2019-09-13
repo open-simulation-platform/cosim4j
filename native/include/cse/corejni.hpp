@@ -51,19 +51,19 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv*
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jdoubleArray values);
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialRealValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jdouble value);
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialRealValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jdouble value);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jintArray values);
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialIntegerValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jint value);
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialIntegerValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jint value);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jbooleanArray values);
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialBooleanValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jboolean value);
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialBooleanValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jboolean value);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr, jobjectArray values);
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value);
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jstring value);
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_resetSlave(JNIEnv* env, jobject obj, jlong manipulator, jint slaveIndex, jlongArray vr);
 

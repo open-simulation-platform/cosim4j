@@ -329,9 +329,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv* env, 
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialRealValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jdouble value)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialRealValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jdouble value)
 {
-
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
@@ -369,9 +368,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* en
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialIntegerValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jint value)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialIntegerValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jint value)
 {
-
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
@@ -409,9 +407,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* en
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialBooleanValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jboolean value)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialBooleanValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jboolean value)
 {
-
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
@@ -453,9 +450,8 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jobject execution, jint slaveIndex, jlong vr, jstring value)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInitialStringValue(JNIEnv* env, jobject obj, jlong execution, jint slaveIndex, jlong vr, jstring value)
 {
-
     if (execution == 0) {
         std::cerr << "[JNI-wrapper] Error: execution is NULL" << std::endl;
         return false;
