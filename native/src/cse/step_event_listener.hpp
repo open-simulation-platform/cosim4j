@@ -44,6 +44,23 @@ private:
     void callback();
 };
 
+
+inline void step_event_listener::simulator_added(simulator_index index, observable* observable, time_point point)
+{
+}
+inline void step_event_listener::simulator_removed(simulator_index index, time_point point)
+{
+}
+inline void step_event_listener::variables_connected(variable_id output, variable_id input, time_point point)
+{
+}
+inline void step_event_listener::variable_disconnected(variable_id input, time_point point)
+{
+}
+inline void step_event_listener::simulator_step_complete(simulator_index index, step_number lastStep, duration lastStepSize, time_point currentTime)
+{
+}
+
 } // namespace cse
 
 

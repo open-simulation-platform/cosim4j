@@ -9,20 +9,6 @@ sealed class CseObserver(
         protected var observerPtr: ObserverPtr
 ) : Closeable {
 
-    fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
-        return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbersForDuration(observerPtr, slave.index, duration, steps)
-            steps[0] to steps[1]
-        }
-    }
-
-    fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
-        return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbers(observerPtr, slave.index, begin, end, steps)
-            steps[0] to steps[1]
-        }
-    }
-
     override fun close() {
         if (observerPtr != 0L) {
             CseLibrary.destroyObserver(observerPtr)
@@ -55,6 +41,20 @@ class CseTimeSeriesObserver(
 
     fun stopObserving(): Boolean {
         return CseLibrary.stopObserving(observerPtr)
+    }
+
+    fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
+        return LongArray(2).let { steps ->
+            CseLibrary.getStepNumbersForDuration(observerPtr, slave.index, duration, steps)
+            steps[0] to steps[1]
+        }
+    }
+
+    fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
+        return LongArray(2).let { steps ->
+            CseLibrary.getStepNumbers(observerPtr, slave.index, begin, end, steps)
+            steps[0] to steps[1]
+        }
     }
 
 }

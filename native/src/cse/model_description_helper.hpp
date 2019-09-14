@@ -60,4 +60,4 @@ jobject create_model_description(JNIEnv* env, jlong executionPtr, jint slaveInde
 
 } // namespace
 
-#endif //CSECOREJNI_MODEL_DESCRIPTION_HELPER_HPP
+#endif

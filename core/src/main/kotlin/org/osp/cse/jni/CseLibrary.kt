@@ -20,39 +20,7 @@ object CseLibrary {
 
     private val LOG: Logger = LoggerFactory.getLogger(CseLibrary::class.java)
 
-    /**
-     *  Returns the error code associated with the last reported error.
-     *
-     *  Most functions in this library will indicate that an error occurred by
-     *  returning -1 or `NULL`, after which this function can be called to
-     *  obtain more detailed information about the problem.
-     *
-     *  This function must be called from the thread in which the error occurred,
-     *  and before any new calls to functions in this library (with the exception
-     *  of `cse_last_error_message()`).
-     *
-     *  @return The error code associated with the last reported error.
-     */
-    fun getLastErrorCode(): CseErrorCode {
-        return CseErrorCode.valueOf(getLastErrorCode_())
-    }
-
-    /**
-     *  Returns a textual description of the last reported error.
-     *
-     *  Most functions in this library will indicate that an error occurred by
-     *  returning -1 or `NULL`, after which this function can be called to
-     *  obtain more detailed information about the problem.
-     *
-     *  This function must be called create the thread in which the error occurred,
-     *  and before any new calls to functions in this library (with the exception
-     *  of `cse_last_error_code()`).
-     *
-     * @return A textual description of the last reported error.
-     * The pointer is only guaranteed to remain valid until the next time a function
-     * in this library is called (with the exception of `cse_last_error_code()`).
-     */
-    external fun getLastErrorMessage(): String
+    external fun getLastError(): CseError
 
     /**
      * Creates a new execution.
@@ -466,20 +434,6 @@ object CseLibrary {
     external fun getModelDescription(execution: ExecutionPtr, slaveIndex: Int): CseModelDescription
 
     /**
-     *  Installs a global severity level filter for log messages.
-     *
-     *  This function sets up a log message filter which ensures that only messages
-     *  whose severity level is at least `level` will be printed.
-     *
-     *  @param level The minimum visible severity level.
-     */
-    fun setLogLevel(level: CseLogLevel) {
-        setLogLevel(level.code)
-    }
-
-    private external fun getLastErrorCode_(): NativeErrorCode
-
-    /**
      *  Configures simple console logging.
      *
      *  Note that the library may produce log messages before this function is
@@ -491,6 +445,18 @@ object CseLibrary {
     private external fun setupSimpleConsoleLogging(): Boolean
 
     private external fun setLogLevel(level: Int): Boolean
+
+    /**
+     *  Installs a global severity level filter for log messages.
+     *
+     *  This function sets up a log message filter which ensures that only messages
+     *  whose severity level is at least `level` will be printed.
+     *
+     *  @param level The minimum visible severity level.
+     */
+    fun setLogLevel(level: CseLogLevel) {
+        setLogLevel(level.code)
+    }
 
 
     init {

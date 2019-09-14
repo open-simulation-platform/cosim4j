@@ -1,15 +1,13 @@
 
-#include <cse/corejni.hpp>
 #include <cse/execution.hpp>
 #include <cse/execution_status_fields.hpp>
 #include <cse/model.hpp>
 #include <cse/model_description_helper.hpp>
 #include <cse/samples_fields.hpp>
 #include <cse/slave_infos_helper.hpp>
-#include <cse/ssp_parser.hpp>
 #include <cse/step_event_listener.hpp>
-#include <cse/structs.hpp>
 #include <cse/unit_conversion.hpp>
+#include <cse/error_helper.hpp>
 
 #include <atomic>
 #include <iostream>
@@ -21,15 +19,9 @@
 extern "C" {
 #endif
 
-JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorCode(JNIEnv* env, jobject obj)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getLastError(JNIEnv* env, jobject obj)
 {
-    return cse_last_error_code();
-}
-
-JNIEXPORT jstring JNICALL Java_org_osp_cse_jni_CseLibrary_getLastErrorMessage(JNIEnv* env, jobject obj)
-{
-    const char* msg = cse_last_error_message();
-    return env->NewStringUTF(msg);
+    return create_error(env);
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv* env, jobject obj, jdouble startTime, jdouble stepSize)

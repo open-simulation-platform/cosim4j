@@ -18,7 +18,7 @@ class CseExecution private constructor(
 
     init {
         getSlaveInfos().forEach {
-            slaves.add(CseSlave(it.index, it.name, 0L, executionPtr))
+            slaves.add(CseSlave(it.index, it.name, executionPtr))
         }
     }
 
@@ -34,13 +34,20 @@ class CseExecution private constructor(
         return slaves.find { it.name == name }
     }
 
-    fun addSlave(fmuPath: File): CseSlave {
+    fun addSlave(fmuPath: File): CseSlave? {
         return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
-            val index = CseLibrary.addSlave(executionPtr, slave)
-            val name = getSlaveInfos().find { it.index == index }!!.name
-            CseSlave(index, name, slave, executionPtr).also {
-                slaves.add(it)
+
+            if (slave != 0L) {
+                val index = CseLibrary.addSlave(executionPtr, slave)
+                val name = getSlaveInfos().find { it.index == index }!!.name
+                CseLocalSlave(index, name, executionPtr, slave).also {
+                    slaves.add(it)
+                }
+            } else {
+                LOG.error("Failed to add slave! Last reported error=${CseLibrary.getLastError()}")
+                null
             }
+
         }
     }
 
@@ -90,19 +97,24 @@ class CseExecution private constructor(
     }
 
     fun getSlaveInfos(): List<CseSlaveInfo> {
-        return  CseLibrary.getSlaveInfos(executionPtr)
+        return CseLibrary.getSlaveInfos(executionPtr)
     }
 
-    fun addLastValueObserver(): CseLastValueObserver {
+    fun addLastValueObserver(): CseLastValueObserver? {
         val observer = CseLibrary.createLastValueObserver()
-        CseLibrary.addObserver(executionPtr, observer)
-        return CseLastValueObserver(observer).also {
-            observers.add(it)
+        return if (CseLibrary.addObserver(executionPtr, observer)) {
+            CseLastValueObserver(observer).also {
+                observers.add(it)
+            }
+        } else {
+            LOG.error("Failed to add last value observer! Last reported error=${CseLibrary.getLastError()}")
+            null
         }
+
     }
 
     @JvmOverloads
-    fun addFileObserver(logDir: File, cfgFile: File? = null): CseFileObserver {
+    fun addFileObserver(logDir: File, cfgFile: File? = null): CseFileObserver? {
         if (!logDir.exists()) {
             logDir.mkdirs()
         }
@@ -111,71 +123,94 @@ class CseExecution private constructor(
         } else {
             CseLibrary.createFileObserverFromCfg(logDir.absolutePath, cfgFile.absolutePath)
         }
-        CseLibrary.addObserver(executionPtr, observer)
-        return CseFileObserver(observer, logDir).also {
-            observers.add(it)
+        return if (CseLibrary.addObserver(executionPtr, observer)) {
+            CseFileObserver(observer, logDir).also {
+                observers.add(it)
+            }
+        } else {
+            LOG.error("Failed to add file observer! Last reported error=${CseLibrary.getLastError()}")
+            null
         }
     }
 
     @JvmOverloads
-    fun addTimeSeriesObserver(bufferSize: Int? = null): CseTimeSeriesObserver {
+    fun addTimeSeriesObserver(bufferSize: Int? = null): CseTimeSeriesObserver? {
         val observer = if (bufferSize == null) {
             CseLibrary.createTimeSeriesObserver()
         } else {
             CseLibrary.createTimeSeriesObserver(bufferSize)
         }
-        CseLibrary.addObserver(executionPtr, observer)
-        return CseTimeSeriesObserver(observer).also {
-            observers.add(it)
-        }
-    }
-
-    fun addOverrideManipulator(): CseOverrideManipulator {
-        val manipulator = CseLibrary.createOverrideManipulator()
-        CseLibrary.addManipulator(executionPtr, manipulator)
-        return CseOverrideManipulator(manipulator).also {
-            manipulators.add(it)
-        }
-    }
-
-    fun loadScenario(scenarioFile: File): CseScenario {
-        val scenarioManager = CseLibrary.createScenarioManager()
-        CseLibrary.addManipulator(executionPtr, scenarioManager)
-        CseLibrary.loadScenario(executionPtr, scenarioManager, scenarioFile.absolutePath).also { success ->
-            if (success) {
-                LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
-            } else {
-                LOG.error("Error loading scenario '${scenarioFile.name}'!")
+        return if (CseLibrary.addObserver(executionPtr, observer)) {
+            CseTimeSeriesObserver(observer).also {
+                observers.add(it)
             }
-
-        }
-        return CseScenario(scenarioManager).also {
-            manipulators.add(it)
+        } else {
+            LOG.error("Failed to add time series observer! Last reported error=${CseLibrary.getLastError()}")
+            null
         }
     }
 
-    fun addStepEventListener(listener: StepEventListener): CseStepEventListener {
-        val observer = CseLibrary.createStepEventListener(listener)
-        CseLibrary.addObserver(executionPtr, observer)
-        return CseStepEventListener(observer).also {
-            observers.add(it)
+    fun addOverrideManipulator(): CseOverrideManipulator? {
+        val manipulator = CseLibrary.createOverrideManipulator()
+        return if (CseLibrary.addManipulator(executionPtr, manipulator)) {
+            CseOverrideManipulator(manipulator).also {
+                manipulators.add(it)
+            }
+        } else {
+            LOG.error("Failed to add override manipulator! Last reported error=${CseLibrary.getLastError()}")
+            null
         }
+
+    }
+
+    fun loadScenario(scenarioFile: File): CseScenario? {
+        val scenarioManager = CseLibrary.createScenarioManager()
+        return if (CseLibrary.addManipulator(executionPtr, scenarioManager)) {
+            CseLibrary.loadScenario(executionPtr, scenarioManager, scenarioFile.absolutePath).also { success ->
+                if (success) {
+                    LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
+                } else {
+                    LOG.error("Error loading scenario '${scenarioFile.name}'! Last reported error=${CseLibrary.getLastError()}")
+                }
+
+            }
+            CseScenario(scenarioManager).also {
+                manipulators.add(it)
+            }
+        } else {
+            LOG.error("Failed add scenario manager! Last reported error=${CseLibrary.getLastError()}")
+            null
+        }
+
+    }
+
+    fun addStepEventListener(listener: StepEventListener): CseStepEventListener? {
+        val observer = CseLibrary.createStepEventListener(listener)
+        return if (CseLibrary.addObserver(executionPtr, observer)) {
+            CseStepEventListener(observer).also {
+                observers.add(it)
+            }
+        } else {
+            LOG.error("Failed add scenario manager! Last reported error=${CseLibrary.getLastError()}")
+            null
+        }
+
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Double) {
-        CseLibrary.setInitialRealValue(executionPtr,slaveIndex, vr, value);
+        CseLibrary.setInitialRealValue(executionPtr, slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Int) {
-        CseLibrary.setInitialIntegerValue(executionPtr,slaveIndex, vr, value);
+        CseLibrary.setInitialIntegerValue(executionPtr, slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Boolean) {
-        CseLibrary.setInitialBooleanValue(executionPtr,slaveIndex, vr, value);
+        CseLibrary.setInitialBooleanValue(executionPtr, slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: String) {
-        CseLibrary.setInitialStringValue(executionPtr,slaveIndex, vr, value);
+        CseLibrary.setInitialStringValue(executionPtr, slaveIndex, vr, value);
     }
 
     override fun close() {
@@ -254,6 +289,31 @@ class CseExecutionStatus {
 
     override fun toString(): String {
         return "CseExecutionStatus(currentTime=$currentTime, state=$state, errorCode=$errorCode, realTimeFactor=$realTimeFactor, isRealTimeSimulation=$realTimeSimulation)"
+    }
+
+}
+
+
+enum class CseExecutionState(
+        private val code: Int
+) {
+    UNKNOWN(-1),
+    STOPPED(0),
+    RUNNING(1),
+    ERROR(2);
+
+    companion object {
+
+        @JvmStatic
+        fun valueOf(i: Int): CseExecutionState {
+            for (state in values()) {
+                if (i == state.code) {
+                    return state
+                }
+            }
+            throw java.lang.IllegalArgumentException("$i not in range of ${values().map { it.code }}")
+        }
+
     }
 
 }

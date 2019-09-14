@@ -1,35 +1,10 @@
 
-set(publicHeaderDir "${CMAKE_SOURCE_DIR}/include/cse")
-set(privateHeaderDir "${CMAKE_CURRENT_SOURCE_DIR}/cse")
-
-set(publicHeaders
-        "corejni.hpp"
-        )
-set(privateHeaders
-        "execution_status_fields.hpp"
-        "model_description_helper.hpp"
-        "samples_fields.hpp"
-        "slave_infos_helper.hpp"
-        "step_event_listener.hpp"
-        "structs.hpp"
-        "unit_conversion.hpp"
-        )
 set(sources
         "corejni.cpp"
         "step_event_listener.cpp"
         )
 
-set(publicHeadersFull)
-foreach (h IN LISTS publicHeaders)
-  list(APPEND publicHeadersFull "${publicHeaderDir}/${h}")
-endforeach ()
-set(privateHeadersFull)
-foreach (h IN LISTS privateHeaders)
-  list(APPEND privateHeadersFull "${privateHeaderDir}/${h}")
-endforeach ()
-set(allSources ${publicHeadersFull} ${privateHeadersFull} ${sources})
-
-add_library(csecorejni ${allSources})
+add_library(csecorejni ${sources})
 target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_compile_features(csecorejni PUBLIC "cxx_std_17")
 target_include_directories(csecorejni

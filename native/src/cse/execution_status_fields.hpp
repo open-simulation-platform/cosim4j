@@ -1,6 +1,9 @@
 
-#include <iostream>
-#include <jni.h>
+#ifndef CSECOREJNI_EXECUTION_STATUS_FIELDS_HPP
+#define CSECOREJNI_EXECUTION_STATUS_FIELDS_HPP
+
+#    include <iostream>
+#    include <jni.h>
 
 namespace
 {
@@ -45,3 +48,5 @@ inline void init_execution_status_fields(JNIEnv* env)
 }
 
 } // namespace
+
+#endif

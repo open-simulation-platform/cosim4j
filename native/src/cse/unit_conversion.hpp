@@ -4,6 +4,9 @@
 
 #include <cse.h>
 
+namespace
+{
+
 const double sec2nano = 1e9;
 const double nano2sec = 1.0 / sec2nano;
 
@@ -21,5 +24,7 @@ double to_seconds(int64_t duration)
 {
     return static_cast<double>(duration) * nano2sec;
 }
+
+} // namespace
 
 #endif

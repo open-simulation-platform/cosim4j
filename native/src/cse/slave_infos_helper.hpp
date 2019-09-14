@@ -1,6 +1,3 @@
-//
-// Created by LarsIvar on 13.09.2019.
-//
 
 #ifndef CSECOREJNI_SLAVE_INFOS_HELPER_HPP
 #define CSECOREJNI_SLAVE_INFOS_HELPER_HPP
@@ -25,21 +22,27 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
     jmethodID infoCtor = env->GetMethodID(infoCls, "<init>", "(ILjava/lang/String;Ljava/lang/String;)V");
 
     const auto size = execution->get_num_slaves();
+    auto* infos = (cse_slave_info*)malloc(sizeof(cse_slave_info) * size);
+    bool status = cse_execution_get_slave_infos((cse_execution*)execution, infos, size) == 0;
 
-    auto ids = execution->simulators;
-    auto list = env->NewObject(listCls, listCtor, size);
-    for (const auto& [name, entry] : ids) {
+    jobject list = nullptr;
+    if (status) {
 
-        auto info = env->NewObject(
-            infoCls,
-            infoCtor,
-            entry.index,
-            env->NewStringUTF(name.c_str()),
-            env->NewStringUTF(entry.source.c_str()));
+        list = env->NewObject(listCls, listCtor, size);
+        for (int i = 0; i < size; i++) {
+            auto info = env->NewObject(
+                infoCls,
+                infoCtor,
+                infos[i].index,
+                env->NewStringUTF(infos[i].name),
+                env->NewStringUTF(infos[i].source));
 
-        env->CallBooleanMethod(list, addId, info);
+            env->CallBooleanMethod(list, addId, info);
+        }
+
     }
 
+    free(infos);
     return list;
 }
 

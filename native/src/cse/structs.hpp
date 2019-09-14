@@ -16,9 +16,6 @@ struct cse_execution_s
 {
     cse::simulator_map simulators;
     std::unique_ptr<cse::execution> cpp_execution;
-    std::thread t;
-    std::atomic<cse_execution_state> state;
-    int error_code;
 
     size_t get_num_slaves()
     {

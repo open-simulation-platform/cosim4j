@@ -96,22 +96,3 @@ cse::step_event_listener::~step_event_listener()
         jvm_->DetachCurrentThread();
     }
 }
-
-
-////
-
-void cse::step_event_listener::simulator_added(cse::simulator_index index, cse::observable* observable, cse::time_point point)
-{
-}
-void cse::step_event_listener::simulator_removed(cse::simulator_index index, cse::time_point point)
-{
-}
-void cse::step_event_listener::variables_connected(cse::variable_id output, cse::variable_id input, cse::time_point point)
-{
-}
-void cse::step_event_listener::variable_disconnected(cse::variable_id input, cse::time_point point)
-{
-}
-void cse::step_event_listener::simulator_step_complete(cse::simulator_index index, cse::step_number lastStep, cse::duration lastStepSize, cse::time_point currentTime)
-{
-}

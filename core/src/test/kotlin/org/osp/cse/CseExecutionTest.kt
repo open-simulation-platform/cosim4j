@@ -2,6 +2,7 @@ package org.osp.cse
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.osp.cse.jni.CseLibrary
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -51,7 +52,7 @@ class CseExecutionTest {
             val logDir = File("build/results")
             execution.addFileObserver(logDir)
 
-            val slave = execution.addSlave(testFmu)
+            val slave = execution.addSlave(testFmu)!!
             slave.modelDescription.variables.also {
 
                 Assertions.assertEquals(19, it[0].valueReference)
@@ -66,7 +67,7 @@ class CseExecutionTest {
 
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
 
-            execution.addLastValueObserver().use { observer ->
+            execution.addLastValueObserver()!!.use { observer ->
 
                 observer.getReal(slave.index, 1).also {
                     Assertions.assertEquals(298.0, it)
