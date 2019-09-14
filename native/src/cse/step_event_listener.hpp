@@ -2,13 +2,12 @@
 #ifndef CSECOREJNI_STEP_EVENT_LISTENER_HPP
 #define CSECOREJNI_STEP_EVENT_LISTENER_HPP
 
-#include <jni.h>
+#include <cse/observer.hpp>
 
+#include <condition_variable>
+#include <jni.h>
 #include <mutex>
 #include <thread>
-#include <condition_variable>
-
-#include <cse/observer.hpp>
 
 namespace cse
 {
@@ -26,7 +25,7 @@ public:
     void step_complete(step_number lastStep, duration lastStepSize, time_point currentTime) override;
     void simulator_step_complete(simulator_index index, step_number lastStep, duration lastStepSize, time_point currentTime) override;
 
-    ~step_event_listener();
+    ~step_event_listener() override;
 
 private:
     JavaVM* jvm_;
@@ -43,7 +42,6 @@ private:
 
     void listen();
     void callback();
-
 };
 
 } // namespace cse

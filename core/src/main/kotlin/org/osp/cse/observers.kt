@@ -1,32 +1,32 @@
 package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
-import org.osp.cse.jni.cse_observer
+import org.osp.cse.jni.ObserverPtr
 import java.io.Closeable
 import java.io.File
 
 sealed class CseObserver(
-        protected var observer: cse_observer
+        protected var observerPtr: ObserverPtr
 ) : Closeable {
 
     fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbersForDuration(observer, slave.index, duration, steps)
+            CseLibrary.getStepNumbersForDuration(observerPtr, slave.index, duration, steps)
             steps[0] to steps[1]
         }
     }
 
     fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbers(observer, slave.index, begin, end, steps)
+            CseLibrary.getStepNumbers(observerPtr, slave.index, begin, end, steps)
             steps[0] to steps[1]
         }
     }
 
     override fun close() {
-        if (observer != 0L) {
-            CseLibrary.destroyObserver(observer)
-            observer = 0L
+        if (observerPtr != 0L) {
+            CseLibrary.destroyObserver(observerPtr)
+            observerPtr = 0L
         }
     }
 
@@ -37,35 +37,35 @@ interface StepEventListener {
 }
 
 class CseStepEventListener(
-        observer: cse_observer
+        observer: ObserverPtr
 ): CseObserver(observer)
 
 class CseFileObserver(
-        observer: cse_observer,
+        observer: ObserverPtr,
         val logDir: File
 ) : CseObserver(observer)
 
 class CseTimeSeriesObserver(
-        observer: cse_observer
+        observer: ObserverPtr
 ) : CseObserver(observer) {
 
     fun startObserver(): Boolean {
-        return CseLibrary.startObserving(observer)
+        return CseLibrary.startObserving(observerPtr)
     }
 
     fun stopObserving(): Boolean {
-        return CseLibrary.stopObserving(observer)
+        return CseLibrary.stopObserving(observerPtr)
     }
 
 }
 
 class CseLastValueObserver(
-        observer: cse_observer
+        observer: ObserverPtr
 ) : CseObserver(observer) {
 
     fun getReal(slaveIndex: Int, vr: Long): Double? {
         return DoubleArray(1).also {
-            if (!CseLibrary.getReal(observer, slaveIndex, longArrayOf(vr), it)) {
+            if (!CseLibrary.getReal(observerPtr, slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
@@ -74,14 +74,14 @@ class CseLastValueObserver(
     fun getReal(slave: CseSlave, vr: Long) = getReal(slave.index, vr)
 
     fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
-        return CseLibrary.getReal(observer, slaveIndex, vr, ref)
+        return CseLibrary.getReal(observerPtr, slaveIndex, vr, ref)
     }
 
     fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray) = getReal(slave.index, vr, ref)
 
     fun getInteger(slaveIndex: Int, vr: Long): Int? {
         return IntArray(1).also {
-            if (!CseLibrary.getInteger(observer, slaveIndex, longArrayOf(vr), it)) {
+            if (!CseLibrary.getInteger(observerPtr, slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
@@ -90,14 +90,14 @@ class CseLastValueObserver(
     fun getInteger(slave: CseSlave, vr: Long) = getInteger(slave.index, vr)
 
     fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
-        return CseLibrary.getInteger(observer, slaveIndex, vr, ref)
+        return CseLibrary.getInteger(observerPtr, slaveIndex, vr, ref)
     }
 
     fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray) = getInteger(slave.index, vr, ref)
 
     fun getBoolean(slaveIndex: Int, vr: Long): Boolean? {
         return BooleanArray(1).also {
-            if (!CseLibrary.getBoolean(observer, slaveIndex, longArrayOf(vr), it)) {
+            if (!CseLibrary.getBoolean(observerPtr, slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
@@ -106,14 +106,14 @@ class CseLastValueObserver(
     fun getBoolean(slave: CseSlave, vr: Long) = getBoolean(slave.index, vr)
 
     fun getBoolean(slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean {
-        return CseLibrary.getBoolean(observer, slaveIndex, vr, ref)
+        return CseLibrary.getBoolean(observerPtr, slaveIndex, vr, ref)
     }
 
     fun getBoolean(slave: CseSlave, vr: LongArray, ref: BooleanArray) = getBoolean(slave.index, vr, ref)
 
     fun getString(slaveIndex: Int, vr: Long): String? {
         return Array<String>(1) { "" }.also {
-            if (!CseLibrary.getString(observer, slaveIndex, longArrayOf(vr), it)) {
+            if (!CseLibrary.getString(observerPtr, slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
@@ -122,7 +122,7 @@ class CseLastValueObserver(
     fun getString(slave: CseSlave, vr: Long) = getString(slave.index, vr)
 
     fun getString(slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean {
-        return CseLibrary.getString(observer, slaveIndex, vr, ref)
+        return CseLibrary.getString(observerPtr, slaveIndex, vr, ref)
     }
 
     fun getString(slave: CseSlave, vr: LongArray, ref: Array<String>) = getString(slave.index, vr, ref)
@@ -130,7 +130,7 @@ class CseLastValueObserver(
 
     fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
         return CseRealSamples().also {
-            CseLibrary.getRealSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+            CseLibrary.getRealSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples, it)
         }
     }
 
@@ -138,7 +138,7 @@ class CseLastValueObserver(
 
     fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
         return CseIntegerSamples().also {
-            CseLibrary.getIntegerSamples(observer, slaveIndex, vr, stepNumber, nSamples, it)
+            CseLibrary.getIntegerSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples, it)
         }
     }
 

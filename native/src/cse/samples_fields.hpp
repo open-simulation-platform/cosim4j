@@ -4,7 +4,7 @@
 namespace
 {
 
-struct CseRealSamplesFields
+struct real_samples_fields
 {
     jfieldID valuesId;
     jfieldID timesId;
@@ -14,31 +14,30 @@ struct CseRealSamplesFields
     bool initialized = false;
 };
 
-CseRealSamplesFields cseRealSamplesFields;
+real_samples_fields realSamplesFields;
 
-inline void initCseRealSamplesFields(JNIEnv* env)
+inline void init_real_samples_fields(JNIEnv* env)
 {
 
-    if (!cseRealSamplesFields.initialized) {
+    if (!realSamplesFields.initialized) {
 
         const char* className = "org/osp/cse/CseRealSamples";
         jclass cls = env->FindClass(className);
 
-        if (cls == 0) {
-            std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'"
-                      << std::endl;
+        if (cls == nullptr) {
+            std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'" << std::endl;
         }
 
-        cseRealSamplesFields.valuesId = env->GetFieldID(cls, "values", "[D");
-        cseRealSamplesFields.timesId = env->GetFieldID(cls, "times", "[D");
-        cseRealSamplesFields.stepsId = env->GetFieldID(cls, "steps", "[J");
-        cseRealSamplesFields.sizeId = env->GetFieldID(cls, "size", "I");
+        realSamplesFields.valuesId = env->GetFieldID(cls, "values", "[D");
+        realSamplesFields.timesId = env->GetFieldID(cls, "times", "[D");
+        realSamplesFields.stepsId = env->GetFieldID(cls, "steps", "[J");
+        realSamplesFields.sizeId = env->GetFieldID(cls, "size", "I");
 
-        cseRealSamplesFields.initialized = true;
+        realSamplesFields.initialized = true;
     }
 }
 
-struct CseIntegerSamplesFields
+struct integer_samples_fields
 {
     jfieldID valuesId;
     jfieldID timesId;
@@ -48,27 +47,27 @@ struct CseIntegerSamplesFields
     bool initialized = false;
 };
 
-CseIntegerSamplesFields cseIntegerSamplesFields;
+integer_samples_fields integerSamplesFields;
 
-inline void initCseIntegerSamplesFields(JNIEnv* env)
+inline void init_integer_samples_fields(JNIEnv* env)
 {
 
-    if (!cseIntegerSamplesFields.initialized) {
+    if (!integerSamplesFields.initialized) {
 
         const char* className = "org/osp/cse/CseIntegerSamples";
         jclass cls = env->FindClass(className);
 
-        if (cls == 0) {
+        if (cls == nullptr) {
             std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'"
                       << std::endl;
         }
 
-        cseIntegerSamplesFields.valuesId = env->GetFieldID(cls, "values", "[I");
-        cseIntegerSamplesFields.timesId = env->GetFieldID(cls, "times", "[D");
-        cseIntegerSamplesFields.stepsId = env->GetFieldID(cls, "steps", "[J");
-        cseIntegerSamplesFields.sizeId = env->GetFieldID(cls, "size", "I");
+        integerSamplesFields.valuesId = env->GetFieldID(cls, "values", "[I");
+        integerSamplesFields.timesId = env->GetFieldID(cls, "times", "[D");
+        integerSamplesFields.stepsId = env->GetFieldID(cls, "steps", "[J");
+        integerSamplesFields.sizeId = env->GetFieldID(cls, "size", "I");
 
-        cseRealSamplesFields.initialized = true;
+        integerSamplesFields.initialized = true;
     }
 }
 

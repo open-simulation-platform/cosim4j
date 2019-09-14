@@ -15,7 +15,7 @@ class Demo {
             CseSlave mySlave = execution.getSlave("mySlave");
             int index = mySlave.getIndex();
 
-            CseVariableDescription myVar = mySlave.getVariable("myVar");
+            CseVariableDescription myVar = mySlave.getModelDescription().getVariable("myVar");
             long vr = myVar.getValueReference();
 
             execution.addFileObserver(new File("results"));

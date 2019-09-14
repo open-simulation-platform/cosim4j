@@ -5,7 +5,7 @@
 namespace
 {
 
-struct CseExecutionStatusFields
+struct execution_status_fields
 {
     jfieldID stateId;
     jfieldID errorId;
@@ -16,32 +16,32 @@ struct CseExecutionStatusFields
     bool initialized = false;
 };
 
-CseExecutionStatusFields cseExecutionStatusFields;
+execution_status_fields executionStatusFields;
 
-inline void initCseExecutionStatusFields(JNIEnv* env)
+inline void init_execution_status_fields(JNIEnv* env)
 {
 
-    if (!cseExecutionStatusFields.initialized) {
+    if (!executionStatusFields.initialized) {
 
         const char* className = "org/osp/cse/CseExecutionStatus";
         jclass cls = env->FindClass(className);
 
-        if (cls == 0) {
+        if (cls == nullptr) {
             std::cerr << "[JNI-wrapper] Error: Could not locate '" << className << "'"
                       << std::endl;
         }
 
-        cseExecutionStatusFields.stateId = env->GetFieldID(cls, "stateId", "I");
-        cseExecutionStatusFields.errorId = env->GetFieldID(cls, "errorCodeId", "I");
-        cseExecutionStatusFields.currentTimeId =
+        executionStatusFields.stateId = env->GetFieldID(cls, "stateId", "I");
+        executionStatusFields.errorId = env->GetFieldID(cls, "errorCodeId", "I");
+        executionStatusFields.currentTimeId =
             env->GetFieldID(cls, "currentTime", "D");
-        cseExecutionStatusFields.realTimeFactorId =
+        executionStatusFields.realTimeFactorId =
             env->GetFieldID(cls, "realTimeFactor", "D");
-        cseExecutionStatusFields.realTimeSimulationId =
+        executionStatusFields.realTimeSimulationId =
             env->GetFieldID(cls, "realTimeSimulation", "Z");
 
-        cseExecutionStatusFields.initialized = true;
+        executionStatusFields.initialized = true;
     }
 }
 
-}
+} // namespace

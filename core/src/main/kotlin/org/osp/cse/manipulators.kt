@@ -1,94 +1,69 @@
 package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
-import org.osp.cse.jni.cse_manipulator
+import org.osp.cse.jni.ManipulatorPtr
 import java.io.Closeable
 
 sealed class CseManipulator(
-        protected var manipulator: cse_manipulator
+        protected var manipulatorPtr: ManipulatorPtr
 ) : Closeable {
 
     override fun close() {
-        if (manipulator != 0L) {
-            CseLibrary.destroyManipulator(manipulator)
-            manipulator = 0L
+        if (manipulatorPtr != 0L) {
+            CseLibrary.destroyManipulator(manipulatorPtr)
+            manipulatorPtr = 0L
         }
     }
 
 }
 
 class CseOverrideManipulator(
-        manipulator: cse_manipulator
+        manipulator: ManipulatorPtr
 ) : CseManipulator(manipulator) {
 
-    fun setReal(slave: CseSlave, vr: Long, value: Double)
-            = setReal(slave.index, vr, value)
-
     fun setReal(slaveIndex: Int, vr: Long, value: Double)
-            = CseLibrary.setReal(manipulator, slaveIndex, longArrayOf(vr), doubleArrayOf(value))
+            = CseLibrary.setReal(manipulatorPtr, slaveIndex, longArrayOf(vr), doubleArrayOf(value))
 
     fun setReal(slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setReal(manipulator, slaveIndex, vr, values)
+        return CseLibrary.setReal(manipulatorPtr, slaveIndex, vr, values)
     }
-
-    fun setReal(slave: CseSlave, vr: LongArray, values: DoubleArray): Boolean {
-        return setReal(slave.index, vr, values)
-    }
-
-    fun setInteger(slave: CseSlave, vr: Long, value: Int)
-            = setInteger(slave.index, vr, value)
 
     fun setInteger(slaveIndex: Int, vr: Long, value: Int)
-            = CseLibrary.setInteger(manipulator, slaveIndex, longArrayOf(vr), intArrayOf(value))
+            = CseLibrary.setInteger(manipulatorPtr, slaveIndex, longArrayOf(vr), intArrayOf(value))
 
     fun setInteger(slaveIndex: Int, vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setInteger(manipulator, slaveIndex, vr, values)
+        return CseLibrary.setInteger(manipulatorPtr, slaveIndex, vr, values)
     }
-
-    fun setInteger(slave: CseSlave, vr: LongArray, values: IntArray): Boolean {
-        return setInteger(slave.index, vr, values)
-    }
-
-    fun setBoolean(slave: CseSlave, vr: Long, value: Boolean)
-            = setBoolean(slave.index, vr, value)
 
     fun setBoolean(slaveIndex: Int, vr: Long, value: Boolean)
-            = CseLibrary.setBoolean(manipulator, slaveIndex, longArrayOf(vr), booleanArrayOf(value))
+            = CseLibrary.setBoolean(manipulatorPtr, slaveIndex, longArrayOf(vr), booleanArrayOf(value))
 
     fun setBoolean(slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean {
-        return CseLibrary.setBoolean(manipulator, slaveIndex, vr, values)
-    }
-
-    fun setBoolean(slave: CseSlave, vr: LongArray, values: BooleanArray): Boolean {
-        return setBoolean(slave.index, vr, values)
+        return CseLibrary.setBoolean(manipulatorPtr, slaveIndex, vr, values)
     }
 
     fun setString(slave: CseSlave, vr: Long, value: String)
             = setString(slave.index, vr, value)
 
     fun setString(slaveIndex: Int, vr: Long, value: String)
-            = CseLibrary.setString(manipulator, slaveIndex, longArrayOf(vr), arrayOf(value))
+            = CseLibrary.setString(manipulatorPtr, slaveIndex, longArrayOf(vr), arrayOf(value))
 
     fun setString(slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean {
-        return CseLibrary.setString(manipulator, slaveIndex, vr, values)
-    }
-
-    fun setString(slave: CseSlave, vr: LongArray, values: Array<String>): Boolean {
-        return setString(slave.index, vr, values)
+        return CseLibrary.setString(manipulatorPtr, slaveIndex, vr, values)
     }
 
 }
 
 class CseScenario(
-        manipulator: cse_manipulator
+        manipulator: ManipulatorPtr
 ) : CseManipulator(manipulator) {
 
     fun isRunning(): Boolean {
-        return CseLibrary.isScenarioRunning(manipulator)
+        return CseLibrary.isScenarioRunning(manipulatorPtr)
     }
 
     fun abort(): Boolean {
-        return CseLibrary.abortScenario(manipulator)
+        return CseLibrary.abortScenario(manipulatorPtr)
     }
 
 }

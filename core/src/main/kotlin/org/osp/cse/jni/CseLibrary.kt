@@ -2,19 +2,19 @@ package org.osp.cse.jni
 
 import org.osp.cse.*
 import org.osp.util.isLinux
-import org.osp.util.sharedLibExtension
 import org.osp.util.libPrefix
+import org.osp.util.sharedLibExtension
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.file.Files
 
-internal typealias cse_error_code = Int
-internal typealias cse_execution = Long
-internal typealias cse_slave = Long
-internal typealias cse_observer = Long
-internal typealias cse_manipulator = Long
+internal typealias NativeErrorCode = Int
+internal typealias ExecutionPtr = Long
+internal typealias SlavePtr = Long
+internal typealias ObserverPtr = Long
+internal typealias ManipulatorPtr = Long
 
 object CseLibrary {
 
@@ -62,21 +62,21 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createExecution(startTime: Double, stepSize: Double): cse_execution
+    external fun createExecution(startTime: Double, stepSize: Double): ExecutionPtr
 
     /**
      * Creates a new execution based on a SystemStructure.ssd file.
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createSspExecution(sspDir: String, startTime: Double): cse_execution
+    external fun createSspExecution(sspDir: String, startTime: Double): ExecutionPtr
 
     /**
      * Destroys an execution.
      *
      * @return true on success and false on error.
      */
-    external fun destroyExecution(execution: cse_execution): Boolean
+    external fun destroyExecution(execution: ExecutionPtr): Boolean
 
     /**
      * Creates a new local slave.
@@ -85,14 +85,14 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createSlave(fmuPath: String): cse_slave
+    external fun createSlave(fmuPath: String): SlavePtr
 
     /**
      *  Destroys a local slave.
      *
      *  @returns true on success and false on error.
      */
-    external fun destroySlave(slave: cse_slave): Boolean
+    external fun destroySlave(slave: SlavePtr): Boolean
 
     /**
      *  Loads a co-simulation FMU, instantiates a slave based on it, and adds it
@@ -105,7 +105,7 @@ object CseLibrary {
      *
      * @return The slave's unique index in the execution, or -1 on error.
      */
-    external fun addSlave(execution: cse_execution, slave: cse_slave): Int
+    external fun addSlave(execution: ExecutionPtr, slave: SlavePtr): Int
 
     /**
      * Advances an execution a number of time steps.
@@ -115,7 +115,7 @@ object CseLibrary {
      *
      * @return  true on success and false on error.
      */
-    external fun step(execution: cse_execution, numSteps: Long): Boolean
+    external fun step(execution: ExecutionPtr, numSteps: Long): Boolean
 
     /**
      *  Advances an execution to a specific point in time.
@@ -125,7 +125,7 @@ object CseLibrary {
      *
      *  @return true on success and false on error.
      */
-    external fun simulateUntil(execution: cse_execution, targetTime: Double): Boolean
+    external fun simulateUntil(execution: ExecutionPtr, targetTime: Double): Boolean
 
     /**
      * Starts an execution.
@@ -135,7 +135,7 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun start(execution: cse_execution): Boolean
+    external fun start(execution: ExecutionPtr): Boolean
 
     /**
      * Stops an execution.
@@ -144,22 +144,22 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun stop(execution: cse_execution): Boolean
+    external fun stop(execution: ExecutionPtr): Boolean
 
     /**
      * Enables real time simulation for an execution.
      */
-    external fun enableRealTimeSimulation(execution: cse_execution): Boolean
+    external fun enableRealTimeSimulation(execution: ExecutionPtr): Boolean
 
     /**
      * Disables real time simulation for an execution.
      */
-    external fun disableRealTimeSimulation(execution: cse_execution): Boolean
+    external fun disableRealTimeSimulation(execution: ExecutionPtr): Boolean
 
     /**
      * Sets a custom real time factor.
      */
-    external fun setRealTimeFactorTarget(execution: cse_execution, realTimeFactor: Double): Boolean
+    external fun setRealTimeFactorTarget(execution: ExecutionPtr, realTimeFactor: Double): Boolean
 
     /**
      * Returns execution status.
@@ -169,14 +169,14 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun getStatus(execution: cse_execution, status: CseExecutionStatus): Boolean
+    external fun getStatus(execution: ExecutionPtr, status: CseExecutionStatus): Boolean
 
     /**
      * Get the number of variables for a slave which has been added to an execution
      *
      * @return the number of variables for a slave which has been added to an execution, or -1 on error.
      */
-    external fun getNumVariables(execution: cse_execution, slaveIndex: Int): Int
+    external fun getNumVariables(execution: ExecutionPtr, slaveIndex: Int): Int
 
     /**
      *  Returns variable metadata for a slave.
@@ -187,14 +187,14 @@ object CseLibrary {
      *
      *  @return The number of variables written to `variables` array or -1 on error.
      */
-    external fun getVariables(execution: cse_execution, slaveIndex: Int, variables: Array<CseVariableDescription>): Boolean
+    external fun getVariables(execution: ExecutionPtr, slaveIndex: Int, variables: Array<CseVariableDescription>): Boolean
 
     /**
      * Returns the number of slaves which have been added to an execution.
      *
      * @return the number of slaves which have been added to an execution.
      */
-    external fun getNumSlaves(execution: cse_execution): Int
+    external fun getNumSlaves(execution: ExecutionPtr): Int
 
     /**
      * Returns slave infos.
@@ -204,83 +204,71 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun getSlaveInfos(execution: cse_execution, infos: Array<CseSlaveInfo>): Boolean
+    external fun getSlaveInfos(execution: ExecutionPtr): List<CseSlaveInfo>
 
     /**
      * Retrieves the values of real variables for one slave.
      *
      * @return  true on success and false on error.
      */
-    external fun getReal(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
+    external fun getReal(observer: ObserverPtr, slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean
 
     /**
      * Retrieves the values of integer variables for one slave.
      *
      * @return  true on success and false on error.
      */
-    external fun getInteger(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
+    external fun getInteger(observer: ObserverPtr, slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean
 
     /**
      * Retrieves the values of boolean variables for one slave.
      *
      * @return  true on success and false on error.
      */
-    external fun getBoolean(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
+    external fun getBoolean(observer: ObserverPtr, slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean
 
     /**
      * Retrieves the values of boolean variables for one slave.
      *
      * @return  true on success and false on error.
      */
-    external fun getString(observer: cse_observer, slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean
+    external fun getString(observer: ObserverPtr, slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean
 
     /**
      * Sets the values of real variables for one slave.
      *
      * @return  true on success and false on error.
      */
-    external fun setReal(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
+    external fun setReal(manipulator: ManipulatorPtr, slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean
 
-    external fun setInitialRealValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Double): Boolean
+    external fun setInitialRealValue(execution: ExecutionPtr, slaveIndex: Int, vr: Long, value: Double): Boolean
 
     /**
      *  Sets the values of integer variables for one slave.
      *
      *  @return  true on success and false on error.
      */
-    external fun setInteger(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
+    external fun setInteger(manipulator: ManipulatorPtr, slaveIndex: Int, vr: LongArray, values: IntArray): Boolean
 
-    external fun setInitialIntegerValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Int): Boolean
+    external fun setInitialIntegerValue(execution: ExecutionPtr, slaveIndex: Int, vr: Long, value: Int): Boolean
 
     /**
      *  Sets the values of boolean variables for one slave.
      *
      *  @return  true on success and false on error.
      */
-    external fun setBoolean(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean
+    external fun setBoolean(manipulator: ManipulatorPtr, slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean
 
-    external fun setInitialBooleanValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: Boolean): Boolean
+    external fun setInitialBooleanValue(execution: ExecutionPtr, slaveIndex: Int, vr: Long, value: Boolean): Boolean
 
     /**
      *  Sets the values of string variables for one slave.
      *
      *  @return  true on success and false on error.
      */
-    external fun setString(manipulator: cse_manipulator, slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean
+    external fun setString(manipulator: ManipulatorPtr, slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean
 
-    external fun setInitialStringValue(execution: cse_execution, slaveIndex: Int, vr: Long, value: String): Boolean
-
-    /**
-     * Retrieves a series of observed values, step numbers and times for a real variable.
-     *
-     * @param observer the observer
-     * @param slaveIndex  index of the slave
-     * @param vr the variable index
-     * @param stepNumber the step number to start from
-     * @param nSamples the number of samples to read
-     *
-     */
-    external fun getRealSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
+    external fun setInitialStringValue(execution: ExecutionPtr, slaveIndex: Int, vr: Long, value: String): Boolean
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -292,7 +280,19 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: cse_observer, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
+    external fun getRealSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
+
+    /**
+     * Retrieves a series of observed values, step numbers and times for a real variable.
+     *
+     * @param observer the observer
+     * @param slaveIndex  index of the slave
+     * @param vr the variable index
+     * @param stepNumber the step number to start from
+     * @param nSamples the number of samples to read
+     *
+     */
+    external fun getIntegerSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
 
     /**
      * Retrieves the step numbers for a range given by a duration.
@@ -309,7 +309,7 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun getStepNumbersForDuration(observer: cse_observer, slaveIndex: Int, duration: Double, steps: LongArray): Boolean
+    external fun getStepNumbersForDuration(observer: ObserverPtr, slaveIndex: Int, duration: Double, steps: LongArray): Boolean
 
     /**
      * Retrieves the step numbers for a range given by two points in time.
@@ -327,7 +327,7 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun getStepNumbers(observer: cse_observer, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
+    external fun getStepNumbers(observer: ObserverPtr, slaveIndex: Int, begin: Double, end: Double, steps: LongArray): Boolean
 
 
     /**
@@ -341,7 +341,7 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun connectIntegers(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
+    external fun connectIntegers(execution: ExecutionPtr, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
     /**
      * Connects one real output variable to one real input variable.
@@ -354,12 +354,12 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun connectReals(execution: cse_execution, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
+    external fun connectReals(execution: ExecutionPtr, outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean
 
     /**
      * Creates an observer which stores the last observed value for all variables.
      */
-    external fun createLastValueObserver(): cse_observer
+    external fun createLastValueObserver(): ObserverPtr
 
     /**
      * Creates an observer which logs variable values to file in csv format.
@@ -368,7 +368,7 @@ object CseLibrary {
      *
      * @return The created observer.
      */
-    external fun createFileObserver(logDir: String): cse_observer
+    external fun createFileObserver(logDir: String): ObserverPtr
 
     /**
      * Creates an observer which logs variable values to file in csv format. Variables to be logged
@@ -378,36 +378,36 @@ object CseLibrary {
      * @param cfgFile The path to the provided config xml file.
      * @return The created observer.
      */
-    external fun createFileObserverFromCfg(logDir: String, cfgFile: String): cse_observer
+    external fun createFileObserverFromCfg(logDir: String, cfgFile: String): ObserverPtr
 
     /**
      * Creates an observer which buffers variable values in memory.
      *
      * To start observing a variable, `cse_observer_start_observing()` must be called.
      */
-    external fun createTimeSeriesObserver(): cse_observer
+    external fun createTimeSeriesObserver(): ObserverPtr
 
     /**
      * Creates an observer which buffers up to `bufferSize` variable values in memory.
      *
      * To start observing a variable, `cse_observer_start_observing()` must be called.
      */
-    external fun createTimeSeriesObserver(bufferSize: Int): cse_observer
+    external fun createTimeSeriesObserver(bufferSize: Int): ObserverPtr
 
     /**
      * Start observing a variable with a `time_series_observer`
      */
-    external fun startObserving(observer: cse_observer): Boolean
+    external fun startObserving(observer: ObserverPtr): Boolean
 
     /**
      * Stop observing a variable with a `time_series_observer`
      */
-    external fun stopObserving(observer: cse_observer): Boolean
+    external fun stopObserving(observer: ObserverPtr): Boolean
 
     /**
      * Destroys an observer
      */
-    external fun destroyObserver(observer: cse_observer): Boolean
+    external fun destroyObserver(observer: ObserverPtr): Boolean
 
     /**
      * Add an observer to an execution.
@@ -418,12 +418,12 @@ object CseLibrary {
      *
      * @return true on success and false on error.
      */
-    external fun addObserver(execution: cse_execution, observer: cse_observer): Boolean
+    external fun addObserver(execution: ExecutionPtr, observer: ObserverPtr): Boolean
 
     /**
      * Creates a manipulator for overriding variable values
      */
-    external fun createOverrideManipulator(): cse_manipulator
+    external fun createOverrideManipulator(): ManipulatorPtr
 
     /**
      *  Add a manipulator to an execution.
@@ -434,34 +434,36 @@ object CseLibrary {
      *
      *  @return true on success and false on error.
      */
-    external fun addManipulator(execution: cse_execution, manipulator: cse_manipulator): Boolean
+    external fun addManipulator(execution: ExecutionPtr, manipulator: ManipulatorPtr): Boolean
 
     /**
      * Destroys a manipulator
      */
-    external fun destroyManipulator(manipulator: cse_manipulator): Boolean
+    external fun destroyManipulator(manipulator: ManipulatorPtr): Boolean
 
     /**
      * Creates a manipulator for running scenarios.
      */
-    external fun createScenarioManager(): cse_manipulator
+    external fun createScenarioManager(): ManipulatorPtr
 
     /**
      * Loads and executes a scenario from file.
      */
-    external fun loadScenario(execution: cse_execution, manipulator: cse_manipulator, scenarioFile: String): Boolean
+    external fun loadScenario(execution: ExecutionPtr, manipulator: ManipulatorPtr, scenarioFile: String): Boolean
 
     /**
      * Checks if a scenario is running
      */
-    external fun isScenarioRunning(manipulator: cse_manipulator): Boolean
+    external fun isScenarioRunning(manipulator: ManipulatorPtr): Boolean
 
     /**
      * Aborts the execution of a running scenario
      */
-    external fun abortScenario(manipulator: cse_manipulator): Boolean
+    external fun abortScenario(manipulator: ManipulatorPtr): Boolean
 
-    external fun createStepEventListener(listener: StepEventListener): cse_observer
+    external fun createStepEventListener(listener: StepEventListener): ObserverPtr
+
+    external fun getModelDescription(execution: ExecutionPtr, slaveIndex: Int): CseModelDescription
 
     /**
      *  Installs a global severity level filter for log messages.
@@ -475,7 +477,7 @@ object CseLibrary {
         setLogLevel(level.code)
     }
 
-    private external fun getLastErrorCode_(): cse_error_code
+    private external fun getLastErrorCode_(): NativeErrorCode
 
     /**
      *  Configures simple console logging.

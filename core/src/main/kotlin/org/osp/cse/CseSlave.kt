@@ -1,29 +1,19 @@
 package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
-import org.osp.cse.jni.cse_execution
-import org.osp.cse.jni.cse_slave
+import org.osp.cse.jni.ExecutionPtr
+import org.osp.cse.jni.SlavePtr
 import java.io.Closeable
 
 class CseSlave internal constructor(
         val index: Int,
         val name: String,
-        private var slave: cse_slave,
-        private val execution: cse_execution
+        private var slavePtr: SlavePtr,
+        private val executionPtr: ExecutionPtr
 ) : Closeable {
 
-    val variables: Array<CseVariableDescription> by lazy {
-        Array(CseLibrary.getNumVariables(execution, index)) { CseVariableDescription() }.also {
-            CseLibrary.getVariables(execution, index, it)
-        }
-    }
-
-    fun getVariable(name: String): CseVariableDescription? {
-        return variables.find { it.name == name }
-    }
-
-    fun getVariable(vr: Long, type: CseVariableType): CseVariableDescription? {
-        return variables.find { it.valueReference == vr && it.type == type }
+    val modelDescription: CseModelDescription by lazy {
+        CseLibrary.getModelDescription(executionPtr, index)
     }
 
     fun getReal(observer: CseLastValueObserver, vr: Long): Double? {
@@ -59,27 +49,27 @@ class CseSlave internal constructor(
     }
 
     fun setReal(manipulator: CseOverrideManipulator, vr: Long, value: Double): Boolean {
-        return manipulator.setReal(this, vr, value)
+        return manipulator.setReal(index, vr, value)
     }
 
     fun setReal(manipulator: CseOverrideManipulator, vr: LongArray, values: DoubleArray): Boolean {
-        return manipulator.setReal(this, vr, values)
+        return manipulator.setReal(index, vr, values)
     }
 
     fun setInteger(manipulator: CseOverrideManipulator, vr: Long, value: Int): Boolean {
-        return manipulator.setInteger(this, vr, value)
+        return manipulator.setInteger(index, vr, value)
     }
 
     fun setInteger(manipulator: CseOverrideManipulator, vr: LongArray, values: IntArray): Boolean {
-        return manipulator.setInteger(this, vr, values)
+        return manipulator.setInteger(index, vr, values)
     }
 
     fun setBoolean(manipulator: CseOverrideManipulator, vr: Long, value: Boolean): Boolean {
-        return manipulator.setBoolean(this, vr, value)
+        return manipulator.setBoolean(index, vr, value)
     }
 
     fun setBoolean(manipulator: CseOverrideManipulator, vr: LongArray, values: BooleanArray): Boolean {
-        return manipulator.setBoolean(this, vr, values)
+        return manipulator.setBoolean(index, vr, values)
     }
 
     fun setString(manipulator: CseOverrideManipulator, vr: Long, value: String): Boolean {
@@ -87,7 +77,7 @@ class CseSlave internal constructor(
     }
 
     fun setString(manipulator: CseOverrideManipulator, vr: LongArray, values: Array<String>): Boolean {
-        return manipulator.setString(this, vr, values)
+        return manipulator.setString(index, vr, values)
     }
 
     fun getRealSamples(observer: CseLastValueObserver, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
@@ -99,9 +89,9 @@ class CseSlave internal constructor(
     }
 
     override fun close() {
-        if (slave != 0L) {
-            CseLibrary.destroySlave(slave)
-            slave = 0L
+        if (slavePtr != 0L) {
+            CseLibrary.destroySlave(slavePtr)
+            slavePtr = 0L
         }
     }
 
@@ -111,16 +101,11 @@ class CseSlave internal constructor(
 
 }
 
-class CseSlaveInfo {
-
-    var index: Int = -1
-        private set
-
-    lateinit var name: String
-        private set
-
-    lateinit var source: String
-        private set
+class CseSlaveInfo(
+        var index: Int,
+        val name: String,
+        val source: String
+) {
 
     override fun toString(): String {
         return "CseSlaveInfo(name=$name, index=$index, source=$source)"

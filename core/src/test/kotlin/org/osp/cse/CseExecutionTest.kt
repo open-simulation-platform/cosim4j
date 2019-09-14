@@ -52,7 +52,7 @@ class CseExecutionTest {
             execution.addFileObserver(logDir)
 
             val slave = execution.addSlave(testFmu)
-            slave.variables.also {
+            slave.modelDescription.variables.also {
 
                 Assertions.assertEquals(19, it[0].valueReference)
                 Assertions.assertEquals("Ground.p1.u", it[0].name)

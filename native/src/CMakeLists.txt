@@ -6,9 +6,13 @@ set(publicHeaders
         "corejni.hpp"
         )
 set(privateHeaders
-        "samples_fields.hpp"
-        "step_event_listener.hpp"
         "execution_status_fields.hpp"
+        "model_description_helper.hpp"
+        "samples_fields.hpp"
+        "slave_infos_helper.hpp"
+        "step_event_listener.hpp"
+        "structs.hpp"
+        "unit_conversion.hpp"
         )
 set(sources
         "corejni.cpp"

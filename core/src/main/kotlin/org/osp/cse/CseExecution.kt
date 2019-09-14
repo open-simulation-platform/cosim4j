@@ -1,7 +1,7 @@
 package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
-import org.osp.cse.jni.cse_execution
+import org.osp.cse.jni.ExecutionPtr
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -9,7 +9,7 @@ import java.io.File
 
 
 class CseExecution private constructor(
-        private val execution: cse_execution
+        private val executionPtr: ExecutionPtr
 ) : Closeable {
 
     private val slaves: MutableList<CseSlave> = mutableListOf()
@@ -18,16 +18,16 @@ class CseExecution private constructor(
 
     init {
         getSlaveInfos().forEach {
-            slaves.add(CseSlave(it.index, it.name, 0L, execution))
+            slaves.add(CseSlave(it.index, it.name, 0L, executionPtr))
         }
     }
 
     val numSlaves: Int
-        get() = CseLibrary.getNumSlaves(execution)
+        get() = CseLibrary.getNumSlaves(executionPtr)
 
     val status: CseExecutionStatus
         get() = CseExecutionStatus().also {
-            CseLibrary.getStatus(execution, it)
+            CseLibrary.getStatus(executionPtr, it)
         }
 
     fun getSlave(name: String): CseSlave? {
@@ -36,68 +36,66 @@ class CseExecution private constructor(
 
     fun addSlave(fmuPath: File): CseSlave {
         return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
-            val index = CseLibrary.addSlave(execution, slave)
+            val index = CseLibrary.addSlave(executionPtr, slave)
             val name = getSlaveInfos().find { it.index == index }!!.name
-            CseSlave(index, name, slave, execution).also {
+            CseSlave(index, name, slave, executionPtr).also {
                 slaves.add(it)
             }
         }
     }
 
     fun start(): Boolean {
-        return CseLibrary.start(execution)
+        return CseLibrary.start(executionPtr)
     }
 
     @JvmOverloads
     fun step(numSteps: Long = 1): Boolean {
-        return CseLibrary.step(execution, numSteps)
+        return CseLibrary.step(executionPtr, numSteps)
     }
 
     fun simulateUntil(targetTime: Double): Boolean {
-        return CseLibrary.simulateUntil(execution, targetTime)
+        return CseLibrary.simulateUntil(executionPtr, targetTime)
     }
 
     fun stop(): Boolean {
-        return CseLibrary.stop(execution)
+        return CseLibrary.stop(executionPtr)
     }
 
     fun enableRealTimeSimulation(): Boolean {
-        return CseLibrary.enableRealTimeSimulation(execution)
+        return CseLibrary.enableRealTimeSimulation(executionPtr)
     }
 
     fun disableRealTimeSimulation(): Boolean {
-        return CseLibrary.disableRealTimeSimulation(execution)
+        return CseLibrary.disableRealTimeSimulation(executionPtr)
     }
 
     fun setRealTimeFactor(realTimeFactor: Double): Boolean {
-        return CseLibrary.setRealTimeFactorTarget(execution, realTimeFactor)
+        return CseLibrary.setRealTimeFactorTarget(executionPtr, realTimeFactor)
     }
 
     fun connectIntegers(outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean {
-        return CseLibrary.connectIntegers(execution, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
+        return CseLibrary.connectIntegers(executionPtr, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
     }
 
     fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return CseLibrary.connectIntegers(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+        return CseLibrary.connectIntegers(executionPtr, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
     fun connectReals(outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean {
-        return CseLibrary.connectReals(execution, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
+        return CseLibrary.connectReals(executionPtr, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
     }
 
     fun connectReals(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return CseLibrary.connectReals(execution, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
+        return CseLibrary.connectReals(executionPtr, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
-    fun getSlaveInfos(): Array<CseSlaveInfo> {
-        return Array(numSlaves) { CseSlaveInfo() }.also {
-            CseLibrary.getSlaveInfos(execution, it)
-        }
+    fun getSlaveInfos(): List<CseSlaveInfo> {
+        return  CseLibrary.getSlaveInfos(executionPtr)
     }
 
     fun addLastValueObserver(): CseLastValueObserver {
         val observer = CseLibrary.createLastValueObserver()
-        CseLibrary.addObserver(execution, observer)
+        CseLibrary.addObserver(executionPtr, observer)
         return CseLastValueObserver(observer).also {
             observers.add(it)
         }
@@ -113,7 +111,7 @@ class CseExecution private constructor(
         } else {
             CseLibrary.createFileObserverFromCfg(logDir.absolutePath, cfgFile.absolutePath)
         }
-        CseLibrary.addObserver(execution, observer)
+        CseLibrary.addObserver(executionPtr, observer)
         return CseFileObserver(observer, logDir).also {
             observers.add(it)
         }
@@ -126,7 +124,7 @@ class CseExecution private constructor(
         } else {
             CseLibrary.createTimeSeriesObserver(bufferSize)
         }
-        CseLibrary.addObserver(execution, observer)
+        CseLibrary.addObserver(executionPtr, observer)
         return CseTimeSeriesObserver(observer).also {
             observers.add(it)
         }
@@ -134,7 +132,7 @@ class CseExecution private constructor(
 
     fun addOverrideManipulator(): CseOverrideManipulator {
         val manipulator = CseLibrary.createOverrideManipulator()
-        CseLibrary.addManipulator(execution, manipulator)
+        CseLibrary.addManipulator(executionPtr, manipulator)
         return CseOverrideManipulator(manipulator).also {
             manipulators.add(it)
         }
@@ -142,8 +140,8 @@ class CseExecution private constructor(
 
     fun loadScenario(scenarioFile: File): CseScenario {
         val scenarioManager = CseLibrary.createScenarioManager()
-        CseLibrary.addManipulator(execution, scenarioManager)
-        CseLibrary.loadScenario(execution, scenarioManager, scenarioFile.absolutePath).also { success ->
+        CseLibrary.addManipulator(executionPtr, scenarioManager)
+        CseLibrary.loadScenario(executionPtr, scenarioManager, scenarioFile.absolutePath).also { success ->
             if (success) {
                 LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
             } else {
@@ -158,26 +156,26 @@ class CseExecution private constructor(
 
     fun addStepEventListener(listener: StepEventListener): CseStepEventListener {
         val observer = CseLibrary.createStepEventListener(listener)
-        CseLibrary.addObserver(execution, observer)
+        CseLibrary.addObserver(executionPtr, observer)
         return CseStepEventListener(observer).also {
             observers.add(it)
         }
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Double) {
-        CseLibrary.setInitialRealValue(execution,slaveIndex, vr, value);
+        CseLibrary.setInitialRealValue(executionPtr,slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Int) {
-        CseLibrary.setInitialIntegerValue(execution,slaveIndex, vr, value);
+        CseLibrary.setInitialIntegerValue(executionPtr,slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: Boolean) {
-        CseLibrary.setInitialBooleanValue(execution,slaveIndex, vr, value);
+        CseLibrary.setInitialBooleanValue(executionPtr,slaveIndex, vr, value);
     }
 
     fun setInitialValue(slaveIndex: Int, vr: Long, value: String) {
-        CseLibrary.setInitialStringValue(execution,slaveIndex, vr, value);
+        CseLibrary.setInitialStringValue(executionPtr,slaveIndex, vr, value);
     }
 
     override fun close() {
@@ -190,7 +188,7 @@ class CseExecution private constructor(
         slaves.forEach {
             it.close()
         }
-        CseLibrary.destroyExecution(execution).also { success ->
+        CseLibrary.destroyExecution(executionPtr).also { success ->
             if (success) {
                 LOG.debug("Destroyed execution successfully!")
             } else {
