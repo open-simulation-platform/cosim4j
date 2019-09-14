@@ -36,7 +36,7 @@ class CseExecutionTest {
 
             Assertions.assertTrue(execution.step(numSteps))
 
-            execution.status.apply {
+            execution.status!!.apply {
                 Assertions.assertEquals(stepSize * numSteps, this.currentTime, 1E-6)
             }
 
@@ -61,7 +61,7 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(10))
-            execution.status.apply {
+            execution.status!!.apply {
                 Assertions.assertEquals(0.1, this.currentTime)
             }
 
@@ -76,7 +76,7 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(10))
-            execution.status.apply {
+            execution.status!!.apply {
                 Assertions.assertEquals(0.2, this.currentTime)
             }
 

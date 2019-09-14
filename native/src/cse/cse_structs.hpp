@@ -1,6 +1,6 @@
 
-#ifndef CSECOREJNI_STRUCTS_HPP
-#define CSECOREJNI_STRUCTS_HPP
+#ifndef CSECOREJNI_CSE_STRUCTS_HPP
+#define CSECOREJNI_CSE_STRUCTS_HPP
 
 #include <cse.h>
 #include <cse/execution.hpp>

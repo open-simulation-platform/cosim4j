@@ -28,8 +28,6 @@ void cse::step_event_listener::step_complete(cse::step_number lastStep, cse::dur
         });
     }
 
-    //        std::thread t(&cse::step_event_listener::callback, this);
-    //        t.join();
 }
 
 void cse::step_event_listener::listen()

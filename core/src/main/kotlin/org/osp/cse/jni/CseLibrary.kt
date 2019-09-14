@@ -133,29 +133,10 @@ object CseLibrary {
      * Returns execution status.
      *
      * @param execution The execution to get status create.
-     * @param status A pointer to a cse_execution_status that will be filled with actual execution status.
      *
-     * @return true on success and false on error.
+     * @return the execution status.
      */
-    external fun getStatus(execution: ExecutionPtr, status: CseExecutionStatus): Boolean
-
-    /**
-     * Get the number of variables for a slave which has been added to an execution
-     *
-     * @return the number of variables for a slave which has been added to an execution, or -1 on error.
-     */
-    external fun getNumVariables(execution: ExecutionPtr, slaveIndex: Int): Int
-
-    /**
-     *  Returns variable metadata for a slave.
-     *
-     *  @param execution The execution which the slave has been added to.
-     *  @param slaveIndex The index of the slave.
-     *  @param variables A pointer to an array of length `numVariables` which will be filled with actual `cse_variable_description` values.
-     *
-     *  @return The number of variables written to `variables` array or -1 on error.
-     */
-    external fun getVariables(execution: ExecutionPtr, slaveIndex: Int, variables: Array<CseVariableDescription>): Boolean
+    external fun getStatus(execution: ExecutionPtr): CseExecutionStatus?
 
     /**
      * Returns the number of slaves which have been added to an execution.

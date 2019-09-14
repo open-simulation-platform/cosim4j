@@ -25,10 +25,8 @@ class CseExecution private constructor(
     val numSlaves: Int
         get() = CseLibrary.getNumSlaves(executionPtr)
 
-    val status: CseExecutionStatus
-        get() = CseExecutionStatus().also {
-            CseLibrary.getStatus(executionPtr, it)
-        }
+    val status: CseExecutionStatus?
+        get() = CseLibrary.getStatus(executionPtr)
 
     fun getSlave(name: String): CseSlave? {
         return slaves.find { it.name == name }
@@ -264,24 +262,18 @@ class CseExecution private constructor(
 
 }
 
-class CseExecutionStatus {
-
-    var currentTime: Double = -1.0
-        private set
-
-    var realTimeFactor: Double = -1.0
-        private set
-
-    var realTimeSimulation: Boolean = false
-        private set
-
-    private var stateId: Int = -1
+class CseExecutionStatus(
+        val currentTime: Double,
+        val realTimeFactor: Double,
+        val realTimeFactorTarget: Double,
+        val realTimeSimulation: Boolean,
+        private val stateId: Int,
+        private val errorCodeId: Int
+) {
 
     val state: CseExecutionState by lazy {
         CseExecutionState.valueOf(stateId)
     }
-
-    private var errorCodeId: Int = -1
 
     val errorCode: CseErrorCode by lazy {
         CseErrorCode.valueOf(errorCodeId)

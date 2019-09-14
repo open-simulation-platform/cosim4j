@@ -1,13 +1,13 @@
 
+#include <cse/error_helper.hpp>
 #include <cse/execution.hpp>
-#include <cse/execution_status_fields.hpp>
+#include <cse/execution_status_helper.hpp>
 #include <cse/model.hpp>
 #include <cse/model_description_helper.hpp>
 #include <cse/samples_fields.hpp>
 #include <cse/slave_infos_helper.hpp>
 #include <cse/step_event_listener.hpp>
 #include <cse/unit_conversion.hpp>
-#include <cse/error_helper.hpp>
 
 #include <atomic>
 #include <iostream>
@@ -135,25 +135,13 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setRealTimeFactorTarg
     return cse_execution_set_real_time_factor_target((cse_execution*)executionPtr, realTimeFactor) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv* env, jobject obj, jlong executionPtr, jobject status)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getStatus(JNIEnv* env, jobject obj, jlong executionPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
-        return false;
+        return nullptr;
     }
-
-    cse_execution_status _status;
-    jboolean success = cse_execution_get_status((cse_execution*)executionPtr, &_status);
-
-    init_execution_status_fields(env);
-
-    env->SetIntField(status, executionStatusFields.stateId, _status.state);
-    env->SetIntField(status, executionStatusFields.errorId, _status.error_code);
-    env->SetDoubleField(status, executionStatusFields.realTimeFactorId, _status.real_time_factor);
-    env->SetDoubleField(status, executionStatusFields.currentTimeId, to_seconds(_status.current_time));
-    env->SetBooleanField(status, executionStatusFields.realTimeSimulationId, _status.is_real_time_simulation == 0);
-
-    return success;
+    return create_execution_status(env, executionPtr);
 }
 
 JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getModelDescription(JNIEnv* env, jobject obj, jlong executionPtr, jint slaveIndex)

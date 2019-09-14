@@ -37,7 +37,7 @@ class SspTest {
             val numSteps = 100L
             Assertions.assertTrue(execution.step(numSteps))
 
-            execution.status.also {
+            execution.status!!.also {
                 Assertions.assertEquals(numSteps*1e-4, it.currentTime)
             }
 

@@ -20,7 +20,7 @@ cse_duration to_cse_duration(double duration)
     return static_cast<cse_duration>(duration * sec2nano);
 }
 
-double to_seconds(int64_t duration)
+double to_seconds(cse_time_point duration)
 {
     return static_cast<double>(duration) * nano2sec;
 }

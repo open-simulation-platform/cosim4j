@@ -2,7 +2,7 @@
 #ifndef CSECOREJNI_MODEL_DESCRIPTION_HELPER_HPP
 #define CSECOREJNI_MODEL_DESCRIPTION_HELPER_HPP
 
-#include <cse/structs.hpp>
+#include <cse/cse_structs.hpp>
 
 #include <iostream>
 #include <jni.h>

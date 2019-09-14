@@ -3,7 +3,7 @@
 #define CSECOREJNI_SLAVE_INFOS_HELPER_HPP
 
 #include <cse.h>
-#include <cse/structs.hpp>
+#include <cse/cse_structs.hpp>
 
 #include <jni.h>
 

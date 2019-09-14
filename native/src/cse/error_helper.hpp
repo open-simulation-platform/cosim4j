@@ -2,6 +2,8 @@
 #ifndef CSECOREJNI_ERROR_HELPER_HPP
 #define CSECOREJNI_ERROR_HELPER_HPP
 
+#include <cse.h>
+
 #include <jni.h>
 
 namespace
