@@ -43,16 +43,16 @@ class CseTimeSeriesObserver(
         return CseLibrary.stopObserving(observerPtr)
     }
 
-    fun getStepNumbersForDuration(slave: CseSlave, duration: Double): Pair<Long, Long> {
+    fun getStepNumbersForDuration(slaveIndex: Int, duration: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbersForDuration(observerPtr, slave.index, duration, steps)
+            CseLibrary.getStepNumbersForDuration(observerPtr, slaveIndex, duration, steps)
             steps[0] to steps[1]
         }
     }
 
-    fun getStepNumbers(slave: CseSlave, begin: Double, end: Double): Pair<Long, Long> {
+    fun getStepNumbers(slaveIndex: Int, begin: Double, end: Double): Pair<Long, Long> {
         return LongArray(2).let { steps ->
-            CseLibrary.getStepNumbers(observerPtr, slave.index, begin, end, steps)
+            CseLibrary.getStepNumbers(observerPtr, slaveIndex, begin, end, steps)
             steps[0] to steps[1]
         }
     }
@@ -71,13 +71,9 @@ class CseLastValueObserver(
         }[0]
     }
 
-    fun getReal(slave: CseSlave, vr: Long) = getReal(slave.index, vr)
-
     fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
         return CseLibrary.getReal(observerPtr, slaveIndex, vr, ref)
     }
-
-    fun getReal(slave: CseSlave, vr: LongArray, ref: DoubleArray) = getReal(slave.index, vr, ref)
 
     fun getInteger(slaveIndex: Int, vr: Long): Int? {
         return IntArray(1).also {
@@ -87,13 +83,9 @@ class CseLastValueObserver(
         }[0]
     }
 
-    fun getInteger(slave: CseSlave, vr: Long) = getInteger(slave.index, vr)
-
     fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
         return CseLibrary.getInteger(observerPtr, slaveIndex, vr, ref)
     }
-
-    fun getInteger(slave: CseSlave, vr: LongArray, ref: IntArray) = getInteger(slave.index, vr, ref)
 
     fun getBoolean(slaveIndex: Int, vr: Long): Boolean? {
         return BooleanArray(1).also {
@@ -103,13 +95,9 @@ class CseLastValueObserver(
         }[0]
     }
 
-    fun getBoolean(slave: CseSlave, vr: Long) = getBoolean(slave.index, vr)
-
     fun getBoolean(slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean {
         return CseLibrary.getBoolean(observerPtr, slaveIndex, vr, ref)
     }
-
-    fun getBoolean(slave: CseSlave, vr: LongArray, ref: BooleanArray) = getBoolean(slave.index, vr, ref)
 
     fun getString(slaveIndex: Int, vr: Long): String? {
         return Array<String>(1) { "" }.also {
@@ -119,14 +107,9 @@ class CseLastValueObserver(
         }[0]
     }
 
-    fun getString(slave: CseSlave, vr: Long) = getString(slave.index, vr)
-
     fun getString(slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean {
         return CseLibrary.getString(observerPtr, slaveIndex, vr, ref)
     }
-
-    fun getString(slave: CseSlave, vr: LongArray, ref: Array<String>) = getString(slave.index, vr, ref)
-
 
     fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
         return CseRealSamples().also {
@@ -134,14 +117,10 @@ class CseLastValueObserver(
         }
     }
 
-    fun getRealSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int) = getRealSamples(slave.index, vr, stepNumber, nSamples)
-
     fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
         return CseIntegerSamples().also {
             CseLibrary.getIntegerSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples, it)
         }
     }
-
-    fun getIntegerSamples(slave: CseSlave, vr: Long, stepNumber: Long, nSamples: Int) = getIntegerSamples(slave.index, vr, stepNumber, nSamples)
 
 }

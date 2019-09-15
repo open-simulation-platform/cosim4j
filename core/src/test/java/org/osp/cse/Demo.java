@@ -28,9 +28,9 @@ class Demo {
 
             CseLastValueObserver observer = execution.addLastValueObserver();
             execution.step(10);
-            double value = slave1.getReal(observer, 46 /*vr*/);
+            double value = observer.getReal(slave1.getIndex(), 46 /*vr*/);
 
-            CseRealSamples samples = slave1.getRealSamples(observer, 46 /*vr*/, 0, 5);
+            CseRealSamples samples = observer.getRealSamples(slave1.getIndex(), 46 /*vr*/, 0, 5);
             double[] values = samples.getValues();
             double[] times = samples.getTimes();
             long[] steps = samples.getSteps();
