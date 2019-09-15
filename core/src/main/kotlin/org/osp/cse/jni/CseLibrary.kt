@@ -224,7 +224,7 @@ object CseLibrary {
      *
      * @param observer the observer
      * @param slaveIndex  index of the slave
-     * @param vr the variable index
+     * @param vr the value reference
      * @param stepNumber the step number to start from
      * @param nSamples the number of samples to read
      *
@@ -236,7 +236,7 @@ object CseLibrary {
      *
      * @param observer the observer
      * @param slaveIndex  index of the slave
-     * @param vr the variable index
+     * @param vr the value reference
      * @param stepNumber the step number to start from
      * @param nSamples the number of samples to read
      *
