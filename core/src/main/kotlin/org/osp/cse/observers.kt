@@ -35,12 +35,20 @@ class CseTimeSeriesObserver(
         observer: ObserverPtr
 ) : CseObserver(observer) {
 
-    fun startObserver(): Boolean {
-        return CseLibrary.startObserving(observerPtr)
+    fun startObserving(slaveIndex: Int, variable: CseVariableDescription): Boolean {
+        return CseLibrary.startObserving(observerPtr, slaveIndex, variable.type, variable.valueReference)
     }
 
-    fun stopObserving(): Boolean {
-        return CseLibrary.stopObserving(observerPtr)
+    fun stopObserving(slaveIndex: Int, variable: CseVariableDescription): Boolean {
+        return CseLibrary.stopObserving(observerPtr, slaveIndex, variable.type, variable.valueReference)
+    }
+
+    fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
+        return CseLibrary.getRealSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples)
+    }
+
+    fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
+        return CseLibrary.getIntegerSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples)
     }
 
     fun getStepNumbersForDuration(slaveIndex: Int, duration: Double): Pair<Long, Long> {
@@ -109,18 +117,6 @@ class CseLastValueObserver(
 
     fun getString(slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean {
         return CseLibrary.getString(observerPtr, slaveIndex, vr, ref)
-    }
-
-    fun getRealSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples {
-        return CseRealSamples().also {
-            CseLibrary.getRealSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples, it)
-        }
-    }
-
-    fun getIntegerSamples(slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples {
-        return CseIntegerSamples().also {
-            CseLibrary.getIntegerSamples(observerPtr, slaveIndex, vr, stepNumber, nSamples, it)
-        }
     }
 
 }

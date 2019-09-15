@@ -4,7 +4,7 @@
 #include <cse/execution_status_helper.hpp>
 #include <cse/model.hpp>
 #include <cse/model_description_helper.hpp>
-#include <cse/samples_fields.hpp>
+#include <cse/samples_helper.hpp>
 #include <cse/slave_infos_helper.hpp>
 #include <cse/step_event_listener.hpp>
 #include <cse/unit_conversion.hpp>
@@ -449,91 +449,24 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv* env
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
-        return false;
+        return nullptr;
     }
 
-    auto* values = (double*)malloc(sizeof(double) * nSamples);
-    auto* steps = (cse_step_number*)malloc(sizeof(cse_step_number*) * nSamples);
-    auto* times = (cse_time_point*)malloc(sizeof(cse_time_point*) * nSamples);
-
-    jint numSamplesRead = (jint)cse_observer_slave_get_real_samples((cse_observer*)observerPtr, slaveIndex, (cse_value_reference)vr, (cse_step_number)fromStep, nSamples, values, steps, times);
-    jboolean success = numSamplesRead != -1;
-
-    if (success) {
-
-        jdoubleArray _values = env->NewDoubleArray(numSamplesRead);
-        jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
-        jlongArray _steps = env->NewLongArray(numSamplesRead);
-
-        env->SetDoubleArrayRegion(_values, 0, numSamplesRead, values);
-
-        for (int i = 0; i < numSamplesRead; i++) {
-            auto step = (jlong)steps[i];
-            double time = to_seconds(times[i]);
-
-            env->SetDoubleArrayRegion(_times, i, 1, &time);
-            env->SetLongArrayRegion(_steps, i, 1, &step);
-        }
-
-        init_real_samples_fields(env);
-        env->SetIntField(samples, realSamplesFields.sizeId, numSamplesRead);
-        env->SetObjectField(samples, realSamplesFields.valuesId, _values);
-        env->SetObjectField(samples, realSamplesFields.stepsId, _steps);
-        env->SetObjectField(samples, realSamplesFields.timesId, _times);
-    }
-
-    free(values);
-    free(steps);
-    free(times);
-
-    return success;
+    return create_real_samples(env, observerPtr, slaveIndex, vr, fromStep, nSamples);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples, jobject samples)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
-        return false;
+        return nullptr;
     }
 
-    int* values = (int*)malloc(sizeof(int) * nSamples);
-    auto* steps = (cse_step_number*)malloc(sizeof(cse_step_number*) * nSamples);
-    auto* times = (cse_time_point*)malloc(sizeof(cse_time_point*) * nSamples);
-
-    jint numSamplesRead = (jint)cse_observer_slave_get_integer_samples((cse_observer*)observerPtr, slaveIndex, (cse_value_reference)vr, (cse_step_number)fromStep, nSamples, values, steps, times);
-    jboolean success = numSamplesRead != -1;
-
-    if (success) {
-
-        jintArray _values = env->NewIntArray(numSamplesRead);
-        jdoubleArray _times = env->NewDoubleArray(numSamplesRead);
-        jlongArray _steps = env->NewLongArray(numSamplesRead);
-
-        env->SetIntArrayRegion(_values, 0, numSamplesRead, (jint*)values);
-
-        for (int i = 0; i < numSamplesRead; i++) {
-            auto step = (jlong)steps[i];
-            double time = to_seconds(times[i]);
-
-            env->SetDoubleArrayRegion(_times, i, 1, &time);
-            env->SetLongArrayRegion(_steps, i, 1, &step);
-        }
-
-        init_integer_samples_fields(env);
-        env->SetIntField(samples, integerSamplesFields.sizeId, numSamplesRead);
-        env->SetObjectField(samples, integerSamplesFields.valuesId, _values);
-        env->SetObjectField(samples, integerSamplesFields.stepsId, _steps);
-        env->SetObjectField(samples, integerSamplesFields.timesId, _times);
-    }
-    free(values);
-    free(steps);
-    free(times);
-
-    return success;
+    return create_integer_samples(env, observerPtr, slaveIndex, vr, fromStep, nSamples);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jdouble duration, jlongArray steps)
@@ -600,7 +533,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_connectReals(JNIEnv* 
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLastValueObserver(JNIEnv* env, jobject obj)
 {
-    return (jlong)cse_last_value_observer_create();
+    return reinterpret_cast<jlong>(cse_last_value_observer_create());
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEnv* env, jobject obj, jstring logDir)
@@ -612,7 +545,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
         std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
-    return (jlong)observer;
+    return reinterpret_cast<jlong>(observer);
 }
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCfg(JNIEnv* env, jobject obj, jstring logDir, jstring cfgPath)
@@ -626,17 +559,16 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCf
         std::cerr << "[JNI-wrapper] Error: Failed to create observer: " << cse_last_error_message() << std::endl;
         return 0;
     }
-    return (jlong)observer;
+    return reinterpret_cast<jlong>(observer);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver(JNIEnv* env, jobject obj)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver(JNIEnv* env, jobject obj, jint bufferSize)
 {
-    return (jlong)cse_time_series_observer_create;
-}
-
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createBufferedTimeSeriesObserver(JNIEnv* env, jobject obj, jint bufferSize)
-{
-    return (jlong)cse_buffered_time_series_observer_create(static_cast<size_t>(bufferSize));
+    if (bufferSize <= 0) {
+        return reinterpret_cast<jlong>(cse_time_series_observer_create());
+    } else {
+        return reinterpret_cast<jlong>(cse_buffered_time_series_observer_create((static_cast<size_t>(bufferSize))));
+    }
 }
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)

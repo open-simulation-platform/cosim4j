@@ -24,16 +24,11 @@ class Demo {
             CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"));
             CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"));
 
-            execution.connectReals(slave1, 12 /*vr*/, slave2, 9 /*vr*/);
+            execution.connectReals(slave1.getIndex(), 12 /*vr*/, slave2.getIndex(), 9 /*vr*/);
 
             CseLastValueObserver observer = execution.addLastValueObserver();
             execution.step(10);
             double value = observer.getReal(slave1.getIndex(), 46 /*vr*/);
-
-            CseRealSamples samples = observer.getRealSamples(slave1.getIndex(), 46 /*vr*/, 0, 5);
-            double[] values = samples.getValues();
-            double[] times = samples.getTimes();
-            long[] steps = samples.getSteps();
 
         } // try with resources (calls destroy internally)
 

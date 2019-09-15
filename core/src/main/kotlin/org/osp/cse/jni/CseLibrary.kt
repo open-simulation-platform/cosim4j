@@ -229,7 +229,7 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getRealSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseRealSamples): Boolean
+    external fun getRealSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseRealSamples
 
     /**
      * Retrieves a series of observed values, step numbers and times for a real variable.
@@ -241,7 +241,7 @@ object CseLibrary {
      * @param nSamples the number of samples to read
      *
      */
-    external fun getIntegerSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int, samples: CseIntegerSamples): Boolean
+    external fun getIntegerSamples(observer: ObserverPtr, slaveIndex: Int, vr: Long, stepNumber: Long, nSamples: Int): CseIntegerSamples
 
     /**
      * Retrieves the step numbers for a range given by a duration.
@@ -330,28 +330,25 @@ object CseLibrary {
     external fun createFileObserverFromCfg(logDir: String, cfgFile: String): ObserverPtr
 
     /**
-     * Creates an observer which buffers variable values in memory.
-     *
-     * To start observing a variable, `cse_observer_start_observing()` must be called.
-     */
-    external fun createTimeSeriesObserver(): ObserverPtr
-
-    /**
      * Creates an observer which buffers up to `bufferSize` variable values in memory.
      *
      * To start observing a variable, `cse_observer_start_observing()` must be called.
      */
-    external fun createTimeSeriesObserver(bufferSize: Int): ObserverPtr
+    external fun createTimeSeriesObserver(bufferSize: Int?): ObserverPtr
 
     /**
      * Start observing a variable with a `time_series_observer`
      */
-    external fun startObserving(observer: ObserverPtr): Boolean
+    private external fun startObserving(observer: ObserverPtr, slaveIndex: Int, type: Int, vr: Long): Boolean
+
+    fun startObserving(observer: ObserverPtr, slaveIndex: Int, type: CseVariableType, vr: Long): Boolean {
+        return startObserving(observer, slaveIndex, type.code, vr)
+    }
 
     /**
      * Stop observing a variable with a `time_series_observer`
      */
-    external fun stopObserving(observer: ObserverPtr): Boolean
+    external fun stopObserving(observer: ObserverPtr, slaveIndex: Int, type: CseVariableType, vr: Long): Boolean
 
     /**
      * Destroys an observer

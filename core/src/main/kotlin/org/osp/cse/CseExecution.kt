@@ -125,11 +125,7 @@ class CseExecution private constructor(
 
     @JvmOverloads
     fun addTimeSeriesObserver(bufferSize: Int? = null): CseTimeSeriesObserver? {
-        val observer = if (bufferSize == null) {
-            CseLibrary.createTimeSeriesObserver()
-        } else {
-            CseLibrary.createTimeSeriesObserver(bufferSize)
-        }
+        val observer = CseLibrary.createTimeSeriesObserver(bufferSize)
         return if (CseLibrary.addObserver(executionPtr, observer)) {
             CseTimeSeriesObserver(observer).also {
                 observers.add(it)

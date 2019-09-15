@@ -21,7 +21,7 @@ class CseVariableDescription internal constructor(
 }
 
 enum class CseVariableType(
-        private val code: Int
+        internal val code: Int
 ) {
 
     REAL(0),

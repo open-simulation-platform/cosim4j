@@ -2,7 +2,6 @@ package org.osp.cse
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.osp.cse.jni.CseLibrary
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -22,12 +21,14 @@ class CseExecutionTest {
     @Test
     fun test1() {
 
-        val stepSize = 1.0 / 100
         val numSteps = 10L
+        val stepSize = 1.0 / 100
 
         CseExecution.create(stepSize).use { execution ->
 
-            execution.addSlave(testFmu)
+            val slave = execution.addSlave(testFmu)!!
+            val observer = execution.addTimeSeriesObserver()!!
+            Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")!!))
 
             execution.getSlaveInfos().apply {
                 Assertions.assertEquals(0, this[0].index)
@@ -35,6 +36,10 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(numSteps))
+
+            val nSamples = 6
+            val samples = observer.getRealSamples(slave.index, 47 /*vr*/, 1, nSamples)
+            Assertions.assertEquals(nSamples, samples.size)
 
             execution.status!!.apply {
                 Assertions.assertEquals(stepSize * numSteps, this.currentTime, 1E-6)
@@ -90,9 +95,9 @@ class CseExecutionTest {
         CseExecution.create(1.0 / 100).use { execution ->
 
             val counter = AtomicLong(0)
-            execution.addStepEventListener(object: StepEventListener{
+            execution.addStepEventListener(object : StepEventListener {
                 override fun post() {
-                   counter.getAndIncrement()
+                    counter.getAndIncrement()
                 }
             })
 
@@ -106,12 +111,12 @@ class CseExecutionTest {
     @Test
     fun testStepEvent2() {
 
-        CseExecution.create(1.0/100).use { execution ->
+        CseExecution.create(1.0 / 100).use { execution ->
 
             execution.addSlave(testFmu)
 
             val counter = AtomicLong(0)
-            execution.addStepEventListener(object: StepEventListener{
+            execution.addStepEventListener(object : StepEventListener {
                 override fun post() {
                     counter.getAndIncrement()
                 }

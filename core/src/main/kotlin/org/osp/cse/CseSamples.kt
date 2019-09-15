@@ -1,21 +1,17 @@
 package org.osp.cse
 
-sealed class CseSamples {
+sealed class CseSamples(
+        val size: Int,
+        val steps: LongArray,
+        val times: DoubleArray
+)
 
-    val size: Int = -1
-
-    lateinit var steps: LongArray
-        private set
-
-    lateinit var times: DoubleArray
-        private set
-
-}
-
-class CseRealSamples : CseSamples() {
-
-    lateinit var values: DoubleArray
-        private set
+class CseRealSamples(
+        size: Int,
+        steps: LongArray,
+        times: DoubleArray,
+        val values: DoubleArray
+) : CseSamples(size, steps, times) {
 
     override fun toString(): String {
         return "CseRealSamples(size=$size\nvalues=${values.contentToString()}\nsteps=${steps.contentToString()}\ntimes=${times.contentToString()})"
@@ -23,10 +19,12 @@ class CseRealSamples : CseSamples() {
 
 }
 
-class CseIntegerSamples : CseSamples() {
-
-    lateinit var values: IntArray
-        private set
+class CseIntegerSamples(
+        size: Int,
+        steps: LongArray,
+        times: DoubleArray,
+        val values: IntArray
+) : CseSamples(size, steps, times) {
 
     override fun toString(): String {
         return "CseIntegerSamples(size=$size\nvalues=${values.contentToString()}\nsteps=${steps.contentToString()}\ntimes=${times.contentToString()})"
