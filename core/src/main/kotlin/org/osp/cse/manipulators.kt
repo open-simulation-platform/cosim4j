@@ -42,9 +42,6 @@ class CseOverrideManipulator(
         return CseLibrary.setBoolean(manipulatorPtr, slaveIndex, vr, values)
     }
 
-    fun setString(slave: CseSlave, vr: Long, value: String)
-            = setString(slave.index, vr, value)
-
     fun setString(slaveIndex: Int, vr: Long, value: String)
             = CseLibrary.setString(manipulatorPtr, slaveIndex, longArrayOf(vr), arrayOf(value))
 
