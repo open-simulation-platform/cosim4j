@@ -82,16 +82,8 @@ class CseExecution private constructor(
         return CseLibrary.connectIntegers(executionPtr, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
     }
 
-    fun connectIntegers(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return CseLibrary.connectIntegers(executionPtr, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
-    }
-
     fun connectReals(outputSlaveIndex: Int, outputValueRef: Long, inputSlaveIndex: Int, inputValueRef: Long): Boolean {
         return CseLibrary.connectReals(executionPtr, outputSlaveIndex, outputValueRef, inputSlaveIndex, inputValueRef)
-    }
-
-    fun connectReals(outputSlave: CseSlave, outputValueRef: Long, inputSlave: CseSlave, inputValueRef: Long): Boolean {
-        return CseLibrary.connectReals(executionPtr, outputSlave.index, outputValueRef, inputSlave.index, inputValueRef)
     }
 
     fun getSlaveInfos(): List<CseSlaveInfo> {
