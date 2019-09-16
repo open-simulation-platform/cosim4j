@@ -440,7 +440,7 @@ object CseLibrary {
     init {
 
         val platform = if (isLinux) "linux" else "win"
-        val tempDir = Files.createTempDirectory("cse-core4j_").toFile().also {
+        val tempDir = Files.createTempDirectory("cse_core4j_").toFile().also {
             it.deleteOnExit()
         }
 
