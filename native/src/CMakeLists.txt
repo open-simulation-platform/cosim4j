@@ -1,6 +1,14 @@
 
 set(sources
-        "corejni.cpp"
+        "connection.cpp"
+        "error.cpp"
+        "execution.cpp"
+        "initial.cpp"
+        "logging.cpp"
+        "manipulator.cpp"
+        "observer.cpp"
+        "samples.cpp"
+        "slave.cpp"
         "step_event_listener.cpp"
         )
 

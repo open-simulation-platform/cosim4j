@@ -3,8 +3,10 @@
 #define CSECOREJNI_SAMPLES_FIELDS_HPP
 
 #include <cse.h>
+#include <cse/unit_conversion.hpp>
 
 #include <jni.h>
+#include <memory>
 
 namespace
 {

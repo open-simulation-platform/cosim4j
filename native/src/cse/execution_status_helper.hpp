@@ -3,7 +3,7 @@
 #define CSECOREJNI_EXECUTION_STATUS_HELPER_HPP
 
 #include <cse.h>
-#include <cse/cse_structs.hpp>
+#include <cse/cse_execution_s.hpp>
 #include <cse/unit_conversion.hpp>
 
 #include <jni.h>

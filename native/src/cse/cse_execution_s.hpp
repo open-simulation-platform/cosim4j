@@ -1,16 +1,16 @@
 
-#ifndef CSECOREJNI_CSE_STRUCTS_HPP
-#define CSECOREJNI_CSE_STRUCTS_HPP
+#ifndef CSECOREJNI_CSE_EXECUTION_S_HPP
+#define CSECOREJNI_CSE_EXECUTION_S_HPP
 
 #include <cse.h>
 #include <cse/execution.hpp>
-#include <cse/model.hpp>
 #include <cse/ssp_parser.hpp>
 
-struct cse_observer_s
-{
-    std::shared_ptr<cse::observer> cpp_observer;
-};
+#include <memory>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 struct cse_execution_s
 {
@@ -41,4 +41,8 @@ struct cse_execution_s
     }
 };
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif //CSECOREJNI_CSE_EXECUTION_S_HPP

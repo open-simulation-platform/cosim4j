@@ -3,7 +3,7 @@
 #define CSECOREJNI_SLAVE_INFOS_HELPER_HPP
 
 #include <cse.h>
-#include <cse/cse_structs.hpp>
+#include <cse/cse_execution_s.hpp>
 
 #include <jni.h>
 
@@ -13,7 +13,7 @@ namespace
 jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
 {
     auto execution = reinterpret_cast<cse_execution*>(executionPtr);
-    
+
     jclass listCls = env->FindClass("java/util/ArrayList");
     jmethodID listCtor = env->GetMethodID(listCls, "<init>", "(I)V");
     jmethodID addId = env->GetMethodID(listCls, "add", "(Ljava/lang/Object;)Z");
@@ -39,7 +39,6 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
 
             env->CallBooleanMethod(list, addId, info);
         }
-
     }
 
     free(infos);
