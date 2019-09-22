@@ -1,7 +1,10 @@
 
 file(GLOB public_headers "${CMAKE_SOURCE_DIR}/include/cse/*.hpp")
 file(GLOB private_headers "${CMAKE_CURRENT_SOURCE_DIR}/cse/*.hpp")
-file(GLOB sources "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+file(GLOB sources
+        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/jni/*.cpp"
+        )
 
 set(publicHeadersFull)
 foreach(h IN LISTS publicHeaders)

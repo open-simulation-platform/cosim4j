@@ -3,11 +3,10 @@
 #define CSECOREJNI_STEP_EVENT_LISTENER_HPP
 
 #include <cse/observer.hpp>
+#include <cse/thread_worker.hpp>
 
-#include <condition_variable>
 #include <jni.h>
-#include <mutex>
-#include <thread>
+
 
 namespace cse
 {
@@ -32,16 +31,7 @@ private:
     jmethodID mid_;
     jobject listener_;
 
-    bool stop_ = false;
-    bool ready_ = false;
-    bool processed_ = false;
-
-    std::mutex m_;
-    std::thread worker_;
-    std::condition_variable cv_;
-
-    void listen();
-    void callback();
+    thread_worker worker_;
 };
 
 
