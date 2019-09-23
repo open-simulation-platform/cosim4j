@@ -13,13 +13,23 @@ fun extractStepSize(sspDir: File): Double? {
         throw NoSuchFileException(sspFile)
     }
 
-   return extractStepSize(sspFile.readText())
+    return extractStepSize(sspFile.readText())
 
 }
 
 internal fun extractStepSize(text: String): Double? {
 
-    val regex = "stepSize=\"(\\d+\\.\\d+)\"".toRegex()
-    return regex.findAll(text).toList().map { it.groupValues }.getOrNull(0)?.getOrNull(1)?.toDouble()
+    val regex = "stepSize=\"(\\d+\\.\\d+)?(\\d+e-\\d+)?\"".toRegex()
+    val groups = regex.findAll(text).toList().map { it.groupValues }
+    return groups.getOrNull(0)?.let { match ->
+
+        val normalNotation = match[1]
+        val scientificNotation = match[2]
+        when {
+            normalNotation.isNotEmpty() -> normalNotation.toDouble()
+            scientificNotation.isNotEmpty() -> scientificNotation.toDouble()
+            else -> null
+        }
+    }
 
 }

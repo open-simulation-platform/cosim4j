@@ -39,10 +39,28 @@ object CseLibrary {
      */
     private external fun createSspExecution(sspDir: String, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
 
+    /**
+     * Creates a new execution based on a SystemStructure.ssd file.
+     *
+     * @return A pointer to an object which holds the execution state, or NULL on error.
+     */
+    private external fun createFixedStepSspExecution(sspDir: String, stepSize: Double, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
+
+
     @JvmOverloads
-    fun createSspExecution(sspDir: String, startTime: Double? = null): ExecutionPtr {
+    fun createSspExecution(sspDir: String, startTime: Double? = null, stepSize: Double? = null): ExecutionPtr {
         val startTimeDefined = startTime?.let { it >= 0 } ?: false
-        return createSspExecution(sspDir, startTimeDefined, startTime ?: 0.0)
+        return if (stepSize == null) {
+            createSspExecution(sspDir, startTimeDefined, startTime ?: 0.0)
+        } else {
+            createFixedStepSspExecution(sspDir, stepSize, startTimeDefined, startTime ?: 0.0)
+        }
+    }
+
+    @JvmOverloads
+    fun createSspExecution(sspDir: String, stepSize: Double, startTime: Double? = null): ExecutionPtr {
+        val startTimeDefined = startTime?.let { it >= 0 } ?: false
+        return createFixedStepSspExecution(sspDir, stepSize, startTimeDefined, startTime ?: 0.0)
     }
 
     /**
