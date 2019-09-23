@@ -236,7 +236,7 @@ class CseExecution private constructor(
 
         @JvmStatic
         @JvmOverloads
-        fun createFromSsp(sspDir: File, startTime: Double = 0.0): CseExecution {
+        fun createFromSsp(sspDir: File, startTime: Double? = null): CseExecution {
             if (!sspDir.exists()) {
                 throw NoSuchFileException(sspDir)
             }

@@ -37,7 +37,13 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    external fun createSspExecution(sspDir: String, startTime: Double): ExecutionPtr
+    private external fun createSspExecution(sspDir: String, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
+
+    @JvmOverloads
+    fun createSspExecution(sspDir: String, startTime: Double? = null): ExecutionPtr {
+        val startTimeDefined = startTime?.let { it >= 0 } ?: false
+        return createSspExecution(sspDir, startTimeDefined, startTime ?: 0.0)
+    }
 
     /**
      * Destroys an execution.

@@ -25,10 +25,10 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv* 
     return reinterpret_cast<jlong>(execution);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv* env, jobject obj, jstring sspDir, jdouble startTime)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv* env, jobject obj, jstring sspDir, jboolean startTimeDefined, jdouble startTime)
 {
     auto sspDir_ = env->GetStringUTFChars(sspDir, nullptr);
-    cse_execution* execution = cse_ssp_execution_create(sspDir_, to_cse_time_point(startTime));
+    cse_execution* execution = cse_ssp_execution_create(sspDir_, startTimeDefined, to_cse_time_point(startTime));
     env->ReleaseStringUTFChars(sspDir, sspDir_);
     if (execution == nullptr) {
         std::cerr << "[JNI-wrapper]"
