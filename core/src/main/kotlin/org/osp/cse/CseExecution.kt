@@ -236,14 +236,14 @@ class CseExecution private constructor(
 
         @JvmStatic
         @JvmOverloads
-        fun createFromSsp(sspDir: File, startTime: Double? = null): CseExecution {
+        fun createFromSsp(sspDir: File, startTime: Double? = null, stepSize: Double? = null): CseExecution {
             if (!sspDir.exists()) {
                 throw NoSuchFileException(sspDir)
             }
             sspDir.listFiles()?.find {
                 it.name == sspFileName
             } ?: throw IllegalArgumentException("Directory $sspDir contains no $sspFileName")
-            return CseExecution((CseLibrary.createSspExecution(sspDir.absolutePath, startTime)))
+            return CseExecution(CseLibrary.createSspExecution(sspDir.absolutePath, startTime, stepSize))
         }
 
     }

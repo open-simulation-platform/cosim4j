@@ -9,7 +9,9 @@ class SspTest {
 
     @Test
     fun testSsp() {
-        testSsp(File(SspTest::class.java.classLoader.getResource("ssp/demo").file))
+        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo").file)
+        testSsp(sspDir)
+        testSsp2(sspDir)
     }
 
     @Test
@@ -38,7 +40,24 @@ class SspTest {
             Assertions.assertTrue(execution.step(numSteps))
 
             execution.status!!.also {
-                Assertions.assertEquals(numSteps*1e-4, it.currentTime)
+                Assertions.assertEquals(numSteps * 1e-4, it.currentTime)
+            }
+
+        }
+    }
+
+    fun testSsp2(sspDir: File) {
+
+        Assertions.assertTrue(sspDir.exists())
+
+        val stepSize = 1.0 / 100
+        CseExecution.createFromSsp(sspDir, stepSize = stepSize).use { execution ->
+
+            val numSteps = 100L
+            Assertions.assertTrue(execution.step(numSteps))
+
+            execution.status!!.also {
+                Assertions.assertEquals(numSteps * stepSize, it.currentTime)
             }
 
         }

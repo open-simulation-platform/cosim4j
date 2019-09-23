@@ -1,13 +1,10 @@
 
 #include <cse.h>
-
-
-#include <cse/unit_conversion.hpp>
 #include <cse/execution_status_helper.hpp>
-
-#include <jni.h>
+#include <cse/unit_conversion.hpp>
 
 #include <iostream>
+#include <jni.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +26,24 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEn
 {
     auto sspDir_ = env->GetStringUTFChars(sspDir, nullptr);
     cse_execution* execution = cse_ssp_execution_create(sspDir_, startTimeDefined, to_cse_time_point(startTime));
+    env->ReleaseStringUTFChars(sspDir, sspDir_);
+    if (execution == nullptr) {
+        std::cerr << "[JNI-wrapper]"
+                  << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
+        return 0;
+    }
+    return reinterpret_cast<jlong>(execution);
+}
+
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFixedStepSspExecution(JNIEnv* env, jobject obj, jstring sspDir, jdouble stepSize, jboolean startTimeDefined, jdouble startTime)
+{
+    auto sspDir_ = env->GetStringUTFChars(sspDir, nullptr);
+    cse_execution* execution = cse_ssp_fixed_step_execution_create(
+        sspDir_,
+        startTimeDefined,
+        to_cse_time_point(startTime),
+        true,
+        to_cse_duration(stepSize));
     env->ReleaseStringUTFChars(sspDir, sspDir_);
     if (execution == nullptr) {
         std::cerr << "[JNI-wrapper]"
