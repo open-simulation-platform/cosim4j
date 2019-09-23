@@ -37,8 +37,6 @@ private:
     JavaVM* jvm_;
     jobject slave_;
 
-    jmethodID modelDescriptionId_;
-
     jmethodID setupId_;
     jmethodID onBeforeStartId_;
     jmethodID doStepId_;
@@ -50,7 +48,14 @@ private:
     jmethodID getIntegerId_;
     jmethodID setIntegerId_;
 
+    jmethodID getBooleanId_;
+    jmethodID setBooleanId_;
+
+    jmethodID getStringId_;
+    jmethodID setStringId_;
+
     thread_worker worker_;
+    cse::model_description model_description_;
 
 };
 

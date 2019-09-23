@@ -32,7 +32,7 @@ abstract class CseJvmSlave {
     fun setReal(vr: LongArray, values: DoubleArray) {
         for (i in vr.indices) {
             (model.variables.getValue(vr[i]) as RealVar).apply {
-                setter?.apply { values[i] }
+                setter?.invoke(values[i])
             }
         }
     }
@@ -47,8 +47,40 @@ abstract class CseJvmSlave {
 
     fun setInteger(vr: LongArray, values: IntArray) {
         for (i in vr.indices) {
-            (model.variables.getValue(vr[i]) as RealVar).apply {
-                setter?.apply { values[i] }
+            (model.variables.getValue(vr[i]) as IntVar).apply {
+                setter?.invoke(values[i])
+            }
+        }
+    }
+
+    fun getBoolean(vr: LongArray): BooleanArray {
+        return BooleanArray(vr.size) { i ->
+            (model.variables.getValue(vr[i]) as BoolVar).let {
+                it.getter()
+            }
+        }
+    }
+
+    fun setBoolean(vr: LongArray, values: BooleanArray) {
+        for (i in vr.indices) {
+            (model.variables.getValue(vr[i]) as BoolVar).apply {
+                setter?.invoke(values[i])
+            }
+        }
+    }
+
+    fun getString(vr: LongArray): Array<String> {
+        return Array(vr.size) { i ->
+            (model.variables.getValue(vr[i]) as StringVar).let {
+                it.getter()
+            }
+        }
+    }
+
+    fun setString(vr: LongArray, values: Array<String>) {
+        for (i in vr.indices) {
+            (model.variables.getValue(vr[i]) as StringVar).apply {
+                setter?.invoke(values[i])
             }
         }
     }
