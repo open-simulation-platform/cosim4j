@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 abstract class CseJvmSlave {
 
+    private val vrCounter = AtomicLong(0)
     private val model: Model = define()
 
     val modelDescription by lazy {
@@ -85,65 +86,72 @@ abstract class CseJvmSlave {
         }
     }
 
-    protected fun model(name: String): Model = Model(name)
+    protected fun model(name: String): Model = Model(name + "_" + counter.incrementAndGet())
 
     @JvmOverloads
-    protected fun real(name: String, getter: () -> Double, setter: ((Double) -> Unit)? = null): Var = RealVar(name, getter, setter)
+    protected fun real(name: String, getter: () -> Double, setter: ((Double) -> Unit)? = null): Var = RealVar(name, getter, setter, vrCounter)
 
     @JvmOverloads
-    protected fun integer(name: String, getter: () -> Int, setter: ((Int) -> Unit)? = null): Var = IntVar(name, getter, setter)
+    protected fun integer(name: String, getter: () -> Int, setter: ((Int) -> Unit)? = null): Var = IntVar(name, getter, setter, vrCounter)
 
     @JvmOverloads
-    protected fun boolean(name: String, getter: () -> Boolean, setter: ((Boolean) -> Unit)? = null): Var = BoolVar(name, getter, setter)
+    protected fun boolean(name: String, getter: () -> Boolean, setter: ((Boolean) -> Unit)? = null): Var = BoolVar(name, getter, setter, vrCounter)
 
     @JvmOverloads
-    protected fun string(name: String, getter: () -> String, setter: ((String) -> Unit)? = null): Var = StringVar(name, getter, setter)
+    protected fun string(name: String, getter: () -> String, setter: ((String) -> Unit)? = null): Var = StringVar(name, getter, setter, vrCounter)
+
+    private companion object {
+        private val counter = AtomicLong(0)
+    }
+
+    inner class Model (
+            private val name: String
+    ) {
+
+        private var author: String = ""
+        private var description: String = ""
+        private var version: String = ""
+        private val uuid = UUID.randomUUID().toString()
+
+        internal val variables = mutableMapOf<Long, Var>()
+
+        fun author(value: String): Model {
+            author = value
+            return this
+        }
+
+        fun version(value: String): Model {
+            version = value
+            return this
+        }
+
+        fun description(value: String): Model {
+            description = value
+            return this
+        }
+
+        fun add(variable: Var): Model {
+            variables[variable.vr] = variable
+            return this
+        }
+
+        fun toCseModelDescription(): CseModelDescription {
+            return CseModelDescription(name, uuid, description, author, version, variables.values.map { it.toCseVariableDescription() })
+        }
+
+    }
 
 }
 
-class Model(
-        private val name: String
-) {
 
-    private var author: String = ""
-    private var description: String = ""
-    private var version: String = ""
-    private val uuid = UUID.randomUUID().toString()
-
-    internal val variables = mutableMapOf<Long, Var>()
-
-    fun author(value: String): Model {
-        author = value
-        return this
-    }
-
-    fun version(value: String): Model {
-        version = value
-        return this
-    }
-
-    fun description(value: String): Model {
-        description = value
-        return this
-    }
-
-    fun add(variable: Var): Model {
-        variables[variable.vr] = variable
-        return this
-    }
-
-    fun toCseModelDescription(): CseModelDescription {
-        return CseModelDescription(name, uuid, description, author, version, variables.values.map { it.toCseVariableDescription() })
-    }
-
-}
 
 sealed class Var(
         val name: String,
-        val type: CseVariableType
+        val type: CseVariableType,
+        private val counter: AtomicLong
 ) {
 
-    internal val vr = vr_gen.getAndIncrement()
+    internal val vr = counter.getAndIncrement()
 
     private var causality: CseVariableCausality? = null
     private var variability: CseVariableVariability? = null
@@ -162,36 +170,34 @@ sealed class Var(
         return CseVariableDescription(name, vr, type, causality, variability)
     }
 
-    private companion object {
-
-        val vr_gen = AtomicLong(0)
-
-    }
-
 }
 
 
 class RealVar @JvmOverloads constructor(
         name: String,
         val getter: () -> Double,
-        val setter: ((Double) -> Unit)? = null
-) : Var(name, CseVariableType.REAL)
+        val setter: ((Double) -> Unit)? = null,
+        vrCounter: AtomicLong
+) : Var(name, CseVariableType.REAL, vrCounter)
 
 class IntVar @JvmOverloads constructor(
         name: String,
         val getter: () -> Int,
-        val setter: ((Int) -> Unit)? = null
-) : Var(name, CseVariableType.INTEGER)
+        val setter: ((Int) -> Unit)? = null,
+        vrCounter: AtomicLong
+) : Var(name, CseVariableType.INTEGER, vrCounter)
 
 class BoolVar @JvmOverloads constructor(
         name: String,
         val getter: () -> Boolean,
-        val setter: ((Boolean) -> Unit)? = null
-) : Var(name, CseVariableType.BOOLEAN)
+        val setter: ((Boolean) -> Unit)? = null,
+        vrCounter: AtomicLong
+) : Var(name, CseVariableType.BOOLEAN, vrCounter)
 
 class StringVar @JvmOverloads constructor(
         name: String,
         val getter: () -> String,
-        val setter: ((String) -> Unit)? = null
-) : Var(name, CseVariableType.STRING)
+        val setter: ((String) -> Unit)? = null,
+        vrCounter: AtomicLong
+) : Var(name, CseVariableType.STRING, vrCounter)
 

@@ -100,14 +100,16 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, 
 
     const jsize size = env->GetArrayLength(vr);
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
-    auto* ref_ = (double*)malloc(sizeof(double) * size);
+    auto ref_ = reinterpret_cast<jdouble*>(malloc(sizeof(jdouble) * size));
 
-    auto* vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
 
-    bool status = cse_observer_slave_get_real(reinterpret_cast<cse_observer*>(observerPtr), slaveIndex, vr__, size, ref_) == 0;
+    bool status = cse_observer_slave_get_real(
+                      reinterpret_cast<cse_observer*>(observerPtr),
+                      slaveIndex, vr__, size, ref_) == 0;
 
     env->SetDoubleArrayRegion(ref, 0, size, ref_);
 
@@ -127,14 +129,16 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv* en
 
     const jsize size = env->GetArrayLength(vr);
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
-    auto ref_ = (int*)malloc(sizeof(int) * size);
+    auto ref_ = reinterpret_cast<int*>(malloc(sizeof(jint) * size));
 
-    auto vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
-        vr__[i] = (cse_value_reference)vr_[i];
+        vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
 
-    bool status = cse_observer_slave_get_integer(reinterpret_cast<cse_observer*>(observerPtr), slaveIndex, vr__, size, ref_) == 0;
+    bool status = cse_observer_slave_get_integer(
+                      reinterpret_cast<cse_observer*>(observerPtr),
+                      slaveIndex, vr__, size, ref_) == 0;
 
     env->SetIntArrayRegion(ref, 0, size, (jint*)ref_);
 
@@ -154,14 +158,16 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv* en
 
     const jsize size = env->GetArrayLength(vr);
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
-    auto ref_ = (bool*)malloc(sizeof(bool) * size);
+    auto ref_ = reinterpret_cast<bool*>(malloc(sizeof(bool) * size));
 
-    auto* vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto* vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
-        vr__[i] = (cse_value_reference)vr_[i];
+        vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
 
-    bool status = cse_observer_slave_get_boolean(reinterpret_cast<cse_observer*>(observerPtr), slaveIndex, vr__, size, ref_) == 0;
+    bool status = cse_observer_slave_get_boolean(
+                      reinterpret_cast<cse_observer*>(observerPtr),
+                      slaveIndex, vr__, size, ref_) == 0;
 
     env->SetBooleanArrayRegion(ref, 0, size, (jboolean*)ref_);
 
@@ -184,16 +190,18 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv* env
 
     std::vector<const char*> ref_(size);
     for (int i = 0; i < size; i++) {
-        auto str = (jstring)env->GetObjectArrayElement(ref, i);
+        auto str = reinterpret_cast<jstring>(env->GetObjectArrayElement(ref, i));
         ref_[i] = env->GetStringUTFChars(str, nullptr);
     }
 
-    auto vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
 
-    bool status = cse_observer_slave_get_string(reinterpret_cast<cse_observer*>(observerPtr), slaveIndex, vr__, size, ref_.data()) == 0;
+    bool status = cse_observer_slave_get_string(
+                      reinterpret_cast<cse_observer*>(observerPtr),
+                      slaveIndex, vr__, size, ref_.data()) == 0;
 
     for (int i = 0; i < size; i++) {
         jstring value = env->NewStringUTF(ref_[i]);

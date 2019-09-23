@@ -31,7 +31,6 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
     getStringId_ = env->GetMethodID(cls, "getString", "([J)[Ljava/lang/String;");
     setStringId_ = env->GetMethodID(cls, "setString", "([J[Ljava/lang/String;)V");
 
-
     jclass mdCls = env->FindClass("org/osp/cse/CseModelDescription");
     jmethodID modelDescriptionId = env->GetMethodID(cls, "getModelDescription", "()Lorg/osp/cse/CseModelDescription;");
     jobject jmd = env->CallObjectMethod(slave_, modelDescriptionId);
@@ -52,14 +51,6 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
 
     {
 
-        jclass listCls = env->FindClass("java/util/List");
-        jmethodID variablesId_ = env->GetMethodID(mdCls, "getVariables", "()Ljava/util/List;");
-
-        jobject jvars = env->CallObjectMethod(jmd, variablesId_);
-
-        jmethodID sizeId = env->GetMethodID(listCls, "size", "()I");
-        jmethodID getId = env->GetMethodID(listCls, "get", "(I)Ljava/lang/Object;");
-
         jclass varCls = env->FindClass("org/osp/cse/CseVariableDescription");
         jmethodID nameId_ = env->GetMethodID(varCls, "getName", "()Ljava/lang/String;");
         jmethodID referenceId_ = env->GetMethodID(varCls, "getValueReference", "()J");
@@ -67,19 +58,26 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
         jmethodID causalityId = env->GetMethodID(varCls, "getCausalityId", "()I");
         jmethodID variabilityId = env->GetMethodID(varCls, "getVariabilityId", "()I");
 
-        const auto size = env->CallIntMethod(jvars, sizeId);
-        for (int i = 0; i < size; i++) {
-            jobject jvar = env->CallObjectMethod(jvars, getId, i);
+        jclass listCls = env->FindClass("java/util/List");
+        jmethodID sizeId = env->GetMethodID(listCls, "size", "()I");
+        jmethodID getId = env->GetMethodID(listCls, "get", "(I)Ljava/lang/Object;");
 
-            variable_description vd;
-            vd.name = invoke_string_getter(env, jvar, nameId_);
-            vd.reference = static_cast<value_reference>(env->CallLongMethod(jvar, referenceId_));
-            vd.type = static_cast<variable_type>(env->CallIntMethod(jvar, typeId));
-            vd.causality = static_cast<variable_causality>(env->CallIntMethod(jvar, causalityId));
-            vd.variability = static_cast<variable_variability>(env->CallIntMethod(jvar, variabilityId));
+        jmethodID variablesId_ = env->GetMethodID(mdCls, "getVariables", "()Ljava/util/List;");
+        jobject variables = env->CallObjectMethod(jmd, variablesId_);
+
+        const auto size = env->CallIntMethod(variables, sizeId);
+        for (int i = 0; i < size; i++) {
+
+            jobject var = env->CallObjectMethod(variables, getId, i);
+
+            variable_description vd{};
+            vd.name = invoke_string_getter(env, var, nameId_);
+            vd.reference = static_cast<value_reference>(env->CallLongMethod(var, referenceId_));
+            vd.type = static_cast<variable_type>(env->CallIntMethod(var, typeId));
+            vd.causality = static_cast<variable_causality>(env->CallIntMethod(var, causalityId));
+            vd.variability = static_cast<variable_variability>(env->CallIntMethod(var, variabilityId));
 
             model_description_.variables.push_back(vd);
-
         }
     }
 }
@@ -194,6 +192,31 @@ void jvm_slave::get_integer_variables(gsl::span<const value_reference> variables
 void jvm_slave::get_boolean_variables(gsl::span<const value_reference> variables, gsl::span<bool> values) const
 {
     if (variables.empty()) return;
+
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = reinterpret_cast<jlong*>(malloc(sizeof(jlong) * size));
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+            }
+
+            env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
+
+            auto valueArray = reinterpret_cast<jbooleanArray>(env->CallObjectMethod(slave_, getBooleanId_, vrArray));
+            auto valueArrayElements = env->GetBooleanArrayElements(valueArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                values[i] = valueArrayElements[i];
+            }
+
+            free(vrArrayElements);
+            env->ReleaseBooleanArrayElements(valueArray, valueArrayElements, 0);
+        });
+    });
 }
 
 void jvm_slave::get_string_variables(gsl::span<const value_reference> variables, gsl::span<std::string> values) const
@@ -264,6 +287,31 @@ void jvm_slave::set_integer_variables(gsl::span<const value_reference> variables
 void jvm_slave::set_boolean_variables(gsl::span<const value_reference> variables, gsl::span<const bool> values)
 {
     if (variables.empty()) return;
+
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = reinterpret_cast<jlong*>(malloc(sizeof(jlong) * size));
+
+            auto valueArray = env->NewBooleanArray(size);
+            auto valueArrayElements = reinterpret_cast<jboolean*>(malloc(sizeof(jboolean) * size));
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+                valueArrayElements[i] = values[i];
+            }
+
+            env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
+            env->SetBooleanArrayRegion(valueArray, 0, size, valueArrayElements);
+
+            env->CallVoidMethod(slave_, setBooleanId_, vrArray, valueArray);
+
+            free(vrArrayElements);
+            free(valueArrayElements);
+        });
+    });
 }
 
 void jvm_slave::set_string_variables(gsl::span<const value_reference> variables, gsl::span<const std::string> values)

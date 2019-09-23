@@ -22,7 +22,7 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
     jmethodID infoCtor = env->GetMethodID(infoCls, "<init>", "(ILjava/lang/String;Ljava/lang/String;)V");
 
     const auto size = execution->get_num_slaves();
-    auto* infos = (cse_slave_info*)malloc(sizeof(cse_slave_info) * size);
+    auto infos = reinterpret_cast<cse_slave_info*>(malloc(sizeof(cse_slave_info) * size));
     bool status = cse_execution_get_slave_infos((cse_execution*)execution, infos, size) == 0;
 
     jobject list = nullptr;

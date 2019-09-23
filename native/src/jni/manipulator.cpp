@@ -113,7 +113,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* en
     auto vr_ = env->GetLongArrayElements(vr, nullptr);
     auto values_ = env->GetIntArrayElements(values, nullptr);
 
-    auto* vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
