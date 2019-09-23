@@ -43,11 +43,15 @@ private:
     jmethodID onBeforeStartId_;
     jmethodID doStepId_;
     jmethodID terminateId_;
-    jmethodID getRealVariablesId_;
-    jmethodID setRealVariablesId_;
+
+    jmethodID getRealId_;
+    jmethodID setRealId_;
+    
+    jmethodID getIntegerId_;
+    jmethodID setIntegerId_;
 
     thread_worker worker_;
-    
+
 };
 
 } // namespace cse

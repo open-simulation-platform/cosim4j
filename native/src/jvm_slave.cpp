@@ -20,6 +20,12 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
     onBeforeStartId_ = env->GetMethodID(cls, "onBeforeStart", "()V");
     doStepId_ = env->GetMethodID(cls, "doStep", "(DD)V");
     terminateId_ = env->GetMethodID(cls, "terminate", "()V");
+
+    getRealId_ = env->GetMethodID(cls, "getReal", "([J)[D");
+    setRealId_ = env->GetMethodID(cls, "setReal", "([J[D)V");
+
+    getIntegerId_ = env->GetMethodID(cls, "getInteger", "([J)[I");
+    setIntegerId_ = env->GetMethodID(cls, "setInteger", "([J[I)V");
 }
 
 cse::model_description jvm_slave::model_description() const
@@ -123,10 +129,58 @@ cse::step_result jvm_slave::do_step(cse::time_point currentT, cse::duration delt
 }
 void jvm_slave::get_real_variables(gsl::span<const value_reference> variables, gsl::span<double> values) const
 {
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = env->GetLongArrayElements(vrArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+            }
+
+            auto valueArray = reinterpret_cast<jdoubleArray >(env->CallObjectMethod(slave_, getRealId_, vrArray));
+            auto valueArrayElements = env->GetDoubleArrayElements(valueArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                values[i] = valueArrayElements[i];
+            }
+
+            env->ReleaseDoubleArrayElements(valueArray, valueArrayElements, 0);
+            env->ReleaseLongArrayElements(vrArray, vrArrayElements, 0);
+
+        });
+    });
 }
 
 void jvm_slave::get_integer_variables(gsl::span<const value_reference> variables, gsl::span<int> values) const
 {
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = env->GetLongArrayElements(vrArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+            }
+
+            auto valueArray = reinterpret_cast<jintArray >(env->CallObjectMethod(slave_, getIntegerId_, vrArray));
+            auto valueArrayElements = env->GetIntArrayElements(valueArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                values[i] = valueArrayElements[i];
+            }
+
+            env->ReleaseIntArrayElements(valueArray, valueArrayElements, 0);
+            env->ReleaseLongArrayElements(vrArray, vrArrayElements, 0);
+
+        });
+    });
 }
 
 void jvm_slave::get_boolean_variables(gsl::span<const value_reference> variables, gsl::span<bool> values) const
@@ -139,10 +193,56 @@ void jvm_slave::get_string_variables(gsl::span<const value_reference> variables,
 
 void jvm_slave::set_real_variables(gsl::span<const value_reference> variables, gsl::span<const double> values)
 {
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = env->GetLongArrayElements(vrArray, nullptr);
+
+            auto valueArray = env->NewDoubleArray(size);
+            auto valueArrayElements = env->GetDoubleArrayElements(valueArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+                valueArrayElements[i] = values[i];
+            }
+
+            env->CallVoidMethod(slave_, setRealId_, vrArray, valueArray);
+
+            env->ReleaseDoubleArrayElements(valueArray, valueArrayElements, 0);
+            env->ReleaseLongArrayElements(vrArray, vrArrayElements, 0);
+
+        });
+    });
 }
 
 void jvm_slave::set_integer_variables(gsl::span<const value_reference> variables, gsl::span<const int> values)
 {
+    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = env->GetLongArrayElements(vrArray, nullptr);
+
+            auto valueArray = env->NewIntArray(size);
+            auto valueArrayElements = env->GetIntArrayElements(valueArray, nullptr);
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+                valueArrayElements[i] = values[i];
+            }
+
+            env->CallVoidMethod(slave_, setIntegerId_, vrArray, valueArray);
+
+            env->ReleaseIntArrayElements(valueArray, valueArrayElements, 0);
+            env->ReleaseLongArrayElements(vrArray, vrArrayElements, 0);
+
+        });
+    });
 }
 
 void jvm_slave::set_boolean_variables(gsl::span<const value_reference> variables, gsl::span<const bool> values)

@@ -1,5 +1,6 @@
 package org.osp.cse
 
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 class JvmSlaveTest {
@@ -9,9 +10,16 @@ class JvmSlaveTest {
 
         CseExecution.create(1.0 / 100).use { execution ->
 
-            execution.addSlave(MySlave())
+            val slave = MySlave()
+            execution.addSlave(slave)
 
-            execution.step(10)
+            val observer = execution.addLastValueObserver()!!
+
+            val numSteps = 10L
+            execution.step(numSteps)
+
+            Assertions.assertEquals(numSteps.toDouble(), slave.realOut)
+            Assertions.assertEquals(numSteps.toDouble(), observer.getReal(0, 0))
 
         }
 
@@ -21,7 +29,7 @@ class JvmSlaveTest {
 
 class MySlave : CseJvmSlave() {
 
-    private var realOut = 0.0
+    internal var realOut = 0.0
 
     override fun define(): Model {
         return Model("TestSlave")

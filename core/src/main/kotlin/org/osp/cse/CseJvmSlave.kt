@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 abstract class CseJvmSlave {
 
-    private val model = define()
+    private val model: Model = define()
 
     val modelDescription by lazy {
         model.toCseModelDescription()
@@ -21,18 +21,56 @@ abstract class CseJvmSlave {
 
     open fun terminate() {}
 
-    private fun getReal(vr: LongArray, ref: DoubleArray) {
+    fun getReal(vr: LongArray): DoubleArray {
+        return DoubleArray(vr.size) { i ->
+            (model.variables.getValue(vr[i]) as RealVar).let {
+                it.getter()
+            }
+        }
+    }
 
+    fun setReal(vr: LongArray, values: DoubleArray) {
+        for (i in vr.indices) {
+            (model.variables.getValue(vr[i]) as RealVar).apply {
+                setter?.apply { values[i] }
+            }
+        }
+    }
+
+    fun getInteger(vr: LongArray): IntArray {
+        return IntArray(vr.size) { i ->
+            (model.variables.getValue(vr[i]) as IntVar).let {
+                it.getter()
+            }
+        }
+    }
+
+    fun setInteger(vr: LongArray, values: IntArray) {
+        for (i in vr.indices) {
+            (model.variables.getValue(vr[i]) as RealVar).apply {
+                setter?.apply { values[i] }
+            }
+        }
     }
 
     protected fun model(name: String): Model = Model(name)
 
-    protected fun real(name: String, getter: () -> Double): Var<*> = RealVar(name, getter)
+    @JvmOverloads
+    protected fun real(name: String, getter: () -> Double, setter: ((Double) -> Unit)? = null): Var = RealVar(name, getter, setter)
+
+    @JvmOverloads
+    protected fun integer(name: String, getter: () -> Int, setter: ((Int) -> Unit)? = null): Var = IntVar(name, getter, setter)
+
+    @JvmOverloads
+    protected fun boolean(name: String, getter: () -> Boolean, setter: ((Boolean) -> Unit)? = null): Var = BoolVar(name, getter, setter)
+
+    @JvmOverloads
+    protected fun string(name: String, getter: () -> String, setter: ((String) -> Unit)? = null): Var = StringVar(name, getter, setter)
 
 }
 
 class Model(
-        val name: String
+        private val name: String
 ) {
 
     private var author: String = ""
@@ -40,7 +78,7 @@ class Model(
     private var version: String = ""
     private val uuid = UUID.randomUUID().toString()
 
-    private val variables = mutableMapOf<Long, Var<*>>()
+    internal val variables = mutableMapOf<Long, Var>()
 
     fun author(value: String): Model {
         author = value
@@ -57,7 +95,7 @@ class Model(
         return this
     }
 
-    fun add(variable: Var<*>): Model {
+    fun add(variable: Var): Model {
         variables[variable.vr] = variable
         return this
     }
@@ -68,11 +106,9 @@ class Model(
 
 }
 
-sealed class Var<E>(
+sealed class Var(
         val name: String,
-        val type: CseVariableType,
-        val getter: () -> E,
-        val setter: ((E) -> Unit)? = null
+        val type: CseVariableType
 ) {
 
     internal val vr = vr_gen.getAndIncrement()
@@ -80,12 +116,12 @@ sealed class Var<E>(
     private var causality: CseVariableCausality? = null
     private var variability: CseVariableVariability? = null
 
-    fun causality(causality: CseVariableCausality): Var<E> {
+    fun causality(causality: CseVariableCausality): Var {
         this.causality = causality
         return this
     }
 
-    fun variability(variableVariability: CseVariableVariability): Var<E> {
+    fun variability(variableVariability: CseVariableVariability): Var {
         this.variability = variableVariability
         return this
     }
@@ -105,6 +141,25 @@ sealed class Var<E>(
 
 class RealVar @JvmOverloads constructor(
         name: String,
-        getter: () -> Double,
-        setter: ((Double) -> Unit)? = null
-) : Var<Double>(name, CseVariableType.REAL, getter, setter)
+        val getter: () -> Double,
+        val setter: ((Double) -> Unit)? = null
+) : Var(name, CseVariableType.REAL)
+
+class IntVar @JvmOverloads constructor(
+        name: String,
+        val getter: () -> Int,
+        val setter: ((Int) -> Unit)? = null
+) : Var(name, CseVariableType.INTEGER)
+
+class BoolVar @JvmOverloads constructor(
+        name: String,
+        val getter: () -> Boolean,
+        val setter: ((Boolean) -> Unit)? = null
+) : Var(name, CseVariableType.BOOLEAN)
+
+class StringVar @JvmOverloads constructor(
+        name: String,
+        val getter: () -> String,
+        val setter: ((String) -> Unit)? = null
+) : Var(name, CseVariableType.STRING)
+
