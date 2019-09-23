@@ -1,10 +1,12 @@
 
+#include <cse/jvm_helper.hpp>
 #include <cse/jvm_slave.hpp>
 
 namespace cse
 {
 
-jvm_slave::jvm_slave(JNIEnv* env, jobject slave): model_description_(nullptr)
+jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
+    : model_description_(nullptr)
 {
     env->GetJavaVM(&jvm_);
     slave_ = env->NewGlobalRef(slave);
@@ -12,7 +14,6 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave): model_description_(nullptr)
     jclass cls = env->FindClass("org/osp/cse/CseJvmSlave");
 
     doStepId_ = env->GetMethodID(cls, "doStep", "(DD)Z");
-
 }
 
 cse::model_description jvm_slave::model_description() const
@@ -75,17 +76,7 @@ void jvm_slave::set_string_variables(gsl::span<const value_reference> variables,
 
 cse::jvm_slave::~jvm_slave()
 {
-    JNIEnv* env;
-    bool attach = false;
-    int getEnvStat = jvm_->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
-    if (getEnvStat == JNI_EDETACHED) {
-        attach = true;
-        jvm_->AttachCurrentThread(reinterpret_cast<void**>(&env), nullptr);
-    }
-
-    env->DeleteGlobalRef(slave_);
-
-    if (attach) {
-        jvm_->DetachCurrentThread();
-    }
+    jvm_invoke(jvm_, [this](JNIEnv* env) {
+        env->DeleteGlobalRef(slave_);
+    });
 }
