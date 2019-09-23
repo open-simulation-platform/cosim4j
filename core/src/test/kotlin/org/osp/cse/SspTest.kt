@@ -3,6 +3,7 @@ package org.osp.cse
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import org.osp.util.extractStepSize
 import java.io.File
 
 class SspTest {
@@ -40,7 +41,7 @@ class SspTest {
             Assertions.assertTrue(execution.step(numSteps))
 
             execution.status!!.also {
-                Assertions.assertEquals(numSteps * 1e-4, it.currentTime)
+                Assertions.assertEquals(numSteps * extractStepSize(sspDir)!!, it.currentTime)
             }
 
         }
