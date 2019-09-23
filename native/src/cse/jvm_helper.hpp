@@ -2,9 +2,10 @@
 #ifndef CSECOREJNI_JVM_HELPER_HPP
 #define CSECOREJNI_JVM_HELPER_HPP
 
+#include <functional>
+#include <iostream>
 #include <jni.h>
 
-#include <functional>
 
 namespace
 {
@@ -25,7 +26,14 @@ void jvm_invoke(JavaVM* jvm, std::function<void(JNIEnv*)> f)
     if (attach) {
         jvm->DetachCurrentThread();
     }
+}
 
+std::string invoke_string_getter(JNIEnv* env, jobject slave, jmethodID mid)
+{
+    auto jname = reinterpret_cast<jstring>(env->CallObjectMethod(slave, mid));
+    auto cname = env->GetStringUTFChars(jname, nullptr);
+    env->ReleaseStringUTFChars(jname, cname);
+    return cname;
 }
 
 } // namespace

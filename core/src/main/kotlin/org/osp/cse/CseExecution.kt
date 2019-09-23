@@ -33,19 +33,23 @@ class CseExecution private constructor(
     }
 
     fun addSlave(fmuPath: File): CseSlave? {
-        return CseLibrary.createSlave(fmuPath.absolutePath).let { slave ->
+        return addSlave(CseLibrary.createSlave(fmuPath.absolutePath))
+    }
 
-            if (slave != 0L) {
-                val index = CseLibrary.addSlave(executionPtr, slave)
-                val name = getSlaveInfos().find { it.index == index }!!.name
-                CseLocalSlave(index, name, executionPtr, slave).also {
-                    slaves.add(it)
-                }
-            } else {
-                LOG.error("Failed to add slave! Last reported error=${CseLibrary.getLastError()}")
-                null
+    fun addSlave(slave: CseJvmSlave): CseSlave? {
+        return addSlave(CseLibrary.createJvmSlave(slave))
+    }
+
+    private fun addSlave(slavePtr: Long): CseSlave? {
+        return if (slavePtr != 0L) {
+            val index = CseLibrary.addSlave(executionPtr, slavePtr)
+            val name = getSlaveInfos().find { it.index == index }!!.name
+            CseLocalSlave(index, name, executionPtr, slavePtr).also {
+                slaves.add(it)
             }
-
+        } else {
+            LOG.error("Failed to add slave! Last reported error=${CseLibrary.getLastError()}")
+            null
         }
     }
 

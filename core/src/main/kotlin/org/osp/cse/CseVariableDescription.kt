@@ -4,9 +4,16 @@ class CseVariableDescription internal constructor(
         val name: String,
         val valueReference: Long,
         val type: CseVariableType,
-        val causality: CseVariableCausality,
-        val variability: CseVariableVariability
+        causality: CseVariableCausality? = null,
+        variability: CseVariableVariability? = null
 ) {
+
+    val causality = causality ?: CseVariableCausality.LOCAL
+    val variability = variability ?: CseVariableVariability.CONTINUOUS
+
+    fun getTypeId() = this.type.code
+    fun getCausalityId() = this.causality.code
+    fun getVariabilityId() = this.variability.code
 
     constructor(
             name: String,
@@ -53,7 +60,7 @@ enum class CseVariableType(
 }
 
 enum class CseVariableCausality(
-        private val code: Int
+        internal val code: Int
 ) {
 
     INPUT(0),
@@ -80,7 +87,7 @@ enum class CseVariableCausality(
 }
 
 enum class CseVariableVariability(
-        private val code: Int
+        internal val code: Int
 ) {
 
     CONSTANT(0),

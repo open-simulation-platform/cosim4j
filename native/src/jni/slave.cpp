@@ -31,6 +31,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env,
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject obj, jobject jslave)
 {
+
     auto instance = std::make_unique<cse::jvm_slave>(env, jslave);
     const auto md = instance->model_description();
     auto slave = std::make_unique<cse_slave>();

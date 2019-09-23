@@ -37,17 +37,17 @@ private:
     JavaVM* jvm_;
     jobject slave_;
 
+    jmethodID modelDescriptionId_;
+
     jmethodID setupId_;
-    jmethodID start_simulationId_;
-    jmethodID end_simulationId_;
+    jmethodID onBeforeStartId_;
     jmethodID doStepId_;
+    jmethodID terminateId_;
     jmethodID getRealVariablesId_;
     jmethodID setRealVariablesId_;
 
     thread_worker worker_;
-
-    std::unique_ptr<const cse::model_description> model_description_;
-
+    
 };
 
 } // namespace cse
