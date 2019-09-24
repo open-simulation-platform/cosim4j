@@ -222,6 +222,32 @@ void jvm_slave::get_boolean_variables(gsl::span<const value_reference> variables
 void jvm_slave::get_string_variables(gsl::span<const value_reference> variables, gsl::span<std::string> values) const
 {
     if (variables.empty()) return;
+
+    worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = reinterpret_cast<jlong*>(malloc(sizeof(jlong) * size));
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+            }
+
+            env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
+
+            auto valueArray = reinterpret_cast<jobjectArray>(env->CallObjectMethod(slave_, getStringId_, vrArray));
+
+            for (int i = 0; i < size; i++) {
+                auto jstr = reinterpret_cast<jstring>(env->GetObjectArrayElement(valueArray, i));
+                auto cStr = env->GetStringUTFChars(jstr, nullptr);
+                values[i] = cStr;
+                env->ReleaseStringUTFChars(jstr, cStr);
+            }
+
+            free(vrArrayElements);
+        });
+    });
 }
 
 void jvm_slave::set_real_variables(gsl::span<const value_reference> variables, gsl::span<const double> values)
@@ -270,7 +296,7 @@ void jvm_slave::set_integer_variables(gsl::span<const value_reference> variables
 
             for (int i = 0; i < size; i++) {
                 vrArrayElements[i] = static_cast<jlong>(variables[i]);
-                valueArrayElements[i] = values[i];
+                valueArrayElements[i] = static_cast<jint>(values[i]);
             }
 
             env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
@@ -300,7 +326,7 @@ void jvm_slave::set_boolean_variables(gsl::span<const value_reference> variables
 
             for (int i = 0; i < size; i++) {
                 vrArrayElements[i] = static_cast<jlong>(variables[i]);
-                valueArrayElements[i] = values[i];
+                valueArrayElements[i] = static_cast<jboolean>(values[i]);
             }
 
             env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
@@ -317,6 +343,28 @@ void jvm_slave::set_boolean_variables(gsl::span<const value_reference> variables
 void jvm_slave::set_string_variables(gsl::span<const value_reference> variables, gsl::span<const std::string> values)
 {
     if (variables.empty()) return;
+
+    worker_.work([this, variables, values]() {
+        jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
+            const auto size = static_cast<int>(variables.size());
+
+            auto vrArray = env->NewLongArray(size);
+            auto vrArrayElements = reinterpret_cast<jlong*>(malloc(sizeof(jlong) * size));
+
+            auto valueArray = env->NewObjectArray(size, env->FindClass("java/lang/String"), NULL);
+
+            for (int i = 0; i < size; i++) {
+                vrArrayElements[i] = static_cast<jlong>(variables[i]);
+                env->SetObjectArrayElement(valueArray, i, env->NewStringUTF(values[i].c_str()));
+            }
+
+            env->SetLongArrayRegion(vrArray, 0, size, vrArrayElements);
+
+            env->CallVoidMethod(slave_, setStringId_, vrArray, valueArray);
+
+            free(vrArrayElements);
+        });
+    });
 }
 
 jvm_slave::~jvm_slave()

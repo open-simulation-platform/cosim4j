@@ -158,20 +158,27 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv* en
 
     const jsize size = env->GetArrayLength(vr);
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
-    auto ref_ = reinterpret_cast<bool*>(malloc(sizeof(bool) * size));
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
 
-    auto* vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
 
+    auto ref_ = reinterpret_cast<bool*>(malloc(sizeof(bool) * size));
     bool status = cse_observer_slave_get_boolean(
                       reinterpret_cast<cse_observer*>(observerPtr),
                       slaveIndex, vr__, size, ref_) == 0;
 
-    env->SetBooleanArrayRegion(ref, 0, size, (jboolean*)ref_);
+    auto ref__ = reinterpret_cast<jboolean *>(malloc(sizeof(jboolean) * size));
+
+    for (int i = 0; i < size; ++i) {
+        ref__[i] = static_cast<jboolean >(ref_[i]);
+    }
+
+    env->SetBooleanArrayRegion(ref, 0, size, ref__);
 
     free(ref_);
+    free(ref__);
     free(vr__);
     env->ReleaseLongArrayElements(vr, vr_, 0);
 

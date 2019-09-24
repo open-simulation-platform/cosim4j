@@ -28,6 +28,10 @@ class CseExecution private constructor(
     val status: CseExecutionStatus?
         get() = CseLibrary.getStatus(executionPtr)
 
+    fun getSlave(index: Int): CseSlave? {
+        return slaves.find { it.index == index }
+    }
+
     fun getSlave(name: String): CseSlave? {
         return slaves.find { it.name == name }
     }

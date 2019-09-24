@@ -40,8 +40,9 @@ enum class CseVariableType(
 
     REAL(0),
     INTEGER(1),
-    STRING(2),
-    BOOLEAN(3);
+    BOOLEAN(2),
+    STRING(3),
+    ENUMERATION(4);
 
     companion object {
 

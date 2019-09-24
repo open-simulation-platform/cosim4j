@@ -2,6 +2,8 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ManipulatorPtr
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 
 sealed class CseManipulator(
@@ -21,32 +23,56 @@ class CseOverrideManipulator(
         manipulator: ManipulatorPtr
 ) : CseManipulator(manipulator) {
 
-    fun setReal(slaveIndex: Int, vr: Long, value: Double)
-            = CseLibrary.setReal(manipulatorPtr, slaveIndex, longArrayOf(vr), doubleArrayOf(value))
+    private companion object {
+        val LOG: Logger = LoggerFactory.getLogger(CseOverrideManipulator::class.java)
+    }
+
+    fun setReal(slaveIndex: Int, vr: Long, value: Double): Boolean {
+        return setReal(slaveIndex, longArrayOf(vr), doubleArrayOf(value))
+    }
 
     fun setReal(slaveIndex: Int, vr: LongArray, values: DoubleArray): Boolean {
-        return CseLibrary.setReal(manipulatorPtr, slaveIndex, vr, values)
+        return CseLibrary.setReal(manipulatorPtr, slaveIndex, vr, values).also {
+            if (!it) {
+                LOG.warn("setReal failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
-    fun setInteger(slaveIndex: Int, vr: Long, value: Int)
-            = CseLibrary.setInteger(manipulatorPtr, slaveIndex, longArrayOf(vr), intArrayOf(value))
+    fun setInteger(slaveIndex: Int, vr: Long, value: Int): Boolean {
+        return setInteger(slaveIndex, longArrayOf(vr), intArrayOf(value))
+    }
 
     fun setInteger(slaveIndex: Int, vr: LongArray, values: IntArray): Boolean {
-        return CseLibrary.setInteger(manipulatorPtr, slaveIndex, vr, values)
+        return CseLibrary.setInteger(manipulatorPtr, slaveIndex, vr, values).also {
+            if (!it) {
+                LOG.warn("setInteger failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
-    fun setBoolean(slaveIndex: Int, vr: Long, value: Boolean)
-            = CseLibrary.setBoolean(manipulatorPtr, slaveIndex, longArrayOf(vr), booleanArrayOf(value))
+    fun setBoolean(slaveIndex: Int, vr: Long, value: Boolean): Boolean {
+        return setBoolean(slaveIndex, longArrayOf(vr), booleanArrayOf(value))
+    }
 
     fun setBoolean(slaveIndex: Int, vr: LongArray, values: BooleanArray): Boolean {
-        return CseLibrary.setBoolean(manipulatorPtr, slaveIndex, vr, values)
+        return CseLibrary.setBoolean(manipulatorPtr, slaveIndex, vr, values).also {
+            if (!it) {
+                LOG.warn("setBoolean failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
-    fun setString(slaveIndex: Int, vr: Long, value: String)
-            = CseLibrary.setString(manipulatorPtr, slaveIndex, longArrayOf(vr), arrayOf(value))
+    fun setString(slaveIndex: Int, vr: Long, value: String): Boolean {
+        return setString(slaveIndex, longArrayOf(vr), arrayOf(value))
+    }
 
     fun setString(slaveIndex: Int, vr: LongArray, values: Array<String>): Boolean {
-        return CseLibrary.setString(manipulatorPtr, slaveIndex, vr, values)
+        return CseLibrary.setString(manipulatorPtr, slaveIndex, vr, values).also {
+            if (!it) {
+                LOG.warn("setString failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
 }
