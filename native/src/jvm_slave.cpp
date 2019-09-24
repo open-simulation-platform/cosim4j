@@ -133,7 +133,7 @@ void jvm_slave::get_real_variables(gsl::span<const value_reference> variables, g
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 
@@ -163,7 +163,7 @@ void jvm_slave::get_integer_variables(gsl::span<const value_reference> variables
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 
@@ -193,7 +193,7 @@ void jvm_slave::get_boolean_variables(gsl::span<const value_reference> variables
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 
@@ -228,7 +228,7 @@ void jvm_slave::set_real_variables(gsl::span<const value_reference> variables, g
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 
@@ -258,7 +258,7 @@ void jvm_slave::set_integer_variables(gsl::span<const value_reference> variables
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 
@@ -288,7 +288,7 @@ void jvm_slave::set_boolean_variables(gsl::span<const value_reference> variables
 {
     if (variables.empty()) return;
 
-    const_cast<jvm_slave*>(this)->worker_.work([this, variables, values]() {
+    worker_.work([this, variables, values]() {
         jvm_invoke(jvm_, [this, variables, values](JNIEnv* env) {
             const auto size = static_cast<int>(variables.size());
 

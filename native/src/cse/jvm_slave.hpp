@@ -54,7 +54,7 @@ private:
     jmethodID getStringId_;
     jmethodID setStringId_;
 
-    thread_worker worker_;
+    mutable thread_worker worker_;
     cse::model_description model_description_;
 
 };
