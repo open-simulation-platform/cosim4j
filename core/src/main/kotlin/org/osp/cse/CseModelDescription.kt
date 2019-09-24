@@ -3,11 +3,10 @@ package org.osp.cse
 class CseModelDescription(
         val name: String,
         val uuid: String,
-        val description: String,
-        val author: String,
-        val version: String,
+        val description: String = "",
+        val author: String = "",
+        val version: String = "",
         val variables: List<CseVariableDescription>
-
 ) {
 
     fun getVariable(name: String): CseVariableDescription? {
@@ -21,4 +20,5 @@ class CseModelDescription(
     override fun toString(): String {
         return "CseModelDescription(name='$name', uuid='$uuid', description='$description', author='$author', version='$version', numVariables=${variables.size})"
     }
+
 }

@@ -2,6 +2,8 @@ package org.osp.cse
 
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ObserverPtr
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
 
@@ -71,52 +73,74 @@ class CseLastValueObserver(
         observer: ObserverPtr
 ) : CseObserver(observer) {
 
+    private companion object {
+
+        val LOG: Logger = LoggerFactory.getLogger(CseLastValueObserver::class.java)
+
+    }
+
     fun getReal(slaveIndex: Int, vr: Long): Double? {
         return DoubleArray(1).also {
-            if (!CseLibrary.getReal(observerPtr, slaveIndex, longArrayOf(vr), it)) {
+            if (!getReal(slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
     }
 
     fun getReal(slaveIndex: Int, vr: LongArray, ref: DoubleArray): Boolean {
-        return CseLibrary.getReal(observerPtr, slaveIndex, vr, ref)
+        return CseLibrary.getReal(observerPtr, slaveIndex, vr, ref).also {
+            if (!it) {
+                LOG.warn("getReal failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
     fun getInteger(slaveIndex: Int, vr: Long): Int? {
         return IntArray(1).also {
-            if (!CseLibrary.getInteger(observerPtr, slaveIndex, longArrayOf(vr), it)) {
+            if (!getInteger(slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
     }
 
     fun getInteger(slaveIndex: Int, vr: LongArray, ref: IntArray): Boolean {
-        return CseLibrary.getInteger(observerPtr, slaveIndex, vr, ref)
+        return CseLibrary.getInteger(observerPtr, slaveIndex, vr, ref).also {
+            if (!it) {
+                LOG.warn("getInteger failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
     fun getBoolean(slaveIndex: Int, vr: Long): Boolean? {
         return BooleanArray(1).also {
-            if (!CseLibrary.getBoolean(observerPtr, slaveIndex, longArrayOf(vr), it)) {
+            if (!getBoolean(slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
     }
 
     fun getBoolean(slaveIndex: Int, vr: LongArray, ref: BooleanArray): Boolean {
-        return CseLibrary.getBoolean(observerPtr, slaveIndex, vr, ref)
+        return CseLibrary.getBoolean(observerPtr, slaveIndex, vr, ref).also {
+            if (!it) {
+                LOG.warn("getBoolean failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
     fun getString(slaveIndex: Int, vr: Long): String? {
-        return Array<String>(1) { "" }.also {
-            if (!CseLibrary.getString(observerPtr, slaveIndex, longArrayOf(vr), it)) {
+        return Array(1) { "" }.also {
+            if (!getString(slaveIndex, longArrayOf(vr), it)) {
                 return null
             }
         }[0]
     }
 
     fun getString(slaveIndex: Int, vr: LongArray, ref: Array<String>): Boolean {
-        return CseLibrary.getString(observerPtr, slaveIndex, vr, ref)
+        return CseLibrary.getString(observerPtr, slaveIndex, vr, ref).also {
+            if (!it) {
+                LOG.warn("getString failed, last reported error: ${CseLibrary.getLastError()}")
+            }
+        }
     }
 
 }

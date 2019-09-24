@@ -1,18 +1,32 @@
 package org.osp.cse
 
-import java.lang.IllegalArgumentException
-
 class CseVariableDescription internal constructor(
         val name: String,
         val valueReference: Long,
-        private var variableType: Int,
-        private var variableCausality: Int,
-        private var variableVariability: Int
+        val type: CseVariableType,
+        causality: CseVariableCausality? = null,
+        variability: CseVariableVariability? = null
 ) {
 
-    val type: CseVariableType by lazy { CseVariableType.valueOf(variableType) }
-    val causality: CseVariableCausality by lazy { CseVariableCausality.valueOf(variableCausality) }
-    val variability: CseVariableVariability by lazy { CseVariableVariability.valueOf(variableVariability) }
+    val causality = causality ?: CseVariableCausality.LOCAL
+    val variability = variability ?: CseVariableVariability.CONTINUOUS
+
+    fun getTypeId() = this.type.code
+    fun getCausalityId() = this.causality.code
+    fun getVariabilityId() = this.variability.code
+
+    constructor(
+            name: String,
+            valueReference: Long,
+            variableType: Int,
+            variableCausality: Int,
+            variableVariability: Int
+    ) : this(
+            name,
+            valueReference,
+            CseVariableType.valueOf(variableType),
+            CseVariableCausality.valueOf(variableCausality),
+            CseVariableVariability.valueOf(variableVariability))
 
     override fun toString(): String {
         return "CseVariableDescription(name='$name', valueReference=$valueReference, variableType=$type, causality=$causality, variability=$variability)"
@@ -26,8 +40,9 @@ enum class CseVariableType(
 
     REAL(0),
     INTEGER(1),
-    STRING(2),
-    BOOLEAN(3);
+    BOOLEAN(2),
+    STRING(3),
+    ENUMERATION(4);
 
     companion object {
 
@@ -46,7 +61,7 @@ enum class CseVariableType(
 }
 
 enum class CseVariableCausality(
-        private val code: Int
+        internal val code: Int
 ) {
 
     INPUT(0),
@@ -73,7 +88,7 @@ enum class CseVariableCausality(
 }
 
 enum class CseVariableVariability(
-        private val code: Int
+        internal val code: Int
 ) {
 
     CONSTANT(0),

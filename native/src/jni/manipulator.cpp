@@ -87,7 +87,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setReal(JNIEnv* env, 
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
     jdouble* _values = env->GetDoubleArrayElements(values, nullptr);
 
-    auto vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = (cse_value_reference)vr_[i];
     }
@@ -110,10 +110,10 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setInteger(JNIEnv* en
     }
 
     const jsize size = env->GetArrayLength(vr);
-    jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
-    jint* values_ = env->GetIntArrayElements(values, nullptr);
+    auto vr_ = env->GetLongArrayElements(vr, nullptr);
+    auto values_ = env->GetIntArrayElements(values, nullptr);
 
-    auto* vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
@@ -143,7 +143,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setBoolean(JNIEnv* en
     jlong* vr_ = env->GetLongArrayElements(vr, nullptr);
     jboolean* values_ = env->GetBooleanArrayElements(values, nullptr);
 
-    auto* vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto* vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
@@ -174,7 +174,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_setString(JNIEnv* env
         values_[i] = env->GetStringUTFChars(value, nullptr);
     }
 
-    auto* vr__ = (cse_value_reference*)malloc(sizeof(cse_value_reference) * size);
+    auto* vr__ = reinterpret_cast<cse_value_reference*>(malloc(sizeof(cse_value_reference) * size));
     for (int i = 0; i < size; ++i) {
         vr__[i] = static_cast<cse_value_reference>(vr_[i]);
     }
