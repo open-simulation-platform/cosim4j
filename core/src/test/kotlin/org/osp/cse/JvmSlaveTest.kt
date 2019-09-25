@@ -103,34 +103,3 @@ class MySlave(
     }
 
 }
-
-class MySlave2 : CseJvmSlave() {
-
-    internal var intIn = 0
-    internal var intOut = 0
-    internal var realOut1 = 0.0
-    internal var realOut2 = 0.0
-
-    override fun define(): Model {
-        return Model("TestSlave2")
-                .description("Slave for testing")
-                .author("Lars Ivar Hatledal")
-                .add(integer("intIn", { intIn }, { intIn = it }).causality(CseVariableCausality.INPUT))
-                .add(integer("intOut", { intOut }).causality(CseVariableCausality.OUTPUT))
-                .add(real("realOut1", { realOut1 }).causality(CseVariableCausality.OUTPUT))
-                .add(real("realOut2", { realOut2 }).causality(CseVariableCausality.OUTPUT))
-    }
-
-    override fun setup(startTime: Double) {}
-
-    override fun doStep(currentTime: Double, stepSize: Double) {
-        intOut += 1
-        realOut1 += 1
-        realOut2 += 2
-    }
-
-    override fun terminate() {
-        println("terminate")
-    }
-
-}
