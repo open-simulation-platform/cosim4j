@@ -2,7 +2,7 @@ package org.osp.cse
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.osp.cse.jni.CseLibrary
+
 
 class JvmSlaveTest {
 
@@ -21,7 +21,7 @@ class JvmSlaveTest {
         val strInVr = 6L
         val strInWriteValue = "Hello World!"
 
-        val slaves = List(2) { i -> MySlave(i) }
+        val slaves = List(2) { MySlave() }
 
         CseExecution.create(1.0 / 100).use { execution ->
 
@@ -47,11 +47,17 @@ class JvmSlaveTest {
                 Assertions.assertEquals(slave.realOut, observer.getReal(slaveIndex, 3L))
                 Assertions.assertEquals(slave.boolOut, observer.getBoolean(slaveIndex, 5L))
                 Assertions.assertEquals(slave.stringOut, observer.getString(slaveIndex, 7L))
-                
+
                 Assertions.assertEquals(intInWriteValue, observer.getInteger(slaveIndex, intInVr))
                 Assertions.assertEquals(realInWriteValue, observer.getReal(slaveIndex, realInVr))
                 Assertions.assertEquals(boolInWriteValue, observer.getBoolean(slaveIndex, boolInVr))
                 Assertions.assertEquals(strInWriteValue, observer.getString(slaveIndex, strInVr))
+
+                Assertions.assertEquals(9, observer.getInteger(slaveIndex, 8L))
+                Assertions.assertEquals(9, observer.getInteger(slaveIndex, 9L))
+
+                Assertions.assertEquals("Hello", observer.getString(slaveIndex, 10L))
+                Assertions.assertEquals("world!", observer.getString(slaveIndex, 11L))
 
             }
 
@@ -61,41 +67,40 @@ class JvmSlaveTest {
 
 }
 
-class MySlave(
-        private val nr: Int
-) : CseJvmSlave() {
+@SlaveInfo(name = "SimpleSlave")
+class MySlave : CseJvmSlave() {
 
+    @ScalarVariable(causality = CseVariableCausality.INPUT)
     internal var intIn = 1
+    @ScalarVariable(causality = CseVariableCausality.OUTPUT)
     internal var intOut = 2
 
+    @ScalarVariable(causality = CseVariableCausality.INPUT)
     internal var realIn = 3.0
+    @ScalarVariable(causality = CseVariableCausality.OUTPUT)
     internal var realOut = 4.0
 
+    @ScalarVariable(causality = CseVariableCausality.INPUT)
     internal var boolIn = false
+    @ScalarVariable(causality = CseVariableCausality.OUTPUT)
     internal var boolOut = true
 
+    @ScalarVariable(causality = CseVariableCausality.INPUT)
     internal var stringIn = ""
+    @ScalarVariable(causality = CseVariableCausality.OUTPUT)
     internal var stringOut = "Hello world!"
 
-    override fun define(): Model {
-        return model("TestSlave")
-                .description("Slave for testing")
-                .author("Lars Ivar Hatledal")
-                .add(integer("intIn", { intIn }, { intIn = it }).causality(CseVariableCausality.INPUT))
-                .add(integer("intOut", { intOut }).causality(CseVariableCausality.OUTPUT))
-                .add(real("realIn", { realIn }, { realIn = it }).causality(CseVariableCausality.INPUT))
-                .add(real("realOut", { realOut }).causality(CseVariableCausality.OUTPUT))
-                .add(boolean("boolIn", { boolIn }, { boolIn = it }).causality(CseVariableCausality.INPUT))
-                .add(boolean("boolOut", { boolOut }).causality(CseVariableCausality.OUTPUT))
-                .add(string("stringIn", { stringIn }, { stringIn = it }).causality(CseVariableCausality.INPUT))
-                .add(string("stringOut", { stringOut }).causality(CseVariableCausality.OUTPUT))
-    }
+    @ScalarVariable(causality = CseVariableCausality.LOCAL)
+    internal var ints = intArrayOf(9, 9)
+
+    @ScalarVariable(causality = CseVariableCausality.LOCAL)
+    internal var strings = arrayOf("Hello", "world!")
 
     override fun setup(startTime: Double) {}
 
     override fun doStep(currentTime: Double, stepSize: Double) {
-        intOut += nr
-        realOut += nr
+        intOut += 1
+        realOut += 1
     }
 
     override fun terminate() {
