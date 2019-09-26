@@ -28,7 +28,7 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                dir('native') {
+                                dir('cpp/cse-core4j') {
                                    bat 'conan install . -s build_type=Release --install-folder=build --build=missing'
                                    dir('build') {
                                        bat 'cmake -G "Visual Studio 15 2017 Win64" ..'
@@ -39,7 +39,9 @@ pipeline {
                         }
                         stage('Build-jvm') {
                             steps {
-                                bat 'gradlew.bat clean build'
+								dir('java') {
+									bat 'gradlew.bat clean build'
+								}
                             }
                         }
 
@@ -70,7 +72,7 @@ pipeline {
                         }
                         stage('Build-native') {
                             steps {
-                                dir('native') {
+                                dir('cpp/cse-core4j') {
                                     sh 'conan install . -s compiler.libcxx=libstdc++11 -s build_type=Release --install-folder=build --build=missing'
                                     dir ('build') {
                                         sh 'cmake -DCMAKE_BUILD_TYPE=Release ..'
@@ -81,10 +83,11 @@ pipeline {
                         }
                         stage('Build-jvm') {
                             steps {
-                                sh './gradlew clean build'
+                                dir('java') {
+									sh './gradlew clean build'
+								}
                             }
                         }
-
                     }
                 }
             }
