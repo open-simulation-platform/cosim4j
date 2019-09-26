@@ -27,7 +27,7 @@ class CseLibraryTest {
 
         val execution = CseLibrary.createExecution(0.0, 1.0/100)
 
-        val slave = CseLibrary.createSlave(testFmu.absolutePath)
+        val slave = CseLibrary.createSlave(testFmu.absolutePath, "slave")
         val index = CseLibrary.addSlave(execution, slave)
         Assertions.assertEquals(0, index)
 

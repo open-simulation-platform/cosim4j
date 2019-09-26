@@ -16,7 +16,7 @@ public class TestCallback {
 
         CseExecution execution = CseExecution.create(1.0 / 100);
 
-        execution.addSlave(testFmu);
+        execution.addSlave(testFmu, "slave");
 
         AtomicInteger counter = new AtomicInteger(0);
 

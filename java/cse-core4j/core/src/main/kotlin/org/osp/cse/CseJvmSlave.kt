@@ -24,6 +24,9 @@ abstract class CseJvmSlave {
     private lateinit var modelInfo: SlaveInfo
     private val variables = mutableMapOf<Long, Var<*>>()
 
+    val name: String
+        get() = modelInfo.name
+
     private val modelDescription by lazy {
         define()
         val uuid = UUID.randomUUID().toString()
@@ -77,6 +80,7 @@ abstract class CseJvmSlave {
                         }
                     }
                     Array<String>::class.java -> {
+                        @Suppress("UNCHECKED_CAST")
                         (field.get(this) as Array<String>).also { array ->
                             for (i in array.indices) {
                                 variables[vrCounter] = Var(vrCounter++, "${field.name}_$i", CseVariableType.STRING, v.causality, v.variability, { array[i] }, { array[i] = it })
@@ -99,6 +103,7 @@ abstract class CseJvmSlave {
 
     open fun terminate() {}
 
+    @Suppress("UNCHECKED_CAST")
     fun getReal(vr: LongArray): DoubleArray {
         return DoubleArray(vr.size) { i ->
             (variables.getValue(vr[i]) as RealVar).let {
@@ -107,6 +112,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun setReal(vr: LongArray, values: DoubleArray) {
         for (i in vr.indices) {
             (variables.getValue(vr[i]) as RealVar).apply {
@@ -115,6 +121,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getInteger(vr: LongArray): IntArray {
         return IntArray(vr.size) { i ->
             (variables.getValue(vr[i]) as IntVar).let {
@@ -123,6 +130,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun setInteger(vr: LongArray, values: IntArray) {
         for (i in vr.indices) {
             (variables.getValue(vr[i]) as IntVar).apply {
@@ -131,6 +139,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getBoolean(vr: LongArray): BooleanArray {
         return BooleanArray(vr.size) { i ->
             (variables.getValue(vr[i]) as BoolVar).let {
@@ -139,6 +148,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun setBoolean(vr: LongArray, values: BooleanArray) {
         for (i in vr.indices) {
             (variables.getValue(vr[i]) as BoolVar).apply {
@@ -147,6 +157,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getString(vr: LongArray): Array<String> {
         return Array(vr.size) { i ->
             (variables.getValue(vr[i]) as StringVar).let {
@@ -155,6 +166,7 @@ abstract class CseJvmSlave {
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun setString(vr: LongArray, values: Array<String>) {
         for (i in vr.indices) {
             (variables.getValue(vr[i]) as StringVar).apply {

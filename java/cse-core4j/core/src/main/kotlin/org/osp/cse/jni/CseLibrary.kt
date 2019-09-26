@@ -74,19 +74,21 @@ object CseLibrary {
      * Creates a new local slave.
      *
      * @param fmuPath Path to FMU.
+     * @param instanceName name of the instance
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createSlave(fmuPath: String): SlavePtr
+    external fun createSlave(fmuPath: String, instanceName: String): SlavePtr
 
     /**
      * Creates a new local slave.
      *
      * @param slave the JVM owned slave
+     * @param instanceName name of the instance
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createJvmSlave(slave: CseJvmSlave): SlavePtr
+    external fun createJvmSlave(slave: CseJvmSlave, instanceName: String): SlavePtr
 
     /**
      *  Destroys a local slave.

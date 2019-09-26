@@ -36,12 +36,12 @@ class CseExecution private constructor(
         return slaves.find { it.name == name }
     }
 
-    fun addSlave(fmuPath: File): CseSlave? {
-        return addSlave(CseLibrary.createSlave(fmuPath.absolutePath))
+    fun addSlave(fmuPath: File, instanceName: String): CseSlave? {
+        return addSlave(CseLibrary.createSlave(fmuPath.absolutePath, instanceName))
     }
 
-    fun addSlave(slave: CseJvmSlave): CseSlave? {
-        return addSlave(CseLibrary.createJvmSlave(slave))
+    fun addSlave(slave: CseJvmSlave, instanceName: String): CseSlave? {
+        return addSlave(CseLibrary.createJvmSlave(slave, instanceName))
     }
 
     private fun addSlave(slavePtr: Long): CseSlave? {

@@ -21,24 +21,31 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getModelDescription(JN
     return create_model_description(env, executionPtr, slaveIndex);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env, jobject obj, jstring fmuPath)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env, jobject obj, jstring fmuPath, jstring jInstanceName)
 {
-    const char* fmuPath_ = env->GetStringUTFChars(fmuPath, nullptr);
+    auto fmuPath_ = env->GetStringUTFChars(fmuPath, nullptr);
+    auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
     cse_slave* slave = cse_local_slave_create(fmuPath_);
     env->ReleaseStringUTFChars(fmuPath, fmuPath_);
+    env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
     return reinterpret_cast<jlong>(slave);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject obj, jobject jslave)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject obj, jobject jslave, jstring jInstanceName)
 {
     auto instance = std::make_shared<cse::jvm_slave>(env, jslave);
     const auto md = instance->model_description();
+    
     auto slave = std::make_unique<cse_slave>();
-    slave->name = md.name;
     slave->instance = instance;
     // slave address not in use yet. Should be something else than a string.
     slave->address = "local";
     slave->source = "memory";
+
+    auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
+    slave->name = cInstanceName;
+    env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
+
     return reinterpret_cast<jlong>(slave.release());
 }
 

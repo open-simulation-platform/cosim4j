@@ -21,8 +21,8 @@ class Demo {
             execution.addFileObserver(new File("results"));
             execution.loadScenario(new File("path/to/scenario.json"));
 
-            CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"));
-            CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"));
+            CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"), "slave1");
+            CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"), "slave2");
 
             execution.connectReals(slave1.getIndex(), 12 /*vr*/, slave2.getIndex(), 9 /*vr*/);
 

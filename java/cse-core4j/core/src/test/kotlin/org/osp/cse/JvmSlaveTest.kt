@@ -28,8 +28,8 @@ class JvmSlaveTest {
             val observer = execution.addLastValueObserver()!!
             val manipulator = execution.addOverrideManipulator()!!
 
-            slaves.forEach {
-                val index = execution.addSlave((it))!!.index
+            slaves.forEachIndexed { i, slave ->
+                val index = execution.addSlave(slave, "${slave.name}_$i")!!.index
                 manipulator.setInteger(index, intInVr, intInWriteValue)
                 manipulator.setReal(index, realInVr, realInWriteValue)
                 manipulator.setBoolean(index, boolInVr, boolInWriteValue)

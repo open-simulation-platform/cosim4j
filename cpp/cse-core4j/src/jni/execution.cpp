@@ -42,7 +42,6 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFixedStepSspExecut
         sspDir_,
         startTimeDefined,
         to_cse_time_point(startTime),
-        true,
         to_cse_duration(stepSize));
     env->ReleaseStringUTFChars(sspDir, sspDir_);
     if (execution == nullptr) {
