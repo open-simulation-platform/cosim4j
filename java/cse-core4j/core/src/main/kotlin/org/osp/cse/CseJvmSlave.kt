@@ -21,11 +21,16 @@ annotation class ScalarVariable(
 
 abstract class CseJvmSlave {
 
-    private lateinit var modelInfo: SlaveInfo
+    private var modelInfo: SlaveInfo
     private val variables = mutableMapOf<Long, Var<*>>()
 
     val name: String
         get() = modelInfo.name
+
+    init {
+        modelInfo = javaClass.getAnnotation(SlaveInfo::class.java)
+                ?: throw IllegalStateException("No ${SlaveInfo::class} annotation present!")
+    }
 
     private val modelDescription by lazy {
         define()
@@ -35,9 +40,6 @@ abstract class CseJvmSlave {
 
     private fun define() {
         var vrCounter = 0L
-
-        modelInfo = javaClass.getAnnotation(SlaveInfo::class.java)
-                ?: throw IllegalStateException("No ${SlaveInfo::class} annotation present!")
 
         javaClass.declaredFields.forEach { field ->
 
