@@ -83,7 +83,7 @@ pipeline {
                         }
                         stage('Build-jvm') {
                             steps {
-                                dir('java') {
+                                dir('java/cse-core4j') {
 									sh './gradlew clean build'
 								}
                             }
