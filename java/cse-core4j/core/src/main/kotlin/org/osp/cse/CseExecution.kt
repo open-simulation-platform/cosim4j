@@ -1,5 +1,6 @@
 package org.osp.cse
 
+import no.ntnu.ihb.fmi4j.Fmi2Slave
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.slf4j.Logger
@@ -40,7 +41,7 @@ class CseExecution private constructor(
         return addSlave(CseLibrary.createSlave(fmuPath.absolutePath, instanceName))
     }
 
-    fun addSlave(slave: CseJvmSlave, instanceName: String): CseSlave? {
+    fun addSlave(slave: Fmi2Slave, instanceName: String): CseSlave? {
         return addSlave(CseLibrary.createJvmSlave(slave, instanceName))
     }
 

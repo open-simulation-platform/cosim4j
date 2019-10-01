@@ -37,9 +37,11 @@ private:
     JavaVM* jvm_;
     jobject slave_;
 
-    jmethodID setupId_;
-    jmethodID onBeforeStartId_;
+    jmethodID setupExperimentId_;
+    jmethodID enterInitialisationModeId_;
+    jmethodID exitInitialisationModeId_;
     jmethodID doStepId_;
+    jmethodID resetId_;
     jmethodID terminateId_;
 
     jmethodID getRealId_;

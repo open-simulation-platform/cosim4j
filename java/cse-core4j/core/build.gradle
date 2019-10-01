@@ -11,11 +11,13 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url  "https://dl.bintray.com/ntnu-ihb/mvn"  }
 }
 
 dependencies {
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "no.ntnu.ihb.fmi4j:fmi-export:0.24.1"
 
     def slf4j_version = '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
@@ -53,12 +55,12 @@ shadowJar {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
+    archiveClassifier.set("sources")
     from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
+    archiveClassifier.set("javadoc")
     from javadoc.destinationDir
 }
 
