@@ -1,5 +1,6 @@
 package org.osp.cse.jni
 
+import no.ntnu.ihb.fmi4j.Fmi2Slave
 import org.osp.cse.*
 import org.osp.util.isLinux
 import org.osp.util.libPrefix
@@ -81,7 +82,7 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createJvmSlave(slave: CseJvmSlave, instanceName: String): SlavePtr
+    external fun createJvmSlave(slave: Fmi2Slave, instanceName: String): SlavePtr
 
     /**
      *  Destroys a local slave.

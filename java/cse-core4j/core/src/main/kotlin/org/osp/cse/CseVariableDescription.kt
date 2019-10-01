@@ -64,12 +64,11 @@ enum class CseVariableCausality(
         internal val code: Int
 ) {
 
-    INPUT(0),
-    PARAMETER(1),
-    OUTPUT(2),
-    CALCULATED_PARAMETER(3),
-    LOCAL(4),
-    INDEPENDENT(5);
+    PARAMETER(0),
+    CALCULATED_PARAMETER(1),
+    INPUT(2),
+    OUTPUT(3),
+    LOCAL(4);
 
     companion object {
 
