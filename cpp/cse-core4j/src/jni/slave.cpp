@@ -25,7 +25,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env,
 {
     auto fmuPath_ = env->GetStringUTFChars(fmuPath, nullptr);
     auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
-    cse_slave* slave = cse_local_slave_create(fmuPath_);
+    cse_slave* slave = cse_local_slave_create(fmuPath_, cInstanceName);
     env->ReleaseStringUTFChars(fmuPath, fmuPath_);
     env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
     return reinterpret_cast<jlong>(slave);
