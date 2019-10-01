@@ -4,6 +4,7 @@
 
 #include <cse/slave.hpp>
 
+#include <memory>
 #include <string>
 
 #ifdef __cplusplus
