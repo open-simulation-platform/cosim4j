@@ -46,7 +46,6 @@ object CseLibrary {
      */
     private external fun createFixedStepSspExecution(sspDir: String, stepSize: Double, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
 
-
     @JvmOverloads
     fun createSspExecution(sspDir: String, startTime: Double? = null, stepSize: Double? = null): ExecutionPtr {
         val startTimeDefined = startTime?.let { it >= 0 } ?: false
@@ -55,12 +54,6 @@ object CseLibrary {
         } else {
             createFixedStepSspExecution(sspDir, stepSize, startTimeDefined, startTime ?: 0.0)
         }
-    }
-
-    @JvmOverloads
-    fun createSspExecution(sspDir: String, stepSize: Double, startTime: Double? = null): ExecutionPtr {
-        val startTimeDefined = startTime?.let { it >= 0 } ?: false
-        return createFixedStepSspExecution(sspDir, stepSize, startTimeDefined, startTime ?: 0.0)
     }
 
     /**

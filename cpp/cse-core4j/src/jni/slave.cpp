@@ -35,15 +35,16 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* e
 {
     auto instance = std::make_shared<cse::jvm_slave>(env, jslave);
     const auto md = instance->model_description();
-    
+
     auto slave = std::make_unique<cse_slave>();
+    slave->modelName = md.name;
     slave->instance = instance;
     // slave address not in use yet. Should be something else than a string.
     slave->address = "local";
     slave->source = "memory";
 
     auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
-    slave->name = cInstanceName;
+    slave->instanceName = cInstanceName;
     env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
 
     return reinterpret_cast<jlong>(slave.release());

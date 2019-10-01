@@ -8,22 +8,22 @@ cmake
 cse-core:fmuproxy=True
 
 [imports]
-bin, cse*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_chrono-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_context-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_date_time-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_fiber-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_filesystem-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_log-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_system-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
-bin, boost_thread-vc141-mt-x64*.dll -> ../../natives-win/src/main/resources/native/win
+bin, cse*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_chrono-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_context-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_date_time-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_fiber-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_filesystem-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_log-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_system-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
+bin, boost_thread-vc141-mt-x64*.dll -> ../../../java/cse-core4j/natives-win/src/main/resources/native/win
 
-lib, libcse*.so-> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_chrono.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_context.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_date_time.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_fiber.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_filesystem.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_log.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_system.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
-lib, libboost_thread.so.1.66.0 -> ../../natives-linux/src/main/resources/native/linux
+lib, libcse*.so-> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_chrono.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_context.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_date_time.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_fiber.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_filesystem.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_log.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_system.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux
+lib, libboost_thread.so.1.66.0 -> ../../../java/cse-core4j/natives-linux/src/main/resources/native/linux

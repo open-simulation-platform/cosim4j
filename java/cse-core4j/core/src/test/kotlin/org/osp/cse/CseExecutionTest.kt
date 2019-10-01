@@ -26,7 +26,7 @@ class CseExecutionTest {
 
         CseExecution.create(stepSize).use { execution ->
 
-            val slave = execution.addSlave(testFmu, "slave")!!
+            val slave = execution.addSlave(testFmu, "ControlledTemperature")!!
             val observer = execution.addTimeSeriesObserver()!!
             Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")!!))
 

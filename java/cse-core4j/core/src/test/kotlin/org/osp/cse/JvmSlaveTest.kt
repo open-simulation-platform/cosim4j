@@ -1,13 +1,14 @@
 package org.osp.cse
 
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 
 class JvmSlaveTest {
 
     @Test
-    fun test() {
+    fun testJvmSlave() {
 
         val intInVr = 0L
         val intInWriteValue = 100
