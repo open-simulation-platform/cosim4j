@@ -39,7 +39,7 @@ pipeline {
                         }
                         stage('Build-jvm') {
                             steps {
-								dir('java') {
+								dir('java/cse-core4j') {
 									bat 'gradlew.bat clean build'
 								}
                             }
