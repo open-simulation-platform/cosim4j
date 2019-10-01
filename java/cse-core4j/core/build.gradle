@@ -17,13 +17,6 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
-    def os = OperatingSystem.current()
-    if (os.isLinux()) {
-        compile project(':natives-linux')
-    } else if (os.isWindows()) {
-        compile project(':natives-win')
-    }
-
     def slf4j_version = '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
     runtimeOnly group: 'org.slf4j', name: 'slf4j-log4j12', version: slf4j_version
@@ -32,7 +25,14 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junit_version")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junit_version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junit_version")
-    
+
+    def os = OperatingSystem.current()
+    if (os.isLinux()) {
+        testCompile project(':natives-linux')
+    } else if (os.isWindows()) {
+        testCompile project(':natives-win')
+    }
+
 }
 
 test {
