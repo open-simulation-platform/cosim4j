@@ -1,5 +1,4 @@
 
-#include <cse.h>
 #include <cse/jni_helper.hpp>
 #include <cse/jvm_slave.hpp>
 
@@ -16,7 +15,6 @@ cse::variable_causality get_causality(JNIEnv* env, jclass Fmi2ScalarVariable, jo
     jclass Fmi2Causality = FindClass(env, "no/ntnu/ihb/fmi4j/modeldescription/fmi2/Fmi2Causality");
     jmethodID ordinal = GetMethodID(env, Fmi2Causality, "ordinal", "()I");
     int result = env->CallIntMethod(causality, ordinal);
-    std::cout << "result=" << result << std::endl;
     switch (result) {
         case 0: return cse::variable_causality::parameter;
         case 1: return cse::variable_causality::calculated_parameter;
