@@ -21,8 +21,8 @@ class TestJvmSlave {
             val numSteps = 10L
             execution.step(numSteps)
 
-            Assertions.assertEquals(1.0, observer!!.getReal(index, slave.getValueReference("speed")))
-            Assertions.assertEquals(10, observer!!.getInteger(index,slave.getValueReference("count")))
+            Assertions.assertEquals(1.0, observer.getReal(index, slave.getValueReference("speed")))
+            Assertions.assertEquals(10, observer.getInteger(index,slave.getValueReference("count")))
 
         }
 

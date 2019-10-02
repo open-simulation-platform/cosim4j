@@ -27,7 +27,7 @@ class CseExecutionTest {
         CseExecution.create(stepSize).use { execution ->
 
             val slave = execution.addSlave(testFmu, "ControlledTemperature")!!
-            val observer = execution.addTimeSeriesObserver()!!
+            val observer = execution.addTimeSeriesObserver()
             Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")!!))
 
             execution.getSlaveInfos().apply {
@@ -72,7 +72,7 @@ class CseExecutionTest {
 
             Assertions.assertTrue(logDir.listFiles().isNotEmpty())
 
-            execution.addLastValueObserver()!!.use { observer ->
+            execution.addLastValueObserver().use { observer ->
 
                 observer.getReal(slave.index, 1).also {
                     Assertions.assertEquals(298.0, it)
