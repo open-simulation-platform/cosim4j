@@ -38,15 +38,23 @@ class CseExecution private constructor(
         return slaves.find { it.name == name }
     }
 
-    fun addSlave(fmuPath: File, instanceName: String): CseSlave? {
-        return addSlave(CseLibrary.createSlave(fmuPath.absolutePath, instanceName))
+    fun addSlave(fmuPath: File, instanceName: String): CseSlave {
+        val slavePtr = CseLibrary.createSlave(fmuPath.absolutePath, instanceName)
+        if (slavePtr == 0L) {
+            throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
+        }
+        return addSlave(slavePtr)
     }
 
-    fun addSlave(slave: Fmi2Slave, instanceName: String): CseSlave? {
-        return addSlave(CseLibrary.createJvmSlave(slave, instanceName))
+    fun addSlave(slave: Fmi2Slave, instanceName: String): CseSlave {
+        val slavePtr = CseLibrary.createJvmSlave(slave, instanceName)
+        if (slavePtr == 0L) {
+            throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
+        }
+        return addSlave(slavePtr)
     }
 
-    private fun addSlave(slavePtr: Long): CseSlave? {
+    private fun addSlave(slavePtr: Long): CseSlave {
         return if (slavePtr != 0L) {
             val index = CseLibrary.addSlave(executionPtr, slavePtr)
             val name = getSlaveInfos().find { it.index == index }!!.name

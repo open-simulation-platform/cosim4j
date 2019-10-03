@@ -26,7 +26,7 @@ class CseExecutionTest {
 
         CseExecution.create(stepSize).use { execution ->
 
-            val slave = execution.addSlave(testFmu, "ControlledTemperature")!!
+            val slave = execution.addSlave(testFmu, "ControlledTemperature")
             val observer = execution.addTimeSeriesObserver()
             Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")!!))
 
@@ -57,7 +57,7 @@ class CseExecutionTest {
             val logDir = File("build/results")
             execution.addFileObserver(logDir)
 
-            val slave = execution.addSlave(testFmu, "slave")!!
+            val slave = execution.addSlave(testFmu, "slave")
             slave.modelDescription.variables.also {
 
                 Assertions.assertEquals(19, it[0].valueReference)
