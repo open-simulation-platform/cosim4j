@@ -96,7 +96,7 @@ class CseExecutionTest {
 
             val counter = AtomicLong(0)
             execution.addStepEventListener(object : StepEventListener {
-                override fun post() {
+                override fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double) {
                     counter.getAndIncrement()
                 }
             })
@@ -117,7 +117,7 @@ class CseExecutionTest {
 
             val counter = AtomicLong(0)
             execution.addStepEventListener(object : StepEventListener {
-                override fun post() {
+                override fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double) {
                     counter.getAndIncrement()
                 }
             })

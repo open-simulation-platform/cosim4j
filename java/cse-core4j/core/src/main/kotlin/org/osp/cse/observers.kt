@@ -21,12 +21,14 @@ sealed class CseObserver(
 }
 
 interface StepEventListener {
-    fun post()
+
+    fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double)
 }
+
 
 class CseStepEventListener(
         observer: ObserverPtr
-): CseObserver(observer)
+) : CseObserver(observer)
 
 class CseFileObserver(
         observer: ObserverPtr,

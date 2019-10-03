@@ -6,22 +6,25 @@ cse::step_event_listener::step_event_listener(JNIEnv* env, jobject listener)
 {
     env->GetJavaVM(&jvm_);
     jclass cls = env->GetObjectClass(listener);
-    mid_ = env->GetMethodID(cls, "post", "()V");
+    mid_ = env->GetMethodID(cls, "onStepComplete", "(JDD)V");
     listener_ = env->NewGlobalRef(listener);
 }
 
-void cse::step_event_listener::step_complete(cse::step_number, cse::duration, cse::time_point)
+void cse::step_event_listener::step_complete(step_number lastStep, duration lastStepSize, time_point currentTime)
 {
-    worker_.work([this]() {
-        jvm_invoke(jvm_, [this](JNIEnv* env){
-            env->CallVoidMethod(listener_, mid_);
+    worker_.work([this, lastStep, lastStepSize, currentTime]() {
+        jvm_invoke(jvm_, [this, lastStep, lastStepSize, currentTime](JNIEnv* env) {
+            auto jLastStep = static_cast<jlong>(lastStep);
+            auto jLastStepSize = to_double_duration(lastStepSize, {});
+            auto jCurrentTime = to_double_time_point(currentTime);
+            env->CallVoidMethod(listener_, mid_, jLastStep, jCurrentTime, jLastStepSize);
         });
     });
 }
 
 cse::step_event_listener::~step_event_listener()
 {
-    jvm_invoke(jvm_, [this](JNIEnv* env){
+    jvm_invoke(jvm_, [this](JNIEnv* env) {
         env->DeleteGlobalRef(listener_);
     });
 }
