@@ -7,5 +7,5 @@ wrapper {
 
 subprojects {
     group 'org.osp'
-    version '0.5.0-SNAPHOT'
+    version '0.5.0-SNAPSHOT'
 }
