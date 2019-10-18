@@ -19,7 +19,7 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
     jmethodID addId = env->GetMethodID(listCls, "add", "(Ljava/lang/Object;)Z");
 
     jclass infoCls = env->FindClass("org/osp/cse/CseSlaveInfo");
-    jmethodID infoCtor = env->GetMethodID(infoCls, "<init>", "(ILjava/lang/String;Ljava/lang/String;)V");
+    jmethodID infoCtor = env->GetMethodID(infoCls, "<init>", "(ILjava/lang/String;)V");
 
     const auto size = execution->get_num_slaves();
     auto infos = reinterpret_cast<cse_slave_info*>(malloc(sizeof(cse_slave_info) * size));
@@ -34,8 +34,7 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
                 infoCls,
                 infoCtor,
                 infos[i].index,
-                env->NewStringUTF(infos[i].name),
-                env->NewStringUTF(infos[i].source));
+                env->NewStringUTF(infos[i].name));
 
             env->CallBooleanMethod(list, addId, info);
         }

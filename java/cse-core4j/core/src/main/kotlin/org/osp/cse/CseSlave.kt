@@ -51,12 +51,11 @@ class CseLocalSlave(
 
 class CseSlaveInfo(
         var index: Int,
-        val name: String,
-        val source: String
+        val name: String
 ) {
 
     override fun toString(): String {
-        return "CseSlaveInfo(name=$name, index=$index, source=$source)"
+        return "CseSlaveInfo(name=$name, index=$index)"
     }
 
 }
