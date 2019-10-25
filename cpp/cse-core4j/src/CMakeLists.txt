@@ -1,6 +1,7 @@
 
 set(sources
         jvm_slave.cpp
+        model_description_parser.cpp
         python_model.cpp
         python_slave.cpp
         python_uri_sub_resolver.cpp
@@ -19,6 +20,7 @@ set(sources
         )
 
 add_library(csecorejni ${sources})
+target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_include_directories(csecorejni
         PRIVATE
         "${JNI_INCLUDE_DIRS}"

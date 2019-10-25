@@ -11,7 +11,7 @@ namespace cse {
 class python_slave: public cse::slave {
 
 public:
-    explicit python_slave(PyObject* pyInstance, std::shared_ptr<const cse::model_description> modelDescription);
+    python_slave(PyObject* pInstance, std::shared_ptr<const cse::model_description> modelDescription);
     cse::model_description model_description() const override;
     void setup(cse::time_point startTime, std::optional<time_point> stopTime, std::optional<double> relativeTolerance) override;
     void start_simulation() override;

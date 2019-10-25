@@ -1,24 +1,28 @@
 
+#include <cse/model_description_parser.hpp>
+#include <cse/py_exception.hpp>
 #include <cse/python_model.hpp>
 #include <cse/python_slave.hpp>
-
-namespace
-{
-
-std::shared_ptr<const cse::model_description> parse(const std::string& xml)
-{
-    auto desc = std::make_shared<cse::model_description>();
-
-    return desc;
-}
-
-} // namespace
 
 namespace cse
 {
 
 python_model::python_model(const boost::filesystem::path& py_file)
 {
+    const auto moduleName = py_file.stem().string();
+    pModule_ = PyImport_ImportModule(moduleName.c_str());
+    pClass_ = PyObject_GetAttrString(pModule_, "CseSlave");
+    PyObject* pInstance = PyObject_CallFunctionObjArgs(pClass_, nullptr);
+    auto f = PyObject_CallMethod(pInstance, "define", nullptr);
+    if (f == nullptr) {
+        handle_py_exception();
+    }
+
+    const char* xml = PyUnicode_AsUTF8(f);
+    modelDescription_ = parse_model_description(xml);
+
+    Py_XDECREF(f);
+    Py_XDECREF(pInstance);
 }
 
 std::shared_ptr<const cse::model_description> python_model::description() const noexcept
@@ -27,7 +31,8 @@ std::shared_ptr<const cse::model_description> python_model::description() const 
 }
 std::shared_ptr<cse::slave> python_model::instantiate_slave()
 {
-    return std::shared_ptr<cse::python_slave>();
+    PyObject* pInstance = PyObject_CallFunctionObjArgs(pClass_, nullptr);
+    return std::make_shared<cse::python_slave>(pInstance, modelDescription_);
 }
 std::shared_ptr<cse::async_slave> python_model::instantiate(std::string_view name)
 {
