@@ -1,6 +1,9 @@
 
 set(sources
         jvm_slave.cpp
+        python_model.cpp
+        python_slave.cpp
+        python_uri_sub_resolver.cpp
         step_event_listener.cpp
         thread_worker.cpp
 
