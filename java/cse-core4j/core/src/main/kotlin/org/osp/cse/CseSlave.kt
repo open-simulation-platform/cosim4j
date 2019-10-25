@@ -4,6 +4,7 @@ import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.osp.cse.jni.SlavePtr
 import java.io.Closeable
+import java.lang.IllegalArgumentException
 
 open class CseSlave internal constructor(
         val index: Int,
@@ -15,12 +16,14 @@ open class CseSlave internal constructor(
         CseLibrary.getModelDescription(executionPtr, index)
     }
 
-    fun getVariable(name: String): CseVariableDescription? {
+    fun getVariable(name: String): CseVariableDescription {
         return modelDescription.getVariable(name)
+                ?: throw IllegalArgumentException("No variable with name=$name found!")
     }
 
-    fun getVariable(vr: Long, type: CseVariableType): CseVariableDescription? {
+    fun getVariable(vr: Long, type: CseVariableType): CseVariableDescription {
         return modelDescription.getVariable(vr, type)
+                ?: throw IllegalArgumentException("No variable with valueReference=$vr and type=$type found!")
     }
 
     override fun close() {

@@ -28,7 +28,7 @@ class CseExecutionTest {
 
             val slave = execution.addSlave(testFmu, "ControlledTemperature")
             val observer = execution.addTimeSeriesObserver()
-            Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")!!))
+            Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")))
 
             execution.getSlaveInfos().apply {
                 Assertions.assertEquals(0, this[0].index)
@@ -41,7 +41,7 @@ class CseExecutionTest {
             val samples = observer.getRealSamples(slave.index, 47 /*vr*/, 1, nSamples)
             Assertions.assertEquals(nSamples, samples.size)
 
-            execution.status!!.apply {
+            execution.status.apply {
                 Assertions.assertEquals(stepSize * numSteps, this.currentTime, 1E-6)
             }
 
@@ -66,7 +66,7 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(10))
-            execution.status!!.apply {
+            execution.status.apply {
                 Assertions.assertEquals(0.1, this.currentTime)
             }
 
@@ -81,7 +81,7 @@ class CseExecutionTest {
             }
 
             Assertions.assertTrue(execution.step(10))
-            execution.status!!.apply {
+            execution.status.apply {
                 Assertions.assertEquals(0.2, this.currentTime)
             }
 
