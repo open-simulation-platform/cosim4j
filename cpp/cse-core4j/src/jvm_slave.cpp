@@ -3,6 +3,7 @@
 #include <cse/jvm_slave.hpp>
 
 #include <iostream>
+#include <exception>
 
 namespace
 {
@@ -58,6 +59,8 @@ cse::variable_type get_type(JNIEnv* env, jclass Fmi2ScalarVariable, jobject scal
     jmethodID getString = GetMethodID(env, Fmi2ScalarVariable, "getString", "()Lno/ntnu/ihb/fmi4j/modeldescription/fmi2/Fmi2ScalarVariable$String;");
     jobject string = env->CallObjectMethod(scalarVariable, getString);
     if (string != nullptr) return cse::variable_type ::string;
+
+    throw std::invalid_argument("Unknown variable_type encountered!");
 }
 
 cse::variable_description to_variable_description(JNIEnv* env, jobject var)
