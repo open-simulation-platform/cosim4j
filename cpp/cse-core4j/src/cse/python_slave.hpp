@@ -4,11 +4,14 @@
 
 #include <cse/slave.hpp>
 
+#include <Python.h>
+
 namespace cse {
 
 class python_slave: public cse::slave {
 
 public:
+    explicit python_slave(PyObject* pyInstance, std::shared_ptr<const cse::model_description> modelDescription);
     cse::model_description model_description() const override;
     void setup(cse::time_point startTime, std::optional<time_point> stopTime, std::optional<double> relativeTolerance) override;
     void start_simulation() override;
@@ -22,6 +25,13 @@ public:
     void set_integer_variables(gsl::span<const value_reference> variables, gsl::span<const int> values) override;
     void set_boolean_variables(gsl::span<const value_reference> variables, gsl::span<const bool> values) override;
     void set_string_variables(gsl::span<const value_reference> variables, gsl::span<const std::string> values) override;
+
+    ~python_slave() override;
+
+private:
+    PyObject* pInstance_;
+    std::shared_ptr<const cse::model_description> modelDescription_;
+
 };
 
 }

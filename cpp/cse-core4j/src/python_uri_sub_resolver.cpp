@@ -2,6 +2,8 @@
 #include <cse/log/logger.hpp>
 #include <cse/python_uri_sub_resolver.hpp>
 
+#include <cse/python_model.hpp>
+
 namespace cse
 {
 
@@ -21,6 +23,7 @@ std::shared_ptr<model> cse::python_uri_sub_resolver::lookup_model(const cse::uri
     const auto path = file_uri_to_path(modelUri);
     if (!path.has_extension()) return nullptr;
     if (path.extension() != ".py") return nullptr;
+    return std::make_shared<cse::python_model>(path);
 }
 
 } // namespace cse
