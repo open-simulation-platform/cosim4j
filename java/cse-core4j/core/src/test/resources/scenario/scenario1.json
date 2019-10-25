@@ -1,0 +1,24 @@
+{
+  "defaults": {
+    "model": "slave uno",
+    "variable": "realOut",
+    "action": "override"
+  },
+  "events": [
+    {
+      "time": 0.5,
+      "variable": "realIn",
+      "action": "bias",
+      "value": 1.001
+    },
+    {
+      "time": 0.2,
+      "value": -1.0
+    },
+    {
+      "time": 0.3,
+      "action": "reset"
+    }
+  ],
+  "end": 1.0
+}

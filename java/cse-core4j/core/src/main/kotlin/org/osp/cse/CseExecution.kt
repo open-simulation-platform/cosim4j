@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
 import java.io.File
+import java.lang.IllegalStateException
 import java.lang.RuntimeException
 
 
@@ -27,15 +28,18 @@ class CseExecution private constructor(
     val numSlaves: Int
         get() = CseLibrary.getNumSlaves(executionPtr)
 
-    val status: CseExecutionStatus?
+    val status: CseExecutionStatus
         get() = CseLibrary.getStatus(executionPtr)
+                ?: throw IllegalStateException("Failed to retrieve status! Last reported error: ${CseLibrary.getLastError()}")
 
-    fun getSlave(index: Int): CseSlave? {
+    fun getSlave(index: Int): CseSlave {
         return slaves.find { it.index == index }
+                ?: throw IllegalArgumentException("No slave with index=$index found!")
     }
 
-    fun getSlave(name: String): CseSlave? {
+    fun getSlave(name: String): CseSlave {
         return slaves.find { it.name == name }
+                ?: throw IllegalArgumentException("No slave with name=$name found!")
     }
 
     fun addSlave(fmuPath: File, instanceName: String): CseSlave {
@@ -212,9 +216,9 @@ class CseExecution private constructor(
     }
 
     fun setInitialRealValue(slaveIndex: Int, name: String, value: Double) {
-        getSlave(slaveIndex)?.getVariable(name)?.valueReference?.let {
+        getSlave(slaveIndex).getVariable(name).valueReference.let {
             setInitialRealValue(slaveIndex, it, value)
-        } ?: throw IllegalArgumentException("Could not find valueReference for variable named `$name` and slaveIndex=$slaveIndex")
+        }
     }
 
     fun setInitialIntegerValue(slaveIndex: Int, vr: Long, value: Int) {
@@ -222,9 +226,9 @@ class CseExecution private constructor(
     }
 
     fun setInitialIntegerValue(slaveIndex: Int, name: String, value: Int) {
-        getSlave(slaveIndex)?.getVariable(name)?.valueReference?.let {
+        getSlave(slaveIndex).getVariable(name).valueReference.let {
             setInitialIntegerValue(slaveIndex, it, value)
-        } ?: throw IllegalArgumentException("Could not find valueReference for variable named `$name` and slaveIndex=$slaveIndex")
+        }
     }
 
     fun setInitialBooleanValue(slaveIndex: Int, vr: Long, value: Boolean) {
@@ -232,9 +236,9 @@ class CseExecution private constructor(
     }
 
     fun setInitialBooleanValue(slaveIndex: Int, name: String, value: Boolean) {
-        getSlave(slaveIndex)?.getVariable(name)?.valueReference?.let {
+        getSlave(slaveIndex).getVariable(name).valueReference.let {
             setInitialBooleanValue(slaveIndex, it, value)
-        } ?: throw IllegalArgumentException("Could not find valueReference for variable named `$name` and slaveIndex=$slaveIndex")
+        }
     }
 
     fun setInitialStringValue(slaveIndex: Int, vr: Long, value: String) {
@@ -242,9 +246,9 @@ class CseExecution private constructor(
     }
 
     fun setInitialRealValue(slaveIndex: Int, name: String, value: String) {
-        getSlave(slaveIndex)?.getVariable(name)?.valueReference?.let {
+        getSlave(slaveIndex).getVariable(name).valueReference.let {
             setInitialStringValue(slaveIndex, it, value)
-        } ?: throw IllegalArgumentException("Could not find valueReference for variable named `$name` and slaveIndex=$slaveIndex")
+        }
     }
 
     override fun close() {
