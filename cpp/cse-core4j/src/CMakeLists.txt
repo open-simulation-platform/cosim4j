@@ -1,26 +1,22 @@
 
-file(GLOB public_headers "${CMAKE_SOURCE_DIR}/include/cse/*.hpp")
-file(GLOB private_headers "${CMAKE_CURRENT_SOURCE_DIR}/cse/*.hpp")
-file(GLOB sources
-        "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
-        "${CMAKE_CURRENT_SOURCE_DIR}/jni/*.cpp"
+set(sources
+        jvm_slave.cpp
+        step_event_listener.cpp
+        thread_worker.cpp
+
+        jni/connection.cpp
+        jni/error.cpp
+        jni/execution.cpp
+        jni/initial.cpp
+        jni/logging.cpp
+        jni/manipulator.cpp
+        jni/observer.cpp
+        jni/samples.cpp
+        jni/slave.cpp
         )
 
-set(publicHeadersFull)
-foreach(h IN LISTS publicHeaders)
-  list(APPEND publicHeadersFull "${publicHeaderDir}/${h}")
-endforeach()
-set(privateHeadersFull)
-foreach(h IN LISTS privateHeaders)
-  list(APPEND privateHeadersFull "${privateHeaderDir}/${h}")
-endforeach()
-set(allSources ${publicHeadersFull} ${privateHeadersFull} ${sources})
-
-add_library(csecorejni ${allSources})
-target_compile_features(csecorejni PUBLIC "cxx_std_17")
+add_library(csecorejni ${sources})
 target_include_directories(csecorejni
-        PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${JNI_INCLUDE_DIRS}"
         "${CMAKE_CURRENT_SOURCE_DIR}"
