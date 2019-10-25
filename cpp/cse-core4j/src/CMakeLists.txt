@@ -17,7 +17,6 @@ endforeach()
 set(allSources ${publicHeadersFull} ${privateHeadersFull} ${sources})
 
 add_library(csecorejni ${allSources})
-target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_compile_features(csecorejni PUBLIC "cxx_std_17")
 target_include_directories(csecorejni
         PUBLIC
