@@ -15,20 +15,11 @@ set(sources
         jni/slave.cpp
         )
 
-if (Python3_FOUND)
-  add_executable(pytest python_test.cpp)
-  target_link_libraries(pytest
-          PUBLIC
-          Python3::Python
-          )
-  target_link_libraries(pytest PRIVATE ${Python3_LIBRARIES})
-endif ()
-
 add_library(csecorejni ${sources})
 target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_compile_features(csecorejni PUBLIC "cxx_std_17")
 target_include_directories(csecorejni
-        PUBLIC
+      PUBLIC
         "$<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>"
         PRIVATE
         "${JNI_INCLUDE_DIRS}"
@@ -36,11 +27,18 @@ target_include_directories(csecorejni
         )
 
 target_link_libraries(csecorejni
-        PRIVATE
+      PRIVATE
         "${JNI_LIBRARIES}"
         csecore::csecorec
         csecore::csecorecpp
         )
+
+if (Python3_FOUND)
+  target_link_libraries(csecorejni
+          PRIVATE
+          Python3:python
+          )
+endif ()
 
 if (WIN32)
   set_target_properties(csecorejni
