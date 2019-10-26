@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class PySlaveTest {
+class  PySlaveTest {
 
     @Test
     fun testPySlave() {
@@ -17,14 +17,11 @@ class PySlaveTest {
             Assertions.assertEquals("CseSlave", slave.modelDescription.name)
             Assertions.assertEquals("Lars Ivar Hatledal", slave.modelDescription.author)
 
-//            val variableRef = slave.getVariable("realOut").valueReference
+            val variableRef = slave.getVariable("realOut").valueReference
 
-//            val observer = it.addLastValueObserver()
-
-//            it.step()
-
-//            Assertions.assertEquals(5.0, observer.getReal(slave.index, variableRef))
-
+            val observer = it.addLastValueObserver()
+            it.step()
+            Assertions.assertEquals(5.0, observer.getReal(slave.index, variableRef))
 
         }
 

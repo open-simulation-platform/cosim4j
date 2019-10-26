@@ -3,6 +3,7 @@ from uuid import uuid1
 from enum import Enum
 import datetime
 
+
 class Fmi2Causality(Enum):
     parameter = 0,
     calculatedParameter = 1,
@@ -89,6 +90,7 @@ class Fmi2Slave(ABC):
             raise Exception("No modelName has been specified!")
 
     def define(self):
+
         var_str = "\n".join(list(map(lambda v: v.string_repr(), self.vars)))
         outputs = list(filter(lambda v: v.causality == Fmi2Causality.output, self.vars))
         structure_str = ""

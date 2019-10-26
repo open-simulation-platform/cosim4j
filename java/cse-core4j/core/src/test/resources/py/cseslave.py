@@ -10,7 +10,7 @@ class CseSlave(Fmi2Slave):
         super().__init__()
 
         self.realOut = 5.0
-        # self.register_variable(Real("realOut"))
+        self.register_variable(Real("realOut").set_causality(Fmi2Causality.output))
         
     def do_step(self, current_time, step_size):
         return True
