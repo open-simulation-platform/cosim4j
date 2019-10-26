@@ -18,7 +18,7 @@ class TestJvmSlave {
             val observer = execution.addLastValueObserver()
 
             val slave = MySlave()
-            val index = execution.addSlave(slave, "slave1").index
+            val index = execution.addJvmSlave(slave, "slave1").index
 
             val numSteps = 10L
             execution.step(numSteps)

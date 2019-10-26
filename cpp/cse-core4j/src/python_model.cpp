@@ -4,11 +4,19 @@
 #include <cse/python_model.hpp>
 #include <cse/python_slave.hpp>
 
+#include <sstream>
+
 namespace cse
 {
 
 python_model::python_model(const boost::filesystem::path& py_file)
 {
+
+    std::ostringstream oss;
+    oss << "import sys\n";
+    oss << "sys.path.append(r'" << py_file.parent_path().string() << "')\n";
+    PyRun_SimpleString(oss.str().c_str());
+
     const auto moduleName = py_file.stem().string();
     pModule_ = PyImport_ImportModule(moduleName.c_str());
     pClass_ = PyObject_GetAttrString(pModule_, "CseSlave");

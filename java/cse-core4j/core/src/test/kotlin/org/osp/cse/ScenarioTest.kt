@@ -15,7 +15,7 @@ class ScenarioTest {
 
         CseExecution.create(1.0/100).use {
 
-            it.addSlave(Slave(), "slave uno")
+            it.addJvmSlave(Slave(), "slave uno")
             it.loadScenario(scenarioFile)
 
         }

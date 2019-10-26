@@ -4,6 +4,8 @@
 #include <cse/jvm_slave.hpp>
 #include <cse/model_description_helper.hpp>
 #include <cse/slave_infos_helper.hpp>
+#include <cse/python_model.hpp>
+#include <cse/py_state.hpp>
 
 #include <iostream>
 #include <jni.h>
@@ -34,6 +36,36 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env,
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject obj, jobject jslave, jstring jInstanceName)
 {
     auto instance = std::make_shared<cse::jvm_slave>(env, jslave);
+    const auto md = instance->model_description();
+
+    auto slave = std::make_unique<cse_slave>();
+    slave->modelName = md.name;
+    slave->instance = instance;
+    // slave address not in use yet. Should be something else than a string.
+    slave->address = "local";
+    slave->source = "memory";
+
+    auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
+    slave->instanceName = cInstanceName;
+    env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
+
+    return reinterpret_cast<jlong>(slave.release());
+}
+
+std::unique_ptr<cse::py_state> pyState = nullptr;
+
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* env, jobject obj, jstring pyPath, jstring jInstanceName)
+{
+
+    if (pyState == nullptr) {
+        pyState = std::make_unique<cse::py_state>();
+    }
+
+    auto pyPath_ = env->GetStringUTFChars(pyPath, nullptr);
+    auto model = std::make_shared<cse::python_model>(pyPath_);
+    env->ReleaseStringUTFChars(pyPath, pyPath_);
+
+    auto instance = model->instantiate_slave();
     const auto md = instance->model_description();
 
     auto slave = std::make_unique<cse_slave>();
