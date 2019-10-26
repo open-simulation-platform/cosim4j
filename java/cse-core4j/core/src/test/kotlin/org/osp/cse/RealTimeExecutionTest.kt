@@ -18,6 +18,8 @@ class RealTimeExecutionTest {
             Assertions.assertFalse(it.status.realTimeSimulation)
             it.enableRealTimeSimulation()
             Assertions.assertTrue(it.status.realTimeSimulation)
+            it.disableRealTimeSimulation()
+            Assertions.assertFalse(it.status.realTimeSimulation)
 
             it.stop()
 
