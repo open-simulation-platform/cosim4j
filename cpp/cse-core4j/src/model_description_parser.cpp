@@ -6,6 +6,7 @@
 
 #include <exception>
 #include <sstream>
+#include <iostream>
 
 using boost::property_tree::ptree;
 
@@ -19,12 +20,8 @@ cse::variable_causality parse_causality(const std::string& str)
         return cse::variable_causality::input;
     } else if (str == "output") {
         return cse::variable_causality::output;
-    } else if (str == "local" || str == "independent") {
+    } else  {
         return cse::variable_causality::local;
-    } else {
-        std::ostringstream oss;
-        oss << "Don't know how to parse causality '" << str << "'";
-        throw std::invalid_argument(oss.str());
     }
 }
 
@@ -38,12 +35,8 @@ cse::variable_variability parse_variability(const std::string& str)
         return cse::variable_variability::tunable;
     } else if (str == "discrete") {
         return cse::variable_variability::discrete;
-    } else if (str == "continuous") {
-        return cse::variable_variability::continuous;
     } else {
-        std::ostringstream oss;
-        oss << "Don't know how to parse variability '" << str << "'";
-        throw std::invalid_argument(oss.str());
+        return cse::variable_variability::continuous;
     }
 }
 
@@ -60,20 +53,24 @@ cse::variable_description parse_variable(const ptree& node)
         const auto type = v.first;
         if (type == "Integer") {
             variable.type = cse::variable_type::integer;
+            return variable;
         } else if (type == "Real") {
             variable.type = cse::variable_type::real;
+            return variable;
         } else if (type == "String") {
             variable.type = cse::variable_type::string;
+            return variable;
         } else if (type == "Boolean") {
             variable.type = cse::variable_type::boolean;
-        } else {
-            std::ostringstream oss;
-            oss << "Unsupported type '" << type << "'";
-            throw std::invalid_argument(oss.str());
+            return variable;
         }
     }
 
-    return variable;
+    std::ostringstream oss;
+    oss << "Fatal: Unable to parse variable type!";
+    std::cout << oss.str() << std::endl;
+    throw std::invalid_argument(oss.str());
+
 }
 
 void parse_model_variables(const ptree& node, std::vector<cse::variable_description>& variables)

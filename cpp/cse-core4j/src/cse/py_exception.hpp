@@ -5,6 +5,7 @@
 #include <Python.h>
 #include <exception>
 #include <string>
+#include <iostream>
 
 namespace
 {
@@ -17,7 +18,7 @@ inline void handle_py_exception()
         PyObject *pExcType, *pExcValue, *pExcTraceback;
         PyErr_Fetch(&pExcType, &pExcValue, &pExcTraceback);
 
-        std::string error_msg = "An error occurred: ";
+        std::string error_msg = "Fatal py exception encountered: ";
         if (pExcValue != nullptr) {
             PyObject* pRepr = PyObject_Repr(pExcValue);
             error_msg += PyUnicode_AsUTF8(pRepr);
@@ -32,6 +33,7 @@ inline void handle_py_exception()
         Py_XDECREF(pExcValue);
         Py_XDECREF(pExcTraceback);
 
+        std::cout << error_msg << std::endl;
         throw std::runtime_error(error_msg);
     }
 }

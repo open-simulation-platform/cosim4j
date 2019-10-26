@@ -19,13 +19,21 @@ python_model::python_model(const boost::filesystem::path& py_file)
 
     const auto moduleName = py_file.stem().string();
     pModule_ = PyImport_ImportModule(moduleName.c_str());
+    if (pModule_ == nullptr) {
+        handle_py_exception();
+    }
     pClass_ = PyObject_GetAttrString(pModule_, "CseSlave");
+    if (pClass_ == nullptr) {
+        handle_py_exception();
+    }
     PyObject* pInstance = PyObject_CallFunctionObjArgs(pClass_, nullptr);
+    if (pInstance == nullptr) {
+        handle_py_exception();
+    }
     auto f = PyObject_CallMethod(pInstance, "define", nullptr);
     if (f == nullptr) {
         handle_py_exception();
     }
-
     const char* xml = PyUnicode_AsUTF8(f);
     modelDescription_ = parse_model_description(xml);
 
