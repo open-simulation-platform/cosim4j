@@ -1,6 +1,10 @@
 
 set(sources
         jvm_slave.cpp
+        model_description_parser.cpp
+        python_model.cpp
+        python_slave.cpp
+        python_uri_sub_resolver.cpp
         step_event_listener.cpp
         thread_worker.cpp
 
@@ -16,6 +20,7 @@ set(sources
         )
 
 add_library(csecorejni ${sources})
+target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_include_directories(csecorejni
         PRIVATE
         "${JNI_INCLUDE_DIRS}"
@@ -28,6 +33,13 @@ target_link_libraries(csecorejni
         csecore::csecorec
         csecore::csecorecpp
         )
+
+if (Python3_FOUND)
+  target_link_libraries(csecorejni
+          PRIVATE
+          Python3::Python
+          )
+endif ()
 
 if (WIN32)
   set_target_properties(csecorejni

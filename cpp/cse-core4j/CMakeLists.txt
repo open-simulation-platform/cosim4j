@@ -38,5 +38,6 @@ endif()
 
 find_package(JNI REQUIRED)
 find_package(csecore REQUIRED)
+find_package(Python3 COMPONENTS Interpreter Development)
 
 add_subdirectory(src)
