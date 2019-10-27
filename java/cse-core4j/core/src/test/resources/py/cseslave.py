@@ -1,5 +1,7 @@
 from fmi2slave import *
 
+slave_class = "CseSlave"
+
 
 class CseSlave(Fmi2Slave):
 

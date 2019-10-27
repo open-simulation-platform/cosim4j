@@ -9,6 +9,14 @@
 namespace cse
 {
 
+inline const char* get_class_name(PyObject* pModule) {
+    auto f = PyObject_GetAttrString(pModule, "slave_class");
+    if (f != nullptr) {
+        return PyUnicode_AsUTF8(f);
+    }
+    return nullptr;
+}
+
 python_model::python_model(const boost::filesystem::path& py_file)
 {
 
@@ -22,7 +30,11 @@ python_model::python_model(const boost::filesystem::path& py_file)
     if (pModule_ == nullptr) {
         handle_py_exception();
     }
-    pClass_ = PyObject_GetAttrString(pModule_, "CseSlave");
+    auto className = get_class_name(pModule_);
+    if (className == nullptr) {
+        handle_py_exception();
+    }
+    pClass_ = PyObject_GetAttrString(pModule_, className);
     if (pClass_ == nullptr) {
         handle_py_exception();
     }
@@ -30,15 +42,15 @@ python_model::python_model(const boost::filesystem::path& py_file)
     if (pInstance == nullptr) {
         handle_py_exception();
     }
-    auto f = PyObject_CallMethod(pInstance, "define", nullptr);
+    auto f = PyObject_CallMethod(pInstance, "__define__", nullptr);
     if (f == nullptr) {
         handle_py_exception();
     }
     const char* xml = PyUnicode_AsUTF8(f);
     modelDescription_ = parse_model_description(xml);
 
-    Py_XDECREF(f);
-    Py_XDECREF(pInstance);
+    Py_DECREF(f);
+    Py_DECREF(pInstance);
 }
 
 std::shared_ptr<const cse::model_description> python_model::description() const noexcept

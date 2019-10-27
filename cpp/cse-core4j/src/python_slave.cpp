@@ -74,7 +74,7 @@ void python_slave::get_real_variables(gsl::span<const value_reference> variables
         PyList_SetItem(refs, i, Py_BuildValue("d", 0.0));
     }
 
-    auto f = PyObject_CallMethod(pInstance_, "get_real", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__get_real__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     if (f == nullptr) {
         handle_py_exception();
@@ -99,7 +99,7 @@ void python_slave::get_integer_variables(gsl::span<const value_reference> variab
         PyList_SetItem(vrs, i, Py_BuildValue("i", variables[i]));
         PyList_SetItem(refs, i, Py_BuildValue("i", 0));
     }
-    auto f = PyObject_CallMethod(pInstance_, "get_integer", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__get_integer__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     if (f == nullptr) {
         handle_py_exception();
@@ -124,7 +124,7 @@ void python_slave::get_boolean_variables(gsl::span<const value_reference> variab
         PyList_SetItem(vrs, i, Py_BuildValue("i", variables[i]));
         PyList_SetItem(refs, i, Py_BuildValue("i", 0));
     }
-    auto f = PyObject_CallMethod(pInstance_, "get_boolean", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__get_boolean__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     if (f == nullptr) {
         handle_py_exception();
@@ -149,7 +149,7 @@ void python_slave::get_string_variables(gsl::span<const value_reference> variabl
         PyList_SetItem(vrs, i, Py_BuildValue("i", variables[i]));
         PyList_SetItem(refs, i, Py_BuildValue("s", ""));
     }
-    auto f = PyObject_CallMethod(pInstance_, "get_string", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__get_string__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     if (f == nullptr) {
         handle_py_exception();
@@ -175,7 +175,7 @@ void python_slave::set_real_variables(gsl::span<const value_reference> variables
         PyList_SetItem(refs, i, Py_BuildValue("d", values[i]));
     }
 
-    auto f = PyObject_CallMethod(pInstance_, "set_real", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__set_real__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     Py_DECREF(refs);
     if (f == nullptr) {
@@ -195,7 +195,7 @@ void python_slave::set_integer_variables(gsl::span<const value_reference> variab
         PyList_SetItem(refs, i, Py_BuildValue("i", values[i]));
     }
 
-    auto f = PyObject_CallMethod(pInstance_, "set_integer", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__set_integer__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     Py_DECREF(refs);
     if (f == nullptr) {
@@ -214,7 +214,7 @@ void python_slave::set_boolean_variables(gsl::span<const value_reference> variab
         PyList_SetItem(refs, i, PyBool_FromLong(values[i]));
     }
 
-    auto f = PyObject_CallMethod(pInstance_, "set_boolean", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__set_boolean__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     Py_DECREF(refs);
     if (f == nullptr) {
@@ -233,7 +233,7 @@ void python_slave::set_string_variables(gsl::span<const value_reference> variabl
         PyList_SetItem(refs, i, Py_BuildValue("s", values[i].c_str()));
     }
 
-    auto f = PyObject_CallMethod(pInstance_, "set_string", "(OO)", vrs, refs);
+    auto f = PyObject_CallMethod(pInstance_, "__set_string__", "(OO)", vrs, refs);
     Py_DECREF(vrs);
     Py_DECREF(refs);
     if (f == nullptr) {

@@ -55,22 +55,22 @@ class ScalarVariable(ABC):
         self.variability = variability
         return self
 
-    def string_repr(self):
-        strRepr = f"\t\t<ScalarVariable valueReference=\"{self.value_reference}\" name=\"{self.name}\""
+    def __xml_repr__(self):
+        xml_repr = f"\t\t<ScalarVariable valueReference=\"{self.value_reference}\" name=\"{self.name}\""
         if self.initial is not None:
-            strRepr += f" initial=\"{self.initial.name}\""
+            xml_repr += f" initial=\"{self.initial.name}\""
         if self.causality is not None:
-            strRepr += f" causality=\"{self.causality.name}\""
+            xml_repr += f" causality=\"{self.causality.name}\""
         if self.variability is not None:
-            strRepr += f" variability=\"{self.variability.name}\""
+            xml_repr += f" variability=\"{self.variability.name}\""
         if self.description is not None:
-            strRepr += f" description=\"{self.description}\""
-        strRepr += ">\n"
-        strRepr += "\t\t\t" + self.sub_string_repr() + "\n"
-        return strRepr + "\t\t</ScalarVariable>"
+            xml_repr += f" description=\"{self.description}\""
+        xml_repr += ">\n"
+        xml_repr += "\t\t\t" + self.__sub_xml_repr__() + "\n"
+        return xml_repr + "\t\t</ScalarVariable>"
 
     @abstractmethod
-    def sub_string_repr(self):
+    def __sub_xml_repr__(self):
         pass
 
 
@@ -89,9 +89,8 @@ class Fmi2Slave(ABC):
         if Fmi2Slave.modelName is None:
             raise Exception("No modelName has been specified!")
 
-    def define(self):
-
-        var_str = "\n".join(list(map(lambda v: v.string_repr(), self.vars)))
+    def __define__(self):
+        var_str = "\n".join(list(map(lambda v: v.__xml_repr__(), self.vars)))
         outputs = list(filter(lambda v: v.causality == Fmi2Causality.output, self.vars))
         structure_str = ""
         if len(outputs) > 0:
@@ -143,7 +142,7 @@ class Fmi2Slave(ABC):
     def terminate(self):
         pass
 
-    def get_integer(self, vrs, refs):
+    def __get_integer__(self, vrs, refs):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -152,7 +151,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Integer!")
 
-    def get_real(self, vrs, refs):
+    def __get_real__(self, vrs, refs):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -161,7 +160,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Real!")
 
-    def get_boolean(self, vrs, refs):
+    def __get_boolean__(self, vrs, refs):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -170,7 +169,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Boolean!")
 
-    def get_string(self, vrs, refs):
+    def __get_string__(self, vrs, refs):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -179,7 +178,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type String!")
 
-    def set_integer(self, vrs, values):
+    def __set_integer__(self, vrs, values):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -188,7 +187,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Integer!")
 
-    def set_real(self, vrs, values):
+    def __set_real__(self, vrs, values):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -197,7 +196,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Real!")
 
-    def set_boolean(self, vrs, values):
+    def __set_boolean__(self, vrs, values):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -206,7 +205,7 @@ class Fmi2Slave(ABC):
             else:
                 raise Exception(f"Variable with valueReference={vr} is not of type Boolean!")
 
-    def set_string(self, vrs, values):
+    def __set_string__(self, vrs, values):
         for i in range(len(vrs)):
             vr = vrs[i]
             var = self.vars[vr]
@@ -219,18 +218,18 @@ class Fmi2Slave(ABC):
 class Real(ScalarVariable):
 
     def __init__(self, name):
-        super(Real, self).__init__(name)
+        super().__init__(name)
 
-    def sub_string_repr(self):
+    def __sub_xml_repr__(self):
         return f"<Real />"
 
 
 class Integer(ScalarVariable):
 
     def __init__(self, name):
-        super(Integer, self).__init__(name)
+        super().__init__(name)
 
-    def sub_string_repr(self):
+    def __sub_xml_repr__(self):
         return f"<Integer />"
 
 
@@ -238,16 +237,16 @@ class Boolean(ScalarVariable):
 
     def __init__(self, name):
         self.value = False
-        super(Boolean, self).__init__(name)
+        super().__init__(name)
 
-    def sub_string_repr(self):
+    def __sub_xml_repr__(self):
         return f"<Boolean />"
 
 
 class String(ScalarVariable):
 
     def __init__(self, name):
-        super(String, self).__init__(name)
+        super().__init__(name)
 
-    def sub_string_repr(self):
+    def __sub_xml_repr__(self):
         return f"<String />"
