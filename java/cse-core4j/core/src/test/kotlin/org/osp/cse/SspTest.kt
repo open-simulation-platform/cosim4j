@@ -1,9 +1,8 @@
 package org.osp.cse
 
 import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
-import org.osp.util.extractStepSize
+import org.osp.util.extractFixedStepAlgorithmStepSize
 import java.io.File
 
 class SspTest {
@@ -15,11 +14,11 @@ class SspTest {
         testSsp2(sspDir)
     }
 
-    @Test
-    @Disabled
-    fun testSspFmuproxy() {
-        testSsp(File(SspTest::class.java.classLoader.getResource("ssp/demo/fmuproxy").file))
-    }
+//    @Test
+//    @Disabled
+//    fun testSspFmuproxy() {
+//        testSsp(File(SspTest::class.java.classLoader.getResource("ssp/demo/fmuproxy").file))
+//    }
 
     fun testSsp(sspDir: File) {
 
@@ -41,7 +40,7 @@ class SspTest {
             Assertions.assertTrue(execution.step(numSteps))
 
             execution.status.also {
-                Assertions.assertEquals(numSteps * extractStepSize(sspDir)!!, it.currentTime)
+                Assertions.assertEquals(numSteps * extractFixedStepAlgorithmStepSize(sspDir)!!, it.currentTime)
             }
 
         }

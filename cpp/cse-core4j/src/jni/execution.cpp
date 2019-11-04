@@ -22,11 +22,24 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createExecution(JNIEnv* 
     return reinterpret_cast<jlong>(execution);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv* env, jobject obj, jstring sspDir, jboolean startTimeDefined, jdouble startTime)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSspExecution(JNIEnv* env, jobject obj, jstring sspPath, jboolean startTimeDefined, jdouble startTime)
 {
-    auto sspDir_ = env->GetStringUTFChars(sspDir, nullptr);
+    auto sspDir_ = env->GetStringUTFChars(sspPath, nullptr);
     cse_execution* execution = cse_ssp_execution_create(sspDir_, startTimeDefined, to_cse_time_point(startTime));
-    env->ReleaseStringUTFChars(sspDir, sspDir_);
+    env->ReleaseStringUTFChars(sspPath, sspDir_);
+    if (execution == nullptr) {
+        std::cerr << "[JNI-wrapper]"
+                  << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;
+        return 0;
+    }
+    return reinterpret_cast<jlong>(execution);
+}
+
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createCseConfigExecution(JNIEnv* env, jobject obj, jstring configPath, jboolean startTimeDefined, jdouble startTime)
+{
+    auto configDir_ = env->GetStringUTFChars(configPath, nullptr);
+    cse_execution* execution = cse_config_execution_create(configDir_, startTimeDefined, to_cse_time_point(startTime));
+    env->ReleaseStringUTFChars(configPath, configDir_);
     if (execution == nullptr) {
         std::cerr << "[JNI-wrapper]"
                   << "Error: Failed to create execution: " << cse_last_error_message() << std::endl;

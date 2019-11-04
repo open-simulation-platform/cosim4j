@@ -48,13 +48,26 @@ object CseLibrary {
     private external fun createFixedStepSspExecution(sspDir: String, stepSize: Double, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
 
     @JvmOverloads
-    fun createSspExecution(sspDir: String, startTime: Double? = null, stepSize: Double? = null): ExecutionPtr {
+    fun createSspExecution(sspPath: String, startTime: Double? = null, stepSize: Double? = null): ExecutionPtr {
         val startTimeDefined = startTime?.let { it >= 0 } ?: false
         return if (stepSize == null) {
-            createSspExecution(sspDir, startTimeDefined, startTime ?: 0.0)
+            createSspExecution(sspPath, startTimeDefined, startTime ?: 0.0)
         } else {
-            createFixedStepSspExecution(sspDir, stepSize, startTimeDefined, startTime ?: 0.0)
+            createFixedStepSspExecution(sspPath, stepSize, startTimeDefined, startTime ?: 0.0)
         }
+    }
+
+    /**
+     * Creates a new execution based on a OspSystemStructure.xml file.
+     *
+     * @return A pointer to an object which holds the execution state, or NULL on error.
+     */
+    private external fun createCseConfigExecution(sspDir: String, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
+
+    @JvmOverloads
+    fun createCseConfigExecution(configPath: String, startTime: Double? = null): ExecutionPtr {
+        val startTimeDefined = startTime?.let { it >= 0 } ?: false
+        return createCseConfigExecution(configPath, startTimeDefined, startTime ?: 0.0)
     }
 
     /**

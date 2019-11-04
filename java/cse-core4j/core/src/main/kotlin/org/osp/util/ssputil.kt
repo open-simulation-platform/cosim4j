@@ -6,20 +6,20 @@ import java.io.File
 
 const val SSP_FILE_NAME = "SystemStructure.ssd"
 
-fun extractStepSize(sspDir: File): Double? {
+fun extractFixedStepAlgorithmStepSize(sspDir: File): Double? {
 
     val sspFile = File(sspDir, SSP_FILE_NAME)
     if (!sspFile.exists()) {
         throw NoSuchFileException(sspFile)
     }
 
-    return extractStepSize(sspFile.readText())
+    return extractFixedStepAlgorithmStepSize(sspFile.readText())
 
 }
 
-internal fun extractStepSize(text: String): Double? {
+internal fun extractFixedStepAlgorithmStepSize(text: String): Double? {
 
-    val regex = "stepSize=\"(\\d+\\.\\d+)?(\\d+e-\\d+)?\"".toRegex()
+    val regex = "osp:FixedStepAlgorithm baseStepSize=\"(\\d+\\.\\d+)?(\\d+e-\\d+)?\"".toRegex()
     val groups = regex.findAll(text).toList().map { it.groupValues }
     return groups.getOrNull(0)?.let { match ->
 
