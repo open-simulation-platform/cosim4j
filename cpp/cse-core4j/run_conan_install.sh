@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
+export CONAN_REVISIONS_ENABLED="1"
 conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan --f
-conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/conan-local --f
+conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/public --f
 conan user -p "Open Simulation Platform" -r osp osp
 
 unameOut="$(uname -s)"
