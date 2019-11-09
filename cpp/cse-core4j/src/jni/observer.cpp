@@ -10,12 +10,12 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLastValueObserver(JNIEnv* env, jobject obj)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createLastValueObserver(JNIEnv* env, jobject)
 {
     return reinterpret_cast<jlong>(cse_last_value_observer_create());
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEnv* env, jobject obj, jstring logDir)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEnv* env, jobject, jstring logDir)
 {
     const char* _logDir = env->GetStringUTFChars(logDir, nullptr);
     cse_observer* observer = cse_file_observer_create(_logDir);
@@ -27,7 +27,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserver(JNIEn
     return reinterpret_cast<jlong>(observer);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCfg(JNIEnv* env, jobject obj, jstring logDir, jstring cfgPath)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCfg(JNIEnv* env, jobject, jstring logDir, jstring cfgPath)
 {
     const char* logDir_ = env->GetStringUTFChars(logDir, nullptr);
     const char* cfgPath_ = env->GetStringUTFChars(cfgPath, nullptr);
@@ -41,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createFileObserverFromCf
     return reinterpret_cast<jlong>(observer);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver(JNIEnv* env, jobject obj, jint bufferSize)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver(JNIEnv* env, jobject, jint bufferSize)
 {
     if (bufferSize <= 0) {
         return reinterpret_cast<jlong>(cse_time_series_observer_create());
@@ -50,7 +50,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createTimeSeriesObserver
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -59,7 +59,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_startObserving(JNIEnv
     return cse_observer_start_observing(reinterpret_cast<cse_observer*>(observerPtr), slaveIndex, static_cast<cse_variable_type>(variableType), static_cast<cse_value_reference>(vr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -69,7 +69,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_stopObserving(JNIEnv*
 }
 
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv* env, jobject obj, jlong observerPtr)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEnv* env, jobject, jlong observerPtr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -78,7 +78,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroyObserver(JNIEn
     return cse_observer_destroy(reinterpret_cast<cse_observer*>(observerPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv* env, jobject obj, jlong executionPtr, jlong observerPtr)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv* env, jobject, jlong executionPtr, jlong observerPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_addObserver(JNIEnv* e
     return cse_execution_add_observer(reinterpret_cast<cse_execution*>(executionPtr), reinterpret_cast<cse_observer*>(observerPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlongArray vr, jdoubleArray ref)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jdoubleArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -120,7 +120,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getReal(JNIEnv* env, 
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlongArray vr, jintArray ref)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jintArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -149,7 +149,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getInteger(JNIEnv* en
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlongArray vr, jbooleanArray ref)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jbooleanArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -185,7 +185,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getBoolean(JNIEnv* en
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlongArray vr, jobjectArray ref)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getString(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jobjectArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;

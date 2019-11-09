@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getModelDescription(JNIEnv* env, jobject obj, jlong executionPtr, jint slaveIndex)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getModelDescription(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -23,7 +23,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getModelDescription(JN
     return create_model_description(env, executionPtr, slaveIndex);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env, jobject obj, jstring fmuPath, jstring jInstanceName)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env, jobject, jstring fmuPath, jstring jInstanceName)
 {
     auto fmuPath_ = env->GetStringUTFChars(fmuPath, nullptr);
     auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
@@ -33,7 +33,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createSlave(JNIEnv* env,
     return reinterpret_cast<jlong>(slave);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject obj, jobject jslave, jstring jInstanceName)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* env, jobject, jobject jslave, jstring jInstanceName)
 {
     auto instance = std::make_shared<cse::jvm_slave>(env, jslave);
     const auto md = instance->model_description();
@@ -54,7 +54,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* e
 
 std::unique_ptr<cse::py_state> pyState = nullptr;
 
-JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* env, jobject obj, jstring pyPath, jstring jInstanceName)
+JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* env, jobject, jstring pyPath, jstring jInstanceName)
 {
 
     if (pyState == nullptr) {
@@ -82,7 +82,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* en
     return reinterpret_cast<jlong>(slave.release());
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv* env, jobject obj, jlong slave)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv* env, jobject, jlong slave)
 {
     if (slave == 0) {
         std::cerr << "[JNI-wrapper] Error: slave is NULL" << std::endl;
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv* 
     return cse_local_slave_destroy(reinterpret_cast<cse_slave*>(slave)) == 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv* env, jobject obj, jlong executionPtr, jlong slave)
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv* env, jobject, jlong executionPtr, jlong slave)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -105,7 +105,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_addSlave(JNIEnv* env, job
     return static_cast<jint>(cse_execution_add_slave(reinterpret_cast<cse_execution*>(executionPtr), reinterpret_cast<cse_slave*>(slave)));
 }
 
-JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv* env, jobject obj, jlong executionPtr)
+JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv* env, jobject, jlong executionPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -114,7 +114,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cse_jni_CseLibrary_getNumSlaves(JNIEnv* env,
     return static_cast<jint>(cse_execution_get_num_slaves(reinterpret_cast<cse_execution*>(executionPtr)));
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv* env, jobject obj, jlong executionPtr)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getSlaveInfos(JNIEnv* env, jobject, jlong executionPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;

@@ -10,7 +10,7 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -20,7 +20,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getRealSamples(JNIEnv*
     return create_real_samples(env, observerPtr, slaveIndex, vr, fromStep, nSamples);
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
+JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -30,7 +30,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cse_jni_CseLibrary_getIntegerSamples(JNIE
     return create_integer_samples(env, observerPtr, slaveIndex, vr, fromStep, nSamples);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jdouble duration, jlongArray steps)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDuration(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jdouble duration, jlongArray steps)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -52,7 +52,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbersForDura
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv* env, jobject obj, jlong observerPtr, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps)
+JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_getStepNumbers(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jdouble begin, jdouble end, jlongArray steps)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
