@@ -5,27 +5,12 @@ import org.junit.jupiter.api.Test
 
 class SSPUtilTest {
 
-    private val step1 = "0.01"
-    private val step2 = "1e-4"
-
-    private val test1 = """
+    private fun testString(stepSize: String) = """
        <ssd:DefaultExperiment>
             <ssd:Annotations>
                 <ssc:Annotation type="com.opensimulationplatform">
                     <osp:SimulationInformation>
-                    <osp:FixedStepAlgorithm baseStepSize="$step1"/>
-                    </osp:SimulationInformation>
-                </ssc:Annotation>
-            </ssd:Annotations>
-        </ssd:DefaultExperiment>
-    """.trimIndent()
-
-    private val test2 = """
-        <ssd:DefaultExperiment>
-            <ssd:Annotations>
-                <ssc:Annotation type="com.opensimulationplatform">
-                    <osp:SimulationInformation>
-                    <osp:FixedStepAlgorithm baseStepSize="$step2"/>
+                    <osp:FixedStepAlgorithm baseStepSize="$stepSize"/>
                     </osp:SimulationInformation>
                 </ssc:Annotation>
             </ssd:Annotations>
@@ -34,9 +19,8 @@ class SSPUtilTest {
 
     @Test
     fun extractStepSize() {
-
-        Assertions.assertEquals(step1.toDouble(), extractFixedStepAlgorithmStepSize(test1))
-        Assertions.assertEquals(step2.toDouble(), extractFixedStepAlgorithmStepSize(test2))
-
+        listOf("0.001", "1E-4", "1.0E-4", "1e-4", "1.0E-4" ).forEach {
+            Assertions.assertEquals(it.toDouble(), extractFixedStepAlgorithmStepSize(testString(it)))
+        }
     }
 }

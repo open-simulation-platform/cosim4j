@@ -19,17 +19,7 @@ fun extractFixedStepAlgorithmStepSize(sspDir: File): Double? {
 
 internal fun extractFixedStepAlgorithmStepSize(text: String): Double? {
 
-    val regex = "osp:FixedStepAlgorithm baseStepSize=\"(\\d+\\.\\d+)?(\\d+e-\\d+)?\"".toRegex()
+    val regex = "osp:FixedStepAlgorithm baseStepSize=\"([0-9eE.-]*)?\"".toRegex()
     val groups = regex.findAll(text).toList().map { it.groupValues }
-    return groups.getOrNull(0)?.let { match ->
-
-        val normalNotation = match[1]
-        val scientificNotation = match[2]
-        when {
-            normalNotation.isNotEmpty() -> normalNotation.toDouble()
-            scientificNotation.isNotEmpty() -> scientificNotation.toDouble()
-            else -> null
-        }
-    }
-
+    return groups.getOrNull(0)?.get(1)?.toDouble()
 }
