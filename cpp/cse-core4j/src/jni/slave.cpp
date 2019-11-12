@@ -3,9 +3,9 @@
 #include <cse/cse_slave_s.hpp>
 #include <cse/jvm_slave.hpp>
 #include <cse/model_description_helper.hpp>
-#include <cse/slave_infos_helper.hpp>
-#include <cse/python_model.hpp>
 #include <cse/py_state.hpp>
+#include <cse/python_model.hpp>
+#include <cse/slave_infos_helper.hpp>
 
 #include <iostream>
 #include <jni.h>
@@ -52,6 +52,8 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* e
     return reinterpret_cast<jlong>(slave.release());
 }
 
+#ifdef HAS_PYTHON
+
 std::unique_ptr<cse::py_state> pyState = nullptr;
 
 JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* env, jobject, jstring pyPath, jstring jInstanceName)
@@ -81,6 +83,8 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createPySlave(JNIEnv* en
 
     return reinterpret_cast<jlong>(slave.release());
 }
+
+#endif
 
 JNIEXPORT jboolean JNICALL Java_org_osp_cse_jni_CseLibrary_destroySlave(JNIEnv* env, jobject, jlong slave)
 {

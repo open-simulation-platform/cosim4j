@@ -40,6 +40,7 @@ target_link_libraries(csecorejni
         )
 
 if (Python3_FOUND)
+    target_compile_definitions(csecorejni PRIVATE "HAS_PYTHON")
     target_link_libraries(csecorejni
             PRIVATE
             Python3::Python
