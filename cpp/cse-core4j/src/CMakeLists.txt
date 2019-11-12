@@ -5,6 +5,7 @@ set(sources
         step_event_listener.cpp
         thread_worker.cpp
 
+        jni/capabilities.cpp
         jni/connection.cpp
         jni/error.cpp
         jni/execution.cpp

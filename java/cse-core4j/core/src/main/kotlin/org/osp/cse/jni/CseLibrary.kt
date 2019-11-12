@@ -23,6 +23,8 @@ object CseLibrary {
 
     external fun getLastError(): CseError
 
+    external fun hasPython(): Boolean
+
     /**
      * Creates a new execution.
      *
