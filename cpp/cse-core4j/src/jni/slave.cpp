@@ -3,12 +3,15 @@
 #include <cse/cse_slave_s.hpp>
 #include <cse/jvm_slave.hpp>
 #include <cse/model_description_helper.hpp>
-#include <cse/py_state.hpp>
-#include <cse/python_model.hpp>
 #include <cse/slave_infos_helper.hpp>
 
 #include <iostream>
 #include <jni.h>
+
+#ifdef HAS_PYTHON
+#    include <cse/py_state.hpp>
+#    include <cse/python_model.hpp>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
