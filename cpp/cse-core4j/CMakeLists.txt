@@ -6,6 +6,7 @@ project(csecorejni VERSION 0.0.1)
 # ==============================================================================
 
 option(BUILD_SHARED_LIBS "Build shared libraries instead of static libraries" ON)
+option(CSECOREJNI_WITH_PYTHON "Build with Python3 integration" OFF)
 option(CSECOREJNI_USING_CONAN "Whether Conan is used for package management" ON)
 
 # ==============================================================================
@@ -38,6 +39,7 @@ endif()
 
 find_package(JNI REQUIRED)
 find_package(csecore REQUIRED)
-find_package(Python3 COMPONENTS Interpreter Development)
-
+if (CSECOREJNI_WITH_PYTHON)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+endif()
 add_subdirectory(src)
