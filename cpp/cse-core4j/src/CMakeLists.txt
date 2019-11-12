@@ -2,9 +2,6 @@
 set(sources
         jvm_slave.cpp
         model_description_parser.cpp
-        python_model.cpp
-        python_slave.cpp
-        python_uri_sub_resolver.cpp
         step_event_listener.cpp
         thread_worker.cpp
 
@@ -18,6 +15,14 @@ set(sources
         jni/samples.cpp
         jni/slave.cpp
         )
+
+if (Python3_FOUND)
+    list(APPEND sources
+            python_model.cpp
+            python_slave.cpp
+            python_uri_sub_resolver.cpp
+            )
+endif ()
 
 add_library(csecorejni ${sources})
 target_compile_definitions(csecorejni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
@@ -35,20 +40,20 @@ target_link_libraries(csecorejni
         )
 
 if (Python3_FOUND)
-  target_link_libraries(csecorejni
-          PRIVATE
-          Python3::Python
-          )
+    target_link_libraries(csecorejni
+            PRIVATE
+            Python3::Python
+            )
 endif ()
 
 if (WIN32)
-  set_target_properties(csecorejni
-          PROPERTIES
-          RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/../../java/cse-core4j/natives-win/src/main/resources/native/win"
-          )
+    set_target_properties(csecorejni
+            PROPERTIES
+            RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/../../java/cse-core4j/natives-win/src/main/resources/native/win"
+            )
 elseif (UNIX)
-  set_target_properties(csecorejni
-          PROPERTIES
-          LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../../java/cse-core4j/natives-linux/src/main/resources/native/linux"
-          )
+    set_target_properties(csecorejni
+            PROPERTIES
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../../java/cse-core4j/natives-linux/src/main/resources/native/linux"
+            )
 endif ()
