@@ -33,7 +33,7 @@ std::string invoke_string_getter(JNIEnv* env, jobject slave, jmethodID mid)
     auto jname = reinterpret_cast<jstring>(env->CallObjectMethod(slave, mid));
     if (jname == nullptr) return "";
     auto cname = env->GetStringUTFChars(jname, nullptr);
-    env->ReleaseStringUTFChars(jname, cname);
+//    env->ReleaseStringUTFChars(jname, cname);
     return cname;
 }
 
