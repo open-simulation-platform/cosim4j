@@ -9,9 +9,23 @@ import java.io.File
 class ScenarioTest {
 
     @Test
-    fun testScenario() {
+    fun testJsonScenario() {
 
         val scenarioFile = File(ScenarioTest::class.java.classLoader.getResource("scenario/scenario1.json").file)
+
+        CseExecution.create(1.0/100).use {
+
+            it.addJvmSlave(Slave(), "slave uno")
+            it.loadScenario(scenarioFile)
+
+        }
+
+    }
+
+    @Test
+    fun testYamlScenario() {
+
+        val scenarioFile = File(ScenarioTest::class.java.classLoader.getResource("scenario/scenario1.yml").file)
 
         CseExecution.create(1.0/100).use {
 
