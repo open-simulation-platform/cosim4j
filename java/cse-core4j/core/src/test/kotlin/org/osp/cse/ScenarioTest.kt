@@ -4,9 +4,15 @@ import no.ntnu.ihb.fmi4j.Fmi2Slave
 import no.ntnu.ihb.fmi4j.ScalarVariable
 import no.ntnu.ihb.fmi4j.modeldescription.fmi2.Fmi2Causality
 import org.junit.jupiter.api.Test
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 
 class ScenarioTest {
+
+    companion object {
+        private val LOG: Logger = LoggerFactory.getLogger(ScenarioTest::class.java)
+    }
 
     @Test
     fun testJsonScenario() {
@@ -15,7 +21,8 @@ class ScenarioTest {
 
         CseExecution.create(1.0/100).use {
 
-            it.addJvmSlave(Slave(), "slave uno")
+            val slave = it.addJvmSlave(Slave(), "slave uno")
+            LOG.info("${slave.modelDescription.variables}")
             it.loadScenario(scenarioFile)
 
         }
@@ -29,7 +36,8 @@ class ScenarioTest {
 
         CseExecution.create(1.0/100).use {
 
-            it.addJvmSlave(Slave(), "slave uno")
+            val slave = it.addJvmSlave(Slave(), "slave uno")
+            LOG.info("${slave.modelDescription.variables}")
             it.loadScenario(scenarioFile)
 
         }
