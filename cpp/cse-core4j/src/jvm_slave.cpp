@@ -34,10 +34,10 @@ cse::variable_variability get_variability(JNIEnv* env, jclass Fmi2ScalarVariable
     jmethodID ordinal = GetMethodID(env, Fmi2Variability, "ordinal", "()I");
     int result = env->CallIntMethod(variability, ordinal);
     switch (result) {
-        case 1: return cse::variable_variability::constant;
-        case 2: return cse::variable_variability::fixed;
-        case 3: return cse::variable_variability::tunable;
-        case 4: return cse::variable_variability::discrete;
+        case 0: return cse::variable_variability::constant;
+        case 1: return cse::variable_variability::fixed;
+        case 2: return cse::variable_variability::tunable;
+        case 3: return cse::variable_variability::discrete;
         default: return cse::variable_variability::continuous;
     }
 }
