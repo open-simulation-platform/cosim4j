@@ -33,8 +33,9 @@ std::string invoke_string_getter(JNIEnv* env, jobject slave, jmethodID mid)
     auto jname = reinterpret_cast<jstring>(env->CallObjectMethod(slave, mid));
     if (jname == nullptr) return "";
     auto cname = env->GetStringUTFChars(jname, nullptr);
-//    env->ReleaseStringUTFChars(jname, cname);
-    return cname;
+    auto name = std::string(cname);
+    env->ReleaseStringUTFChars(jname, cname);
+    return name;
 }
 
 inline jmethodID GetMethodID(JNIEnv* env, jclass cls, const char* name, const char* sig)
