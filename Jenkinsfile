@@ -40,7 +40,7 @@ pipeline {
                         stage('Build-jvm') {
                             steps {
 								dir('java/cse-core4j') {
-									bat 'gradlew.bat clean build'
+									bat 'gradlew.bat clean build --info'
 								}
                             }
                         }
@@ -84,7 +84,7 @@ pipeline {
                         stage('Build-jvm') {
                             steps {
                                 dir('java/cse-core4j') {
-									sh './gradlew clean build'
+									sh './gradlew clean build --info'
 								}
                             }
                         }
