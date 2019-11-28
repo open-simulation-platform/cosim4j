@@ -1,6 +1,6 @@
 package org.osp.cse
 
-import no.ntnu.ihb.fmi4j.Fmi2Slave
+import no.ntnu.ihb.fmi4j.export.fmi2.Slave
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.slf4j.Logger
@@ -60,8 +60,8 @@ class CseExecution private constructor(
         return addSlave(slavePtr)
     }
 
-    fun addJvmSlave(slave: Fmi2Slave, instanceName: String): CseSlave {
-        val slavePtr = CseLibrary.createJvmSlave(slave, instanceName)
+    fun addJvmSlave(slave: Slave): CseSlave {
+        val slavePtr = CseLibrary.createJvmSlave(slave, slave.instanceName)
         if (slavePtr == 0L) {
             throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
         }
@@ -219,46 +219,6 @@ class CseExecution private constructor(
             throw RuntimeException("Failed add scenario manager! Last reported error: ${CseLibrary.getLastError()}")
         }
 
-    }
-
-    fun setInitialRealValue(slaveIndex: Int, vr: Long, value: Double) {
-        CseLibrary.setInitialRealValue(executionPtr, slaveIndex, vr, value);
-    }
-
-    fun setInitialRealValue(slaveIndex: Int, name: String, value: Double) {
-        getSlave(slaveIndex).getVariable(name).valueReference.let {
-            setInitialRealValue(slaveIndex, it, value)
-        }
-    }
-
-    fun setInitialIntegerValue(slaveIndex: Int, vr: Long, value: Int) {
-        CseLibrary.setInitialIntegerValue(executionPtr, slaveIndex, vr, value);
-    }
-
-    fun setInitialIntegerValue(slaveIndex: Int, name: String, value: Int) {
-        getSlave(slaveIndex).getVariable(name).valueReference.let {
-            setInitialIntegerValue(slaveIndex, it, value)
-        }
-    }
-
-    fun setInitialBooleanValue(slaveIndex: Int, vr: Long, value: Boolean) {
-        CseLibrary.setInitialBooleanValue(executionPtr, slaveIndex, vr, value);
-    }
-
-    fun setInitialBooleanValue(slaveIndex: Int, name: String, value: Boolean) {
-        getSlave(slaveIndex).getVariable(name).valueReference.let {
-            setInitialBooleanValue(slaveIndex, it, value)
-        }
-    }
-
-    fun setInitialStringValue(slaveIndex: Int, vr: Long, value: String) {
-        CseLibrary.setInitialStringValue(executionPtr, slaveIndex, vr, value);
-    }
-
-    fun setInitialRealValue(slaveIndex: Int, name: String, value: String) {
-        getSlave(slaveIndex).getVariable(name).valueReference.let {
-            setInitialStringValue(slaveIndex, it, value)
-        }
     }
 
     override fun close() {

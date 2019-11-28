@@ -1,7 +1,7 @@
 package org.osp.cse
 
-import no.ntnu.ihb.fmi4j.Fmi2Slave
-import no.ntnu.ihb.fmi4j.ScalarVariable
+import no.ntnu.ihb.fmi4j.export.fmi2.ScalarVariable
+import no.ntnu.ihb.fmi4j.export.fmi2.Slave
 import no.ntnu.ihb.fmi4j.modeldescription.fmi2.Fmi2Causality
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Disabled
@@ -17,8 +17,8 @@ class TestJvmSlave {
 
             val observer = execution.addLastValueObserver()
 
-            val slave = MySlave()
-            val index = execution.addJvmSlave(slave, "slave1").index
+            val slave = MySlave("slave1")
+            val index = execution.addJvmSlave(slave).index
 
             val numSteps = 10L
             execution.step(numSteps)
@@ -51,7 +51,9 @@ class TestJvmSlave {
 
 }
 
-internal class MySlave: Fmi2Slave() {
+internal class MySlave(
+        instanceName: String
+): Slave(instanceName) {
 
     @ScalarVariable(Fmi2Causality.output)
     internal var speed = 1.0
@@ -59,9 +61,8 @@ internal class MySlave: Fmi2Slave() {
     @ScalarVariable(Fmi2Causality.output)
     internal var count = 0
 
-    override fun doStep(currentTime: Double, dt: Double): Boolean {
+    override fun doStep(currentTime: Double, dt: Double) {
         count += 1
-        return true
     }
 
 }

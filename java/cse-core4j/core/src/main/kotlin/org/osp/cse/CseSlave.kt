@@ -26,6 +26,46 @@ open class CseSlave internal constructor(
                 ?: throw IllegalArgumentException("No variable with valueReference=$vr and type=$type found!")
     }
 
+    fun setInitialRealValue(vr: Long, value: Double) {
+        CseLibrary.setInitialRealValue(executionPtr, index, vr, value);
+    }
+
+    fun setInitialRealValue(name: String, value: Double) {
+        getVariable(name).valueReference.let {
+            setInitialRealValue(it, value)
+        }
+    }
+
+    fun setInitialIntegerValue(vr: Long, value: Int) {
+        CseLibrary.setInitialIntegerValue(executionPtr, index, vr, value);
+    }
+
+    fun setInitialIntegerValue(name: String, value: Int) {
+        getVariable(name).valueReference.let {
+            setInitialIntegerValue(it, value)
+        }
+    }
+
+    fun setInitialBooleanValue(vr: Long, value: Boolean) {
+        CseLibrary.setInitialBooleanValue(executionPtr, index, vr, value);
+    }
+
+    fun setInitialBooleanValue(name: String, value: Boolean) {
+        getVariable(name).valueReference.let {
+            setInitialBooleanValue(it, value)
+        }
+    }
+
+    fun setInitialStringValue(vr: Long, value: String) {
+        CseLibrary.setInitialStringValue(executionPtr, index, vr, value);
+    }
+
+    fun setInitialRealValue(name: String, value: String) {
+        getVariable(name).valueReference.let {
+            setInitialStringValue(it, value)
+        }
+    }
+
     override fun close() {
         // nothing to do
     }

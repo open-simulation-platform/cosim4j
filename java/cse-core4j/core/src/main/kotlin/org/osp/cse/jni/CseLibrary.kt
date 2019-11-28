@@ -1,6 +1,6 @@
 package org.osp.cse.jni
 
-import no.ntnu.ihb.fmi4j.Fmi2Slave
+import no.ntnu.ihb.fmi4j.export.fmi2.Slave
 import org.osp.cse.*
 import org.osp.util.isLinux
 import org.osp.util.libPrefix
@@ -97,7 +97,7 @@ object CseLibrary {
      *
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
-    external fun createJvmSlave(slave: Fmi2Slave, instanceName: String): SlavePtr
+    external fun createJvmSlave(slave: Slave, instanceName: String): SlavePtr
 
     /**
      * Creates a new local slave.
