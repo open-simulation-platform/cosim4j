@@ -5,7 +5,13 @@ wrapper {
     distributionType = Wrapper.DistributionType.ALL
 }
 
+def snapshot = true
+def core4j_version = '0.7.0'
+if (snapshot) core4j_version += '-SNAPSHOT'
+
+println "Cse-core4j version is $core4j_version"
+
 subprojects {
     group 'org.osp'
-    version '0.7.0'
+    version core4j_version
 }
