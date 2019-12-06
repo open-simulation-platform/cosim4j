@@ -1,6 +1,5 @@
 package org.osp.cse.jni
 
-import no.ntnu.ihb.fmi4j.export.fmi2.Slave
 import org.osp.cse.*
 import org.osp.util.isLinux
 import org.osp.util.libPrefix
@@ -88,26 +87,6 @@ object CseLibrary {
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
     external fun createSlave(fmuPath: String, instanceName: String): SlavePtr
-
-    /**
-     * Creates a new local slave.
-     *
-     * @param slave the JVM owned slave
-     * @param instanceName name of the instance
-     *
-     * @return A pointer to an object which holds the local slave object, or NULL on error.
-     */
-    external fun createJvmSlave(slave: Slave, instanceName: String): SlavePtr
-
-    /**
-     * Creates a new local slave.
-     *
-     * @param pyPath Path to the .py script
-     * @param instanceName name of the instance
-     *
-     * @return A pointer to an object which holds the local slave object, or NULL on error.
-     */
-    external fun createPySlave(pyPath: String, instanceName: String): SlavePtr
 
     /**
      *  Destroys a local slave.

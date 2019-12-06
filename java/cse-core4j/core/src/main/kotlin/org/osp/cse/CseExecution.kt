@@ -1,6 +1,5 @@
 package org.osp.cse
 
-import no.ntnu.ihb.fmi4j.export.fmi2.Slave
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.slf4j.Logger
@@ -45,23 +44,6 @@ class CseExecution private constructor(
     fun addSlave(fmuPath: File, instanceName: String): CseSlave {
         require(fmuPath.extension == "fmu") { "File must have a .fmu ending!" }
         val slavePtr = CseLibrary.createSlave(fmuPath.absolutePath, instanceName)
-        if (slavePtr == 0L) {
-            throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
-        }
-        return addSlave(slavePtr)
-    }
-
-    fun addPySlave(pyPath: File, instanceName: String): CseSlave {
-        require(pyPath.extension == "py") { "File must have a .py ending!" }
-        val slavePtr = CseLibrary.createPySlave(pyPath.absolutePath, instanceName)
-        if (slavePtr == 0L) {
-            throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
-        }
-        return addSlave(slavePtr)
-    }
-
-    fun addJvmSlave(slave: Slave): CseSlave {
-        val slavePtr = CseLibrary.createJvmSlave(slave, slave.instanceName)
         if (slavePtr == 0L) {
             throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
         }
