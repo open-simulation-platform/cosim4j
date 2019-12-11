@@ -3,13 +3,14 @@ println "Gradle version is ${gradle.getGradleVersion()}"
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = '6.0.1'
 }
 
 def snapshot = true
 def core4j_version = '0.7.0'
 if (snapshot) core4j_version += '-SNAPSHOT'
 
-println "Cse-core4j version is $core4j_version"
+println "cse-core4j version is $core4j_version"
 
 subprojects {
     group 'org.osp'
