@@ -7,7 +7,7 @@ wrapper {
 }
 
 def snapshot = true
-def core4j_version = '0.7.0'
+def core4j_version = 'r1'
 if (snapshot) core4j_version += '-SNAPSHOT'
 
 println "cse-core4j version is $core4j_version"
