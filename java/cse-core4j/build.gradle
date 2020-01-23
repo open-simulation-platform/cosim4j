@@ -6,8 +6,8 @@ wrapper {
     gradleVersion = '6.0.1'
 }
 
-def snapshot = false
-def core4j_version = 'r2'
+def snapshot = true
+def core4j_version = 'r3'
 if (snapshot) core4j_version += '-SNAPSHOT'
 
 println "cse-core4j version is $core4j_version"
