@@ -9,7 +9,7 @@ class SspTest {
 
     @Test
     fun testSsp() {
-        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo").file)
+        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
         testSsp(sspDir)
         testSsp2(sspDir)
     }

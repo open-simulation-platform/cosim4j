@@ -14,7 +14,7 @@ class CseExecutionTest {
         val LOG: Logger = LoggerFactory.getLogger(CseExecutionTest::class.java)
 
         val testFmu = File(CseExecutionTest::class.java.classLoader
-                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file)
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu")!!.file)
 
     }
 
@@ -70,7 +70,7 @@ class CseExecutionTest {
                 Assertions.assertEquals(0.1, this.currentTime)
             }
 
-            Assertions.assertTrue(logDir.listFiles().isNotEmpty())
+            Assertions.assertTrue(!logDir.listFiles().isNullOrEmpty())
 
             execution.addLastValueObserver().use { observer ->
 

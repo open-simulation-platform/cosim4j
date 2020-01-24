@@ -9,7 +9,7 @@ class RealTimeExecutionTest {
     @Test
     fun testRealTime() {
 
-        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo").file)
+        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
         Assertions.assertTrue(sspDir.exists())
         CseExecution.createFromSsp(sspDir).use {
 

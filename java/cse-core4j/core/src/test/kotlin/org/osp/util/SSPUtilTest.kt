@@ -9,9 +9,9 @@ class SSPUtilTest {
        <ssd:DefaultExperiment>
             <ssd:Annotations>
                 <ssc:Annotation type="com.opensimulationplatform">
-                    <osp:SimulationInformation>
-                    <osp:FixedStepAlgorithm baseStepSize="$stepSize"/>
-                    </osp:SimulationInformation>
+                    <osp:Algorithm>
+                        <osp:FixedStepAlgorithm baseStepSize="$stepSize"/>
+                    </osp:Algorithm>
                 </ssc:Annotation>
             </ssd:Annotations>
         </ssd:DefaultExperiment>
