@@ -12,8 +12,8 @@ class Demo {
 
         try(CseExecution execution = CseExecution.createFromSsp(new File("path/to/sspDir"))) {
 
-            CseSlave mySlave = execution.getSlave("mySlave");
-            int index = mySlave.getIndex();
+            CseSlave mySlave = execution.getSlaveByName("mySlave");
+            int index = mySlave.getSlaveRef();
 
             CseVariableDescription myVar = mySlave.getModelDescription().getVariable("myVar");
             long vr = myVar.getValueReference();
@@ -24,11 +24,11 @@ class Demo {
             CseSlave slave1 = execution.addSlave(new File("path/to/fmu1.fmu"), "slave1");
             CseSlave slave2 = execution.addSlave(new File("path/to/fmu2.fmu"), "slave2");
 
-            execution.connectReals(slave1.getIndex(), 12 /*vr*/, slave2.getIndex(), 9 /*vr*/);
+            execution.connectReals(slave1.getSlaveRef(), 12 /*vr*/, slave2.getSlaveRef(), 9 /*vr*/);
 
             CseLastValueObserver observer = execution.addLastValueObserver();
             execution.step(10);
-            double value = observer.getReal(slave1.getIndex(), 46 /*vr*/);
+            double value = observer.getReal(slave1.getSlaveRef(), 46 /*vr*/);
 
         } // try with resources (calls destroy internally)
 

@@ -7,12 +7,27 @@ wrapper {
 }
 
 def snapshot = true
-def core4j_version = 'r3'
+def core4j_version = 'r4'
 if (snapshot) core4j_version += '-SNAPSHOT'
 
 println "cse-core4j version is $core4j_version"
 
-subprojects {
+subprojects { sub ->
     group 'org.osp'
     version core4j_version
+
+    pluginManager.withPlugin('kotlin') {
+
+        compileKotlin {
+            kotlinOptions {
+                jvmTarget = "1.8"
+                javaParameters = true
+            }
+        }
+        compileTestKotlin {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+
+    }
+
 }

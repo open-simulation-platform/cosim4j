@@ -18,8 +18,11 @@ public class TestCallback {
         execution.addSlave(testFmu, "slave");
 
         AtomicInteger counter = new AtomicInteger(0);
-        execution.addStepEventListener((stepNumber, currentTime, lastStepSize) -> {
-            Assertions.assertEquals(counter.incrementAndGet(), stepNumber);
+        execution.addStepEventListener(new StepEventAdapter() {
+            @Override
+            public void onStepComplete(long stepNumber, double currentTime, double lastStepSize) {
+                Assertions.assertEquals(counter.incrementAndGet(), stepNumber);
+            }
         });
 
         int numSteps = 100;

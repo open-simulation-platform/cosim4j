@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
 class CseExecutionTest {
@@ -28,17 +29,17 @@ class CseExecutionTest {
 
             val slave = execution.addSlave(testFmu, "ControlledTemperature")
             val observer = execution.addTimeSeriesObserver()
-            Assertions.assertTrue(observer.startObserving(slave.index, slave.getVariable("Temperature_Room")))
+            Assertions.assertTrue(observer.startObserving(slave.slaveRef, slave.getVariable("Temperature_Room")))
 
             execution.getSlaveInfos().apply {
-                Assertions.assertEquals(0, this[0].index)
-                Assertions.assertEquals("ControlledTemperature", this[0].name)
+                Assertions.assertEquals(0, this[0].slaveRef)
+                Assertions.assertEquals("ControlledTemperature", this[0].instanceName)
             }
 
             Assertions.assertTrue(execution.step(numSteps))
 
             val nSamples = 6
-            val samples = observer.getRealSamples(slave.index, 47 /*vr*/, 1, nSamples)
+            val samples = observer.getRealSamples(slave.slaveRef, 47 /*vr*/, 1, nSamples)
             Assertions.assertEquals(nSamples, samples.size)
 
             execution.status.apply {
@@ -74,7 +75,7 @@ class CseExecutionTest {
 
             execution.addLastValueObserver().use { observer ->
 
-                observer.getReal(slave.index, 1).also {
+                observer.getReal(slave.slaveRef, 1).also {
                     Assertions.assertEquals(298.0, it)
                 }
 
@@ -95,15 +96,24 @@ class CseExecutionTest {
         CseExecution.create(1.0 / 100).use { execution ->
 
             val counter = AtomicLong(0)
-            execution.addStepEventListener(object : StepEventListener {
+            val onSimulationInitializedCalled = AtomicBoolean(false)
+            execution.addStepEventListener(object : StepEventAdapter() {
+
+                override fun onSimulationInitialized(currentTime: Double) {
+                    onSimulationInitializedCalled.set(true)
+                }
+
                 override fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double) {
                     counter.getAndIncrement()
                 }
+
             })
 
             val numSteps = 10L
             execution.step(numSteps)
             Assertions.assertEquals(numSteps, counter.get())
+
+            Assertions.assertTrue(onSimulationInitializedCalled.get())
 
         }
     }
@@ -116,7 +126,7 @@ class CseExecutionTest {
             execution.addSlave(testFmu, "slave")
 
             val counter = AtomicLong(0)
-            execution.addStepEventListener(object : StepEventListener {
+            execution.addStepEventListener(object : StepEventAdapter() {
                 override fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double) {
                     counter.getAndIncrement()
                 }

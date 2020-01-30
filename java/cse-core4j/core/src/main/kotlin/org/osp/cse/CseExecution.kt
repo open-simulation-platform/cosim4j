@@ -9,6 +9,7 @@ import java.io.File
 import java.lang.IllegalStateException
 import java.lang.RuntimeException
 
+typealias SlaveRef = Int
 
 class CseExecution private constructor(
         private val executionPtr: ExecutionPtr
@@ -20,7 +21,7 @@ class CseExecution private constructor(
 
     init {
         getSlaveInfos().forEach {
-            slaves.add(CseSlave(it.index, it.name, executionPtr))
+            slaves.add(CseSlave(it.slaveRef, it.instanceName, executionPtr))
         }
     }
 
@@ -31,14 +32,14 @@ class CseExecution private constructor(
         get() = CseLibrary.getStatus(executionPtr)
                 ?: throw IllegalStateException("Failed to retrieve status! Last reported error: ${CseLibrary.getLastError()}")
 
-    fun getSlave(index: Int): CseSlave {
-        return slaves.find { it.index == index }
-                ?: throw IllegalArgumentException("No slave with index=$index found!")
+    fun getSlaveByReference(ref: SlaveRef): CseSlave {
+        return slaves.find { it.slaveRef == ref }
+                ?: throw IllegalArgumentException("No slave with index=$ref found!")
     }
 
-    fun getSlave(name: String): CseSlave {
-        return slaves.find { it.instanceName == name }
-                ?: throw IllegalArgumentException("No slave with name=$name found!")
+    fun getSlaveByName(instanceName: String): CseSlave {
+        return slaves.find { it.instanceName == instanceName }
+                ?: throw IllegalArgumentException("No slave with name=$instanceName found!")
     }
 
     fun addSlave(fmuPath: File, instanceName: String): CseSlave {
@@ -53,7 +54,7 @@ class CseExecution private constructor(
     private fun addSlave(slavePtr: Long): CseSlave {
         return if (slavePtr != 0L) {
             val index = CseLibrary.addSlave(executionPtr, slavePtr)
-            val name = getSlaveInfos().find { it.index == index }!!.name
+            val name = getSlaveInfos().find { it.slaveRef == index }!!.instanceName
             CseLocalSlave(index, name, executionPtr, slavePtr).also {
                 slaves.add(it)
             }
@@ -196,11 +197,11 @@ class CseExecution private constructor(
         return if (CseLibrary.addObserver(executionPtr, observer)) {
             CseStepEventListener(observer).also {
                 observers.add(it)
+                listener.addedToExecution(this)
             }
         } else {
             throw RuntimeException("Failed add scenario manager! Last reported error: ${CseLibrary.getLastError()}")
         }
-
     }
 
     override fun close() {

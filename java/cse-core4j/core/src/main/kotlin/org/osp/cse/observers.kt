@@ -21,21 +21,27 @@ sealed class CseObserver(
 }
 
 interface StepEventListener {
-
+    fun addedToExecution(execution: CseExecution)
+    fun onSimulationInitialized(currentTime: Double)
     fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double)
 }
 
+abstract class StepEventAdapter : StepEventListener {
+    override fun addedToExecution(execution: CseExecution) {}
+    override fun onSimulationInitialized(currentTime: Double) {}
+    override fun onStepComplete(stepNumber: Long, currentTime: Double, lastStepSize: Double) {}
+}
 
-class CseStepEventListener(
+class CseStepEventListener internal constructor(
         observer: ObserverPtr
 ) : CseObserver(observer)
 
-class CseFileObserver(
+class CseFileObserver internal constructor(
         observer: ObserverPtr,
         val logDir: File
 ) : CseObserver(observer)
 
-class CseTimeSeriesObserver(
+class CseTimeSeriesObserver internal constructor(
         observer: ObserverPtr
 ) : CseObserver(observer) {
 

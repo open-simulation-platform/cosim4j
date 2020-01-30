@@ -20,7 +20,7 @@ public:
     void simulation_initialized(step_number firstStep, time_point startTime) override;
     void simulator_added(simulator_index index, observable* observable, time_point point) override;
     void simulator_removed(simulator_index index, time_point point) override;
-    void variables_connected(variable_id output, variable_id input, time_point point) override;
+    void variables_connected(variable_id, variable_id, time_point point) override;
     void variable_disconnected(variable_id input, time_point point) override;
     void step_complete(step_number lastStep, duration lastStepSize, time_point currentTime) override;
     void simulator_step_complete(simulator_index index, step_number lastStep, duration lastStepSize, time_point currentTime) override;
@@ -29,15 +29,13 @@ public:
 
 private:
     JavaVM* jvm_;
-    jmethodID mid_;
     jobject listener_;
+    jmethodID onStepCompletedId_;
+    jmethodID onSimulationInitializedId_;
 
     thread_worker worker_;
 };
 
-inline void step_event_listener::simulation_initialized(step_number, time_point)
-{
-}
 inline void step_event_listener::simulator_added(simulator_index, observable*, time_point)
 {
 }

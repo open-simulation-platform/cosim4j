@@ -4,16 +4,15 @@ import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.osp.cse.jni.SlavePtr
 import java.io.Closeable
-import java.lang.IllegalArgumentException
 
 open class CseSlave internal constructor(
-        val index: Int,
+        val slaveRef: SlaveRef,
         val instanceName: String,
         private val executionPtr: ExecutionPtr
 ) : Closeable {
 
     val modelDescription: CseModelDescription by lazy {
-        CseLibrary.getModelDescription(executionPtr, index)
+        CseLibrary.getModelDescription(executionPtr, slaveRef)
     }
 
     fun getVariable(name: String): CseVariableDescription {
@@ -25,43 +24,35 @@ open class CseSlave internal constructor(
     }
 
     fun setInitialRealValue(vr: Long, value: Double) {
-        CseLibrary.setInitialRealValue(executionPtr, index, vr, value);
+        CseLibrary.setInitialRealValue(executionPtr, slaveRef, vr, value);
     }
 
     fun setInitialRealValue(name: String, value: Double) {
-        getVariable(name).valueReference.let {
-            setInitialRealValue(it, value)
-        }
+        setInitialRealValue(getVariable(name).valueReference, value)
     }
 
     fun setInitialIntegerValue(vr: Long, value: Int) {
-        CseLibrary.setInitialIntegerValue(executionPtr, index, vr, value);
+        CseLibrary.setInitialIntegerValue(executionPtr, slaveRef, vr, value);
     }
 
     fun setInitialIntegerValue(name: String, value: Int) {
-        getVariable(name).valueReference.let {
-            setInitialIntegerValue(it, value)
-        }
+        setInitialIntegerValue(getVariable(name).valueReference, value)
     }
 
     fun setInitialBooleanValue(vr: Long, value: Boolean) {
-        CseLibrary.setInitialBooleanValue(executionPtr, index, vr, value);
+        CseLibrary.setInitialBooleanValue(executionPtr, slaveRef, vr, value);
     }
 
     fun setInitialBooleanValue(name: String, value: Boolean) {
-        getVariable(name).valueReference.let {
-            setInitialBooleanValue(it, value)
-        }
+        setInitialBooleanValue(getVariable(name).valueReference, value)
     }
 
     fun setInitialStringValue(vr: Long, value: String) {
-        CseLibrary.setInitialStringValue(executionPtr, index, vr, value);
+        CseLibrary.setInitialStringValue(executionPtr, slaveRef, vr, value);
     }
 
     fun setInitialRealValue(name: String, value: String) {
-        getVariable(name).valueReference.let {
-            setInitialStringValue(it, value)
-        }
+        setInitialStringValue(getVariable(name).valueReference, value)
     }
 
     override fun close() {
@@ -69,17 +60,17 @@ open class CseSlave internal constructor(
     }
 
     override fun toString(): String {
-        return "CseSlave(name='$instanceName', index=$index)"
+        return "CseSlave(name='$instanceName', index=$slaveRef)"
     }
 
 }
 
 class CseLocalSlave(
-        index: Int,
-        name: String,
+        slaveRef: SlaveRef,
+        instanceName: String,
         executionPtr: ExecutionPtr,
         private var slavePtr: SlavePtr
-) : CseSlave(index, name, executionPtr), Closeable {
+) : CseSlave(slaveRef, instanceName, executionPtr), Closeable {
 
     override fun close() {
         if (slavePtr != 0L) {
@@ -91,12 +82,12 @@ class CseLocalSlave(
 }
 
 class CseSlaveInfo(
-        var index: Int,
-        val name: String
+        var slaveRef: SlaveRef,
+        val instanceName: String
 ) {
 
     override fun toString(): String {
-        return "CseSlaveInfo(name=$name, index=$index)"
+        return "CseSlaveInfo(name=$instanceName, index=$slaveRef)"
     }
 
 }

@@ -30,7 +30,7 @@ class SspTest {
 
         CseExecution.createFromSsp(sspDir).use { execution ->
 
-            val craneController = execution.getSlave("CraneController")
+            val craneController = execution.getSlaveByName("CraneController")
             Assertions.assertNotNull(craneController)
             val variable = craneController.modelDescription.getVariable("Gain1.input")
             Assertions.assertNotNull(variable)
@@ -77,7 +77,7 @@ class SspTest {
             val numSteps = 100L
             Assertions.assertTrue(execution.step(numSteps))
 
-            Assertions.assertNotNull(execution.getSlave("CraneController"))
+            Assertions.assertNotNull(execution.getSlaveByName("CraneController"))
 
             execution.status.also {
                 Assertions.assertEquals(numSteps * stepSize, it.currentTime)
