@@ -8,7 +8,7 @@ import java.lang.IllegalArgumentException
 
 open class CseSlave internal constructor(
         val index: Int,
-        val name: String,
+        val instanceName: String,
         private val executionPtr: ExecutionPtr
 ) : Closeable {
 
@@ -18,12 +18,10 @@ open class CseSlave internal constructor(
 
     fun getVariable(name: String): CseVariableDescription {
         return modelDescription.getVariable(name)
-                ?: throw IllegalArgumentException("No variable with name=$name found!")
     }
 
     fun getVariable(vr: Long, type: CseVariableType): CseVariableDescription {
         return modelDescription.getVariable(vr, type)
-                ?: throw IllegalArgumentException("No variable with valueReference=$vr and type=$type found!")
     }
 
     fun setInitialRealValue(vr: Long, value: Double) {
@@ -71,7 +69,7 @@ open class CseSlave internal constructor(
     }
 
     override fun toString(): String {
-        return "CseSlave(name='$name', index=$index)"
+        return "CseSlave(name='$instanceName', index=$index)"
     }
 
 }

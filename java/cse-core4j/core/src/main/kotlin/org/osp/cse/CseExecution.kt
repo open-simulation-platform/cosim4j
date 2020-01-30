@@ -37,7 +37,7 @@ class CseExecution private constructor(
     }
 
     fun getSlave(name: String): CseSlave {
-        return slaves.find { it.name == name }
+        return slaves.find { it.instanceName == name }
                 ?: throw IllegalArgumentException("No slave with name=$name found!")
     }
 

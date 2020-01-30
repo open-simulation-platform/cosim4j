@@ -15,7 +15,7 @@ class CseConfigTest {
 
         CseExecution.createFromCseConfig(path).use {
 
-           Assertions.assertEquals(it.getSlave(0).name, "CraneController")
+           Assertions.assertEquals(it.getSlave(0).instanceName, "CraneController")
 
         }
 

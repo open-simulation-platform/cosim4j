@@ -30,7 +30,7 @@ class SspTest {
             Assertions.assertNotNull(craneController)
             val variable = craneController.modelDescription.getVariable("Gain1.input")
             Assertions.assertNotNull(variable)
-            Assertions.assertEquals(154, variable!!.valueReference)
+            Assertions.assertEquals(154, variable.valueReference)
             Assertions.assertEquals(CseVariableType.REAL, variable.type)
             Assertions.assertEquals(CseVariableCausality.LOCAL, variable.causality)
 
