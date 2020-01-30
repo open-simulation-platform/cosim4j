@@ -1,18 +1,21 @@
-package org.osp.cse
+package org.osp.cse.ssp
 
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.osp.cse.CseExecution
+import org.osp.cse.CseVariableCausality
+import org.osp.cse.CseVariableType
 import org.osp.util.extractFixedStepAlgorithmStepSize
 import java.io.File
 
 class SspTest {
 
-    @Test
-    fun testSsp() {
+    companion object {
+
         val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
-        testSsp(sspDir)
-        testSsp2(sspDir)
+
     }
+
 
 //    @Test
 //    @Disabled
@@ -20,7 +23,8 @@ class SspTest {
 //        testSsp(File(SspTest::class.java.classLoader.getResource("ssp/demo/fmuproxy").file))
 //    }
 
-    fun testSsp(sspDir: File) {
+    @Test
+    fun testSsp() {
 
         Assertions.assertTrue(sspDir.exists())
 
@@ -46,7 +50,8 @@ class SspTest {
         }
     }
 
-    fun testSsp2(sspDir: File) {
+    @Test
+    fun testSsp2() {
 
         Assertions.assertTrue(sspDir.exists())
 
@@ -55,6 +60,24 @@ class SspTest {
 
             val numSteps = 100L
             Assertions.assertTrue(execution.step(numSteps))
+
+            execution.status.also {
+                Assertions.assertEquals(numSteps * stepSize, it.currentTime)
+            }
+
+        }
+    }
+
+    @Test
+    fun testSspArchive() {
+
+        val stepSize = 1.0 / 100
+        CseExecution.createFromSsp(File(sspDir, "demo.ssp"), stepSize = stepSize).use { execution ->
+
+            val numSteps = 100L
+            Assertions.assertTrue(execution.step(numSteps))
+
+            Assertions.assertNotNull(execution.getSlave("CraneController"))
 
             execution.status.also {
                 Assertions.assertEquals(numSteps * stepSize, it.currentTime)
