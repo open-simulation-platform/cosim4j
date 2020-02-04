@@ -10,12 +10,9 @@ import java.io.File
 
 class SspTest {
 
-    companion object {
-
+    private companion object {
         val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
-
     }
-
 
 //    @Test
 //    @Disabled

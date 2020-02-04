@@ -13,11 +13,8 @@ class CseConfigTest {
     fun TestCseConfig() {
 
         val path = File(CseConfigTest::class.java.classLoader.getResource("msmi")!!.file)
-
         CseExecution.createFromCseConfig(path).use {
-
            Assertions.assertEquals(it.getSlaveByReference(0).instanceName, "CraneController")
-
         }
 
     }
