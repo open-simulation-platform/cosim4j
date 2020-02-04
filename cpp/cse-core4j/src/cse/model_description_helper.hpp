@@ -15,9 +15,7 @@ jobject create_variable(JNIEnv* env, cse::variable_description& description)
     jclass cls = env->FindClass("org/osp/cse/CseVariableDescription");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;JIII)V");
 
-    return env->NewObject(
-        cls,
-        ctor,
+    return env->NewObject(cls, ctor,
         env->NewStringUTF(description.name.c_str()),
         static_cast<jlong>(description.reference),
         static_cast<jint>(description.type),
@@ -41,15 +39,13 @@ jobject create_variables(JNIEnv* env, std::vector<cse::variable_description>& va
 
 jobject create_model_description(JNIEnv* env, jlong executionPtr, jint slaveIndex)
 {
-
     auto execution = reinterpret_cast<cse_execution*>(executionPtr);
     auto description = execution->get_model_description(slaveIndex);
 
     jclass cls = env->FindClass("org/osp/cse/CseModelDescription");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V");
 
-    return env->NewObject(cls,
-        ctor,
+    return env->NewObject(cls, ctor,
         env->NewStringUTF(description.name.c_str()),
         env->NewStringUTF(description.uuid.c_str()),
         env->NewStringUTF(description.description.c_str()),

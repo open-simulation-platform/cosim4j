@@ -1,5 +1,6 @@
 
 set(sources
+        jvm_slave.cpp
         model_description_parser.cpp
         step_event_listener.cpp
         thread_worker.cpp

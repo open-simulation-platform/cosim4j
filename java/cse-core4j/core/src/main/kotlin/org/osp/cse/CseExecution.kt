@@ -1,5 +1,6 @@
 package org.osp.cse
 
+import no.ntnu.ihb.fmi4j.export.fmi2.Fmi2Slave
 import org.osp.cse.jni.CseLibrary
 import org.osp.cse.jni.ExecutionPtr
 import org.slf4j.Logger
@@ -61,6 +62,14 @@ class CseExecution private constructor(
         } else {
             throw RuntimeException("Failed to add slave! Last reported error: ${CseLibrary.getLastError()}")
         }
+    }
+
+    fun addJvmSlave(slave: Fmi2Slave): CseSlave {
+        val slavePtr = CseLibrary.createJvmSlave(slave, slave.instanceName)
+        if (slavePtr == 0L) {
+            throw RuntimeException("Failed to create slave! Last reported error: ${CseLibrary.getLastError()}")
+        }
+        return addSlave(slavePtr)
     }
 
     fun start(): Boolean {
