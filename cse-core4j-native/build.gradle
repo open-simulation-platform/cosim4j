@@ -1,0 +1,56 @@
+import org.gradle.internal.os.OperatingSystem
+
+def os = OperatingSystem.current()
+def buildDir = new File("cmake-build-release")
+
+task configureConan {
+    doLast {
+        def conanFile = new File(buildDir, "conanbuildinfo.cmake")
+        if (!conanFile.exists()) {
+            exec {
+                if (os.isWindows()) {
+                    commandLine 'cmd', '/c', 'run_conan_install.sh'
+                } else if (os.isLinux()) {
+                    commandLine 'run_conan_install.sh'
+                }
+            }
+        }
+    }
+}
+
+task configureNative {
+    doLast {
+        exec {
+            workingDir buildDir
+            if (os.isWindows()) {
+                commandLine 'cmd', '/c', 'cmake', '..', '-DCMAKE_BUILD_TYPE=Release', '-A', 'x64'
+            } else if (os.isLinux()) {
+                commandLine 'cmake', '..', '-DCMAKE_BUILD_TYPE=Release'
+            }
+        }
+    }
+    dependsOn 'configureConan'
+}
+
+task buildNative {
+    doLast {
+        exec {
+            workingDir buildDir
+            if (os.isWindows()) {
+                commandLine 'cmd', '/c', 'cmake', '--build', '.', '--config', 'Release'
+            } else if (os.linux) {
+                commandLine 'cmake', '--build', '.'
+            }
+        }
+    }
+
+    dependsOn 'configureNative'
+}
+
+task clean {
+   doLast {
+       if (buildDir.exists()) {
+           buildDir.deleteDir()
+       }
+   }
+}
