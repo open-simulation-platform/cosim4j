@@ -22,6 +22,6 @@ jobs:
       if: startsWith(runner.os, 'Windows')
       run: ./gradlew build
 
-    - name: Build with Gradle on Windows
+    - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
       run: sudo chmod +x gradlew && ./gradlew build
