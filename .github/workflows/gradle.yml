@@ -18,5 +18,10 @@ jobs:
       with:
         java-version: 1.8
 
-    - name: Build with Gradle
+    - name: Build with Gradle on Windows
+      if: startsWith(runner.os, 'Windows')
       run: ./gradlew build
+
+    - name: Build with Gradle on Windows
+      if: startsWith(runner.os, 'Lunix')
+      run: sudo chmod +x gradlew && ./gradlew build
