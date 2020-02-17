@@ -11,7 +11,7 @@ task configureConan {
                 if (os.isWindows()) {
                     commandLine 'cmd', '/c', 'run_conan_install.sh'
                 } else if (os.isLinux()) {
-                    commandLine 'run_conan_install.sh'
+                    commandLine './run_conan_install.sh'
                 }
             }
         }
