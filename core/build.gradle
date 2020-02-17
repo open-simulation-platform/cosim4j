@@ -18,7 +18,7 @@ repositories {
 dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "no.ntnu.ihb.fmi4j:fmi-export:0.29.2"
+    compile "no.ntnu.ihb.fmi4j:fmi-export:0.29.4"
 
     def slf4j_version = '1.7.25'
     implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version

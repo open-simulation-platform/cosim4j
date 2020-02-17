@@ -40,7 +40,6 @@ private:
     jmethodID enterInitialisationModeId_;
     jmethodID exitInitialisationModeId_;
     jmethodID doStepId_;
-    jmethodID resetId_;
     jmethodID terminateId_;
 
     jmethodID getRealId_;

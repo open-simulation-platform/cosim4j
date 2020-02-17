@@ -96,7 +96,6 @@ jvm_slave::jvm_slave(JNIEnv* env, jobject slave)
     exitInitialisationModeId_ = GetMethodID(env, cls, "exitInitialisationMode", "()V");
 
     doStepId_ = GetMethodID(env, cls, "doStep", "(DD)V");
-    resetId_ = GetMethodID(env, cls, "reset", "()V");
     terminateId_ = GetMethodID(env, cls, "terminate", "()V");
 
     getRealId_ = GetMethodID(env, cls, "getReal", "([J)[D");
