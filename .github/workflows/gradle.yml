@@ -25,4 +25,4 @@ jobs:
 
     - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo chmod +x gradlew && ./gradlew buildNative build --info
+      run: sudo chmod +x gradlew && sudo ./gradlew buildNative build --info
