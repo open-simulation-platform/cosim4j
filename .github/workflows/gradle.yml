@@ -21,8 +21,8 @@ jobs:
 
     - name: Build with Gradle on Windows
       if: startsWith(runner.os, 'Windows')
-      run: ./gradlew build --info
+      run: ./gradlew buildNative build --info
 
     - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo chmod +x gradlew && ./gradlew build --info
+      run: sudo chmod +x gradlew && ./gradlew buildNative build --info
