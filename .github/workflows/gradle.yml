@@ -21,6 +21,20 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Setup Python 3.x
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+
+    - name: Install conan on Windows
+      if: startsWith(runner.os, 'Windows')
+      run: pip install conan
+
+    - name: Install conan on Linux
+      if: startsWith(runner.os, 'Linux')
+      run: sudo pip install conan
+
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -28,8 +42,8 @@ jobs:
 
     - name: Build with Gradle on Windows
       if: startsWith(runner.os, 'Windows')
-      run: ./gradlew build --info
+      run: ./gradlew buildNative build --info
 
     - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo chmod +x gradlew && ./gradlew build --info
+      run: sudo chmod +x gradlew && ./gradlew buildNative build --info
