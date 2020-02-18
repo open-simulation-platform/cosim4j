@@ -8,6 +8,7 @@ task configureConan {
         def conanFile = new File(buildDir, "conanbuildinfo.cmake")
         if (!conanFile.exists()) {
             exec {
+                workingDir project.file("cse-core4j/native")
                 if (os.isWindows()) {
                     commandLine 'cmd', '/c', 'run_conan_install.sh'
                 } else if (os.isLinux()) {
