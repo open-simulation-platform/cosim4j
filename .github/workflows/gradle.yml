@@ -8,7 +8,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
         matrix:
-          os: [windows-latest]
+          os: [windows-latest, ubuntu-latest]
     timeout-minutes: 5
 
     steps:
@@ -27,13 +27,33 @@ jobs:
         python-version: '3.x'
         architecture: 'x64'
 
-    - name: Install conan on Windows
+    - name: Build natives on Windows
       if: startsWith(runner.os, 'Windows')
-      run: pip install conan
+      run: |
+        pip install conan
+        conan remote add conan-center "https://conan.bintray.com" --f
+        conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan" --f
+        conan user -p "Open Simulation Platform" -r osp osp
+        cd cse-core4j-native
+        conan install . -s build_type=Release --install-folder=cmake-build-release --build=missing
+        cd cmake-build-release
+        cmake .. -DCMAKE_BUILD_TYPE=Release -A x64
+        cmake --build . --config Release
+      shell: bash
 
-    - name: Install conan on Linux
+    - name: Build natives on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo pip install conan
+      run: |
+        sudo pip install conan
+        conan remote add conan-center "https://conan.bintray.com" --f
+        conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan" --f
+        conan user -p "Open Simulation Platform" -r osp osp
+        cd cse-core4j-native
+        conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=cmake-build-release --build=missing
+        cd cmake-build-release
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+      shell: bash
 
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
@@ -42,8 +62,8 @@ jobs:
 
     - name: Build with Gradle on Windows
       if: startsWith(runner.os, 'Windows')
-      run: ./gradlew buildNative build --info
+      run: ./gradlew build --info
 
     - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo chmod +x gradlew && ./gradlew buildNative build --info
+      run: sudo chmod +x gradlew && ./gradlew build --info
