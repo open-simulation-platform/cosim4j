@@ -68,7 +68,6 @@ cse::variable_description parse_variable(const ptree& node)
 
     std::ostringstream oss;
     oss << "Fatal: Unable to parse variable type!";
-    std::cout << oss.str() << std::endl;
     throw std::invalid_argument(oss.str());
 
 }

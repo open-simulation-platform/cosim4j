@@ -41,7 +41,6 @@ JNIEXPORT jlong JNICALL Java_org_osp_cse_jni_CseLibrary_createJvmSlave(JNIEnv* e
     slave->instance = instance;
     // slave address not in use yet. Should be something else than a string.
     slave->address = "local";
-    slave->source = "memory";
 
     auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
     slave->instanceName = cInstanceName;

@@ -16,7 +16,6 @@ struct cse_slave_s
     std::string address;
     std::string modelName;
     std::string instanceName;
-    std::string source;
     std::shared_ptr<cse::slave> instance;
 };
 
