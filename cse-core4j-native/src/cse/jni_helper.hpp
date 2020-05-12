@@ -42,7 +42,7 @@ inline jmethodID GetMethodID(JNIEnv* env, jclass cls, const char* name, const ch
 {
     jmethodID id = env->GetMethodID(cls, name, sig);
     if (id == nullptr) {
-        std::cout << "Unable to locate method '" << name << "'!";
+        std::cerr << "Unable to locate method '" << name << "'!";
     }
     return id;
 }
@@ -51,7 +51,7 @@ inline jclass FindClass(JNIEnv* env, const char* name)
 {
     jclass cls = env->FindClass(name);
     if (cls == nullptr) {
-        std::cout << "Unable to find class '" << name << "'!" << std::endl;
+        std::cerr << "Unable to find class '" << name << "'!" << std::endl;
     }
     return cls;
 }

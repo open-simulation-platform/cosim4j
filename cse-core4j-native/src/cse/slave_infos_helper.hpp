@@ -27,7 +27,6 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
 
     jobject list = nullptr;
     if (status) {
-
         list = env->NewObject(listCls, listCtor, size);
         for (int i = 0; i < size; i++) {
             auto info = env->NewObject(
