@@ -7,13 +7,13 @@ wrapper {
 }
 
 def snapshot = true
-def core4j_version = 'r6'
+def core4j_version = 'r7'
 if (snapshot) core4j_version += '-SNAPSHOT'
 
 println "cse-core4j version is $core4j_version"
 
 subprojects { sub ->
-    group 'org.osp'
+    group 'org.osp.cse-core4j'
     version core4j_version
 
     pluginManager.withPlugin('kotlin') {
