@@ -1,6 +1,6 @@
-rootProject.name = 'cse-core4j'
+rootProject.name = 'cosim4j'
 
 include 'core'
 include 'natives-win'
 include 'natives-linux'
-include 'cse-core4j-native'
+include 'cosim4j-native'
