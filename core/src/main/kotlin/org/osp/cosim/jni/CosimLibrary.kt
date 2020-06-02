@@ -513,15 +513,21 @@ object CosimLibrary {
 
         fun loadBoost() {
 
+            val postfix = if (isLinux) {
+                "so.1.71.0"
+            } else {
+                "dll"
+            }
+
             listOf(
-                    "${libPrefix}boost_context.$sharedLibExtension",
-                    "${libPrefix}boost_date_time.$sharedLibExtension",
-                    "${libPrefix}boost_system.$sharedLibExtension",
-                    "${libPrefix}boost_filesystem.$sharedLibExtension",
-                    "${libPrefix}boost_fiber.$sharedLibExtension",
-                    "${libPrefix}boost_chrono.$sharedLibExtension",
-                    "${libPrefix}boost_thread.$sharedLibExtension",
-                    "${libPrefix}boost_log.$sharedLibExtension"
+                    "${libPrefix}boost_context.$postfix",
+                    "${libPrefix}boost_date_time.$postfix",
+                    "${libPrefix}boost_system.$postfix",
+                    "${libPrefix}boost_filesystem.$postfix",
+                    "${libPrefix}boost_fiber.$postfix",
+                    "${libPrefix}boost_chrono.$postfix",
+                    "${libPrefix}boost_thread.$postfix",
+                    "${libPrefix}boost_log.$postfix"
             ).forEach { loadLib(it) }
         }
 
