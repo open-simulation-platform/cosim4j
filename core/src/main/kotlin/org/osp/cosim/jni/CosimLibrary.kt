@@ -62,12 +62,12 @@ object CosimLibrary {
      *
      * @return A pointer to an object which holds the execution state, or NULL on error.
      */
-    private external fun createCosimConfigExecution(sspDir: String, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
+    private external fun createOspConfigExecution(sspDir: String, startTimeDefined: Boolean, startTime: Double): ExecutionPtr
 
     @JvmOverloads
-    fun createCosimConfigExecution(configPath: String, startTime: Double? = null): ExecutionPtr {
+    fun createOspConfigExecution(configPath: String, startTime: Double? = null): ExecutionPtr {
         val startTimeDefined = startTime?.let { it >= 0 } ?: false
-        return createCosimConfigExecution(configPath, startTimeDefined, startTime ?: 0.0)
+        return createOspConfigExecution(configPath, startTimeDefined, startTime ?: 0.0)
     }
 
     /**

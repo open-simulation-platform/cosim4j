@@ -263,7 +263,7 @@ class CosimExecution private constructor(
             if (!configPath.exists()) {
                 throw NoSuchFileException(configPath)
             }
-            return CosimExecution(CosimLibrary.createCosimConfigExecution(configPath.absolutePath, startTime))
+            return CosimExecution(CosimLibrary.createOspConfigExecution(configPath.absolutePath, startTime))
         }
 
     }

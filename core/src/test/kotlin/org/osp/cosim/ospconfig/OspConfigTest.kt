@@ -9,12 +9,16 @@ import java.io.File
 class OspConfigTest {
 
     @Test
-    @Disabled
     fun TestOspConfig() {
 
         val path = File(OspConfigTest::class.java.classLoader.getResource("msmi")!!.file)
         CosimExecution.createFromOspConfig(path).use {
-           Assertions.assertEquals(it.getSlaveByReference(0).instanceName, "CraneController")
+           Assertions.assertDoesNotThrow {
+               it.getSlaveByName("CraneController")
+           }
+            Assertions.assertDoesNotThrow {
+                it.getSlaveByName("KnuckleBoomCrane")
+            }
         }
 
     }
