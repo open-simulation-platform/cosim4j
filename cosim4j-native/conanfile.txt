@@ -1,0 +1,37 @@
+[requires]
+libcosim/0.7.0@osp/v0.7.0
+
+[generators]
+cmake
+
+[options]
+libcosim:fmuproxy=True
+
+[imports]
+lib, boost_atomic*.dll             -> ./../../natives-win/src/main/resources/native/win
+lib, boost_chrono*.dll             -> ./../../natives-win/src/main/resources/native/win
+lib, boost_context*.dll            -> ./../../natives-win/src/main/resources/native/win
+lib, boost_date_time*.dll          -> ./../../natives-win/src/main/resources/native/win
+lib, boost_fiber*.dll              -> ./../../natives-win/src/main/resources/native/win
+lib, boost_filesystem*.dll         -> ./../../natives-win/src/main/resources/native/win
+lib, boost_log*.dll                -> ./../../natives-win/src/main/resources/native/win
+lib, boost_log_setup*.dll          -> ./../../natives-win/src/main/resources/native/win
+lib, boost_program_options*.dll    -> ./../../natives-win/src/main/resources/native/win
+lib, boost_regex*.dll              -> ./../../natives-win/src/main/resources/native/win
+lib, boost_system*.dll             -> ./../../natives-win/src/main/resources/native/win
+lib, boost_thread*.dll             -> ./../../natives-win/src/main/resources/native/win
+bin, cosim.dll                     -> ./../../natives-win/src/main/resources/native/win
+
+lib, libboost_atomic.so.*          -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_chrono.so.*          -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_context.so.*         -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_date_time.so.*       -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_fiber.so.*           -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_filesystem.so.*      -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_log.so.*             -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_log_setup.so.*       -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_program_options.so.* -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_regex.so.*           -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_system.so.*          -> ./../../natives-linux/src/main/resources/native/linux
+lib, libboost_thread.so.*          -> ./../../natives-linux/src/main/resources/native/linux
+lib, libcosim.so                   -> ./../../natives-linux/src/main/resources/native/linux
