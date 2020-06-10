@@ -1,0 +1,23 @@
+
+if (hasProperty("bintrayUser") && hasProperty("bintrayKey")) {
+
+    if (!version.endsWith("SNAPSHOT")) {
+
+        bintray {
+            user = bintrayUser
+            key = bintrayKey
+            publish = true
+            setPublications("maven")
+            pkg {
+                userOrg = "open-simulation-platform"
+                repo = "maven"
+                name = "cosim4j"
+                websiteUrl = "https://github.com/open-simulation-platform/cosim4j"
+                vcsUrl = "https://github.com/open-simulation-platform/cosim4j"
+                setLicenses("MIT")
+            }
+        }
+
+    }
+
+}
