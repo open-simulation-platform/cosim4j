@@ -11,7 +11,7 @@ The JNI code is written by hand in clean, easy to maintain C++, no magic involve
 Add the open-simulation-platform bintray repository:
 
 ```gradle
-repositories {ntnu-ih
+repositories {
     maven { url  "https://dl.bintray.com/open-simulation-platform/maven"  }
 }
 ```
