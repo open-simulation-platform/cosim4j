@@ -1,4 +1,4 @@
-def nativesFolder = new File(projectDir, "src/main/resources/native/linux")
+def nativesFolder = project.ext.nativesFolder
 if (nativesFolder.listFiles() != null && nativesFolder.listFiles().length > 0) {
 
     publishing {
