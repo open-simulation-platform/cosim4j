@@ -192,7 +192,7 @@ class CosimExecution private constructor(
         return if (CosimLibrary.addManipulator(executionPtr, scenarioManager)) {
             CosimLibrary.loadScenario(executionPtr, scenarioManager, scenarioFile.absolutePath).also { success ->
                 if (success) {
-                    CosimExecution.Companion.LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
+                    LOG.debug("Loaded scenario '${scenarioFile.name}' successfully!")
                 } else {
                     throw RuntimeException("Error loading scenario '${scenarioFile.name}'! Last reported error: ${CosimLibrary.getLastError()}")
                 }
@@ -234,9 +234,9 @@ class CosimExecution private constructor(
         }
         CosimLibrary.destroyExecution(executionPtr).also { success ->
             if (success) {
-                CosimExecution.Companion.LOG.debug("Destroyed execution successfully!")
+                LOG.debug("Destroyed execution successfully!")
             } else {
-                CosimExecution.Companion.LOG.error("Error destroying execution!")
+                LOG.error("Error destroying execution!")
             }
         }
     }
@@ -249,7 +249,7 @@ class CosimExecution private constructor(
 
         @JvmStatic
         fun create(stepSize: Double): CosimExecution {
-            return CosimExecution.Companion.create(0.0, stepSize)
+            return create(0.0, stepSize)
         }
 
         @JvmStatic
@@ -289,11 +289,11 @@ class CosimExecutionStatus(
 ) {
 
     val state: CosimExecutionState by lazy {
-        CosimExecutionState.Companion.valueOf(stateId)
+        CosimExecutionState.valueOf(stateId)
     }
 
     val errorCode: CosimErrorCode by lazy {
-        CosimErrorCode.Companion.valueOf(errorCodeId)
+        CosimErrorCode.valueOf(errorCodeId)
     }
 
     override fun toString(): String {
