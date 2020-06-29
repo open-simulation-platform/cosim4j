@@ -10,12 +10,12 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createOverrideManipulator(JNIEnv* env, jobject)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createOverrideManipulator(JNIEnv* env, jobject)
 {
     return reinterpret_cast<jlong>(cosim_override_manipulator_create());
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_addManipulator(JNIEnv* env, jobject, jlong executionPtr, jlong manipulatorPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_addManipulator(JNIEnv* env, jobject, jlong executionPtr, jlong manipulatorPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -28,7 +28,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_addManipulator(JN
     return cosim_execution_add_manipulator(reinterpret_cast<cosim_execution*>(executionPtr), reinterpret_cast<cosim_manipulator*>(manipulatorPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroyManipulator(JNIEnv* env, jobject, jlong manipulatorPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_destroyManipulator(JNIEnv* env, jobject, jlong manipulatorPtr)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -37,12 +37,12 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroyManipulato
     return cosim_manipulator_destroy(reinterpret_cast<cosim_manipulator*>(manipulatorPtr)) == 0;
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createScenarioManager(JNIEnv* env, jobject)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createScenarioManager(JNIEnv* env, jobject)
 {
     return (jlong)cosim_scenario_manager_create();
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_loadScenario(JNIEnv* env, jobject, jlong executionPtr, jlong manipulatorPtr, jstring scenarioFile)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_loadScenario(JNIEnv* env, jobject, jlong executionPtr, jlong manipulatorPtr, jstring scenarioFile)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -58,7 +58,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_loadScenario(JNIE
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_isScenarioRunning(JNIEnv* env, jobject, jlong manipulatorPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_isScenarioRunning(JNIEnv* env, jobject, jlong manipulatorPtr)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -67,7 +67,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_isScenarioRunning
     return cosim_scenario_is_running(reinterpret_cast<cosim_manipulator*>(manipulatorPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_abortScenario(JNIEnv* env, jobject, jlong manipulatorPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_abortScenario(JNIEnv* env, jobject, jlong manipulatorPtr)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -76,7 +76,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_abortScenario(JNI
     return cosim_scenario_abort(reinterpret_cast<cosim_manipulator*>(manipulatorPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setReal(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jdoubleArray values)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setReal(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jdoubleArray values)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -102,7 +102,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setReal(JNIEnv* e
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInteger(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jintArray values)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setInteger(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jintArray values)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -132,7 +132,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInteger(JNIEnv
 }
 
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setBoolean(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jbooleanArray values)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setBoolean(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jbooleanArray values)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;
@@ -158,7 +158,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setBoolean(JNIEnv
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setString(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jobjectArray values)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setString(JNIEnv* env, jobject, jlong manipulatorPtr, jint slaveIndex, jlongArray vr, jobjectArray values)
 {
     if (manipulatorPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: manipulatorPtr is NULL" << std::endl;

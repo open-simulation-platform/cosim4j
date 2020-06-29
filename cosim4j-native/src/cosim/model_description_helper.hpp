@@ -12,7 +12,7 @@ namespace
 
 jobject create_variable(JNIEnv* env, cosim::variable_description& description)
 {
-    jclass cls = env->FindClass("org/osp/cosim/CosimVariableDescription");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimVariableDescription");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;JIII)V");
 
     return env->NewObject(cls, ctor,
@@ -42,7 +42,7 @@ jobject create_model_description(JNIEnv* env, jlong executionPtr, jint slaveInde
     auto execution = reinterpret_cast<cosim_execution*>(executionPtr);
     auto description = execution->get_model_description(slaveIndex);
 
-    jclass cls = env->FindClass("org/osp/cosim/CosimModelDescription");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimModelDescription");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;)V");
 
     return env->NewObject(cls, ctor,

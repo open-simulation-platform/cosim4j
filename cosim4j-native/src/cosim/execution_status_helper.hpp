@@ -13,7 +13,7 @@ namespace
 
 jobject create_execution_status(JNIEnv* env, jlong executionPtr)
 {
-    jclass cls = env->FindClass("org/osp/cosim/CosimExecutionStatus");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimExecutionStatus");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(DDDZII)V");
 
     cosim_execution_status status;
