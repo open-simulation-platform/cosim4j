@@ -19,11 +19,12 @@ repositories {
 Add the dependencies
 
 ```gradle
-implementation "org.osp.cosim4j:core:r1"
+def cosim_version = "r1"
+implementation "com.opensimulationplatform.cosim4j:core:$cosim_version"
 
 // one of
-runtimeOnly "org.osp.cosim4j:natives-win:r1"
-runtimeOnly "org.osp.cosim4j:natives-linux:r1"
+runtimeOnly "com.opensimulationplatform.cosim4j:natives-win:$cosim_version"
+runtimeOnly "com.opensimulationplatform.cosim4j:natives-linux:$cosim_version"
 ```
 
 

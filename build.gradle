@@ -11,14 +11,14 @@ wrapper {
 }
 
 def snapshot = true
-def cosim4j_version = 'r2'
+def cosim4j_version = 'r3'
 if (snapshot) cosim4j_version += '-SNAPSHOT'
 
 println "cosim4j version is $cosim4j_version"
 
 subprojects { sub ->
 
-    group 'org.osp.cosim4j'
+    group 'com.opensimulationplatform.cosim4j'
     version cosim4j_version
 
     pluginManager.withPlugin('kotlin') {
