@@ -10,8 +10,8 @@ wrapper {
     gradleVersion = '6.4'
 }
 
-def snapshot = false
-def cosim4j_version = 'r1'
+def snapshot = true
+def cosim4j_version = 'r2'
 if (snapshot) cosim4j_version += '-SNAPSHOT'
 
 println "cosim4j version is $cosim4j_version"

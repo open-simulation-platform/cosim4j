@@ -8,9 +8,9 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jobject JNICALL Java_org_osp_cosim_jni_CosimLibrary_getLastError(JNIEnv* env, jobject)
+JNIEXPORT jobject JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getLastError(JNIEnv* env, jobject)
 {
-    jclass cls = env->FindClass("org/osp/cosim/CosimError");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimError");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(ILjava/lang/String;)V");
 
     return env->NewObject(

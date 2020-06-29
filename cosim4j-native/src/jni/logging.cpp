@@ -10,18 +10,18 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setupSimpleConsoleLogging(JNIEnv* env, jobject)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setupSimpleConsoleLogging(JNIEnv* env, jobject)
 {
     return cosim_log_setup_simple_console_logging() == 0;
 }
 
-JNIEXPORT void JNICALL Java_org_osp_cosim_jni_CosimLibrary_setLogLevel(JNIEnv* env, jobject, jint level)
+JNIEXPORT void JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setLogLevel(JNIEnv* env, jobject, jint level)
 {
     cosim_log_set_output_level(static_cast<cosim_log_severity_level>(level));
 }
 
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createStepEventListener(JNIEnv* env, jobject, jobject listener)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createStepEventListener(JNIEnv* env, jobject, jobject listener)
 {
     auto observer = std::make_unique<cosim_observer>();
     observer->cpp_observer = std::make_unique<cosim::step_event_listener>(env, listener);

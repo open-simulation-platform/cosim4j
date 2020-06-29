@@ -18,7 +18,7 @@ jobject create_slave_infos(JNIEnv* env, jlong executionPtr)
     jmethodID listCtor = env->GetMethodID(listCls, "<init>", "(I)V");
     jmethodID addId = env->GetMethodID(listCls, "add", "(Ljava/lang/Object;)Z");
 
-    jclass infoCls = env->FindClass("org/osp/cosim/CosimSlaveInfo");
+    jclass infoCls = env->FindClass("com/opensimulationplatform/cosim/CosimSlaveInfo");
     jmethodID infoCtor = env->GetMethodID(infoCls, "<init>", "(ILjava/lang/String;)V");
 
     const auto size = execution->get_num_slaves();

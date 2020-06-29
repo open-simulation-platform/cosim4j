@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-JNIEXPORT jobject JNICALL Java_org_osp_cosim_jni_CosimLibrary_getModelDescription(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex)
+JNIEXPORT jobject JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getModelDescription(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -21,7 +21,7 @@ JNIEXPORT jobject JNICALL Java_org_osp_cosim_jni_CosimLibrary_getModelDescriptio
     return create_model_description(env, executionPtr, slaveIndex);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createSlave(JNIEnv* env, jobject, jstring fmuPath, jstring jInstanceName)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createSlave(JNIEnv* env, jobject, jstring fmuPath, jstring jInstanceName)
 {
     auto fmuPath_ = env->GetStringUTFChars(fmuPath, nullptr);
     auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
@@ -31,7 +31,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createSlave(JNIEnv* 
     return reinterpret_cast<jlong>(slave);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createJvmSlave(JNIEnv* env, jobject, jobject jslave, jstring jInstanceName)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createJvmSlave(JNIEnv* env, jobject, jobject jslave, jstring jInstanceName)
 {
     auto instance = std::make_shared<cosim::jvm_slave>(env, jslave);
     const auto md = instance->model_description();
@@ -49,7 +49,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createJvmSlave(JNIEn
     return reinterpret_cast<jlong>(slave.release());
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroySlave(JNIEnv*, jobject, jlong slave)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_destroySlave(JNIEnv*, jobject, jlong slave)
 {
     if (slave == 0) {
         std::cerr << "[JNI-wrapper] Error: slave is NULL" << std::endl;
@@ -58,7 +58,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroySlave(JNIE
     return cosim_local_slave_destroy(reinterpret_cast<cosim_slave*>(slave)) == 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_osp_cosim_jni_CosimLibrary_addSlave(JNIEnv*, jobject, jlong executionPtr, jlong slave)
+JNIEXPORT jint JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_addSlave(JNIEnv*, jobject, jlong executionPtr, jlong slave)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -71,7 +71,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cosim_jni_CosimLibrary_addSlave(JNIEnv*, job
     return static_cast<jint>(cosim_execution_add_slave(reinterpret_cast<cosim_execution*>(executionPtr), reinterpret_cast<cosim_slave*>(slave)));
 }
 
-JNIEXPORT jint JNICALL Java_org_osp_cosim_jni_CosimLibrary_getNumSlaves(JNIEnv*, jobject, jlong executionPtr)
+JNIEXPORT jint JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getNumSlaves(JNIEnv*, jobject, jlong executionPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_org_osp_cosim_jni_CosimLibrary_getNumSlaves(JNIEnv*,
     return static_cast<jint>(cosim_execution_get_num_slaves(reinterpret_cast<cosim_execution*>(executionPtr)));
 }
 
-JNIEXPORT jobject JNICALL Java_org_osp_cosim_jni_CosimLibrary_getSlaveInfos(JNIEnv* env, jobject, jlong executionPtr)
+JNIEXPORT jobject JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getSlaveInfos(JNIEnv* env, jobject, jlong executionPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;

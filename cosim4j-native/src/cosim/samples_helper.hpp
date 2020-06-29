@@ -13,7 +13,7 @@ namespace
 
 jobject create_real_samples(JNIEnv* env, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
-    jclass cls = env->FindClass("org/osp/cosim/CosimRealSamples");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimRealSamples");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(I[J[D[D)V");
 
     auto* values = (double*)malloc(sizeof(double) * nSamples);
@@ -64,7 +64,7 @@ jobject create_real_samples(JNIEnv* env, jlong observerPtr, jint slaveIndex, jlo
 
 jobject create_integer_samples(JNIEnv* env, jlong observerPtr, jint slaveIndex, jlong vr, jlong fromStep, jint nSamples)
 {
-    jclass cls = env->FindClass("org/osp/cosim/CosimIntegerSamples");
+    jclass cls = env->FindClass("com/opensimulationplatform/cosim/CosimIntegerSamples");
     jmethodID ctor = env->GetMethodID(cls, "<init>", "(I[J[D[D)V");
 
     auto* values = (int*)malloc(sizeof(int) * nSamples);
@@ -130,7 +130,7 @@ inline void init_real_samples_fields(JNIEnv* env)
 
     if (!realSamplesFields.initialized) {
 
-        const char* className = "org/osp/cosim/CosimRealSamples";
+        const char* className = "com/opensimulationplatform/cosim/CosimRealSamples";
         jclass cls = env->FindClass(className);
 
         realSamplesFields.valuesId = env->GetFieldID(cls, "values", "[D");
@@ -159,7 +159,7 @@ inline void init_integer_samples_fields(JNIEnv* env)
 
     if (!integerSamplesFields.initialized) {
 
-        const char* className = "org/osp/cosim/CosimIntegerSamples";
+        const char* className = "com/opensimulationplatform/cosim/CosimIntegerSamples";
         jclass cls = env->FindClass(className);
 
         integerSamplesFields.valuesId = env->GetFieldID(cls, "values", "[I");

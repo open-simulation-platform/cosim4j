@@ -10,12 +10,12 @@ extern "C" {
 #endif
 
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createLastValueObserver(JNIEnv* env, jobject)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createLastValueObserver(JNIEnv* env, jobject)
 {
     return reinterpret_cast<jlong>(cosim_last_value_observer_create());
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createFileObserver(JNIEnv* env, jobject, jstring logDir)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createFileObserver(JNIEnv* env, jobject, jstring logDir)
 {
     const char* _logDir = env->GetStringUTFChars(logDir, nullptr);
     cosim_observer* observer = cosim_file_observer_create(_logDir);
@@ -27,7 +27,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createFileObserver(J
     return reinterpret_cast<jlong>(observer);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createFileObserverFromCfg(JNIEnv* env, jobject, jstring logDir, jstring cfgPath)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createFileObserverFromCfg(JNIEnv* env, jobject, jstring logDir, jstring cfgPath)
 {
     const char* logDir_ = env->GetStringUTFChars(logDir, nullptr);
     const char* cfgPath_ = env->GetStringUTFChars(cfgPath, nullptr);
@@ -41,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createFileObserverFr
     return reinterpret_cast<jlong>(observer);
 }
 
-JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createTimeSeriesObserver(JNIEnv* env, jobject, jint bufferSize)
+JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createTimeSeriesObserver(JNIEnv* env, jobject, jint bufferSize)
 {
     if (bufferSize <= 0) {
         return reinterpret_cast<jlong>(cosim_time_series_observer_create());
@@ -50,7 +50,7 @@ JNIEXPORT jlong JNICALL Java_org_osp_cosim_jni_CosimLibrary_createTimeSeriesObse
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_startObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_startObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -59,7 +59,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_startObserving(JN
     return cosim_observer_start_observing(reinterpret_cast<cosim_observer*>(observerPtr), slaveIndex, static_cast<cosim_variable_type>(variableType), static_cast<cosim_value_reference>(vr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_stopObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_stopObserving(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jint variableType, jlong vr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -69,7 +69,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_stopObserving(JNI
 }
 
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroyObserver(JNIEnv* env, jobject, jlong observerPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_destroyObserver(JNIEnv* env, jobject, jlong observerPtr)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -78,7 +78,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_destroyObserver(J
     return cosim_observer_destroy(reinterpret_cast<cosim_observer*>(observerPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_addObserver(JNIEnv* env, jobject, jlong executionPtr, jlong observerPtr)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_addObserver(JNIEnv* env, jobject, jlong executionPtr, jlong observerPtr)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -91,7 +91,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_addObserver(JNIEn
     return cosim_execution_add_observer(reinterpret_cast<cosim_execution*>(executionPtr), reinterpret_cast<cosim_observer*>(observerPtr)) == 0;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getReal(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jdoubleArray ref)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getReal(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jdoubleArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -120,7 +120,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getReal(JNIEnv* e
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getInteger(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jintArray ref)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getInteger(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jintArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -149,7 +149,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getInteger(JNIEnv
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getBoolean(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jbooleanArray ref)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getBoolean(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jbooleanArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;
@@ -185,7 +185,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getBoolean(JNIEnv
     return status;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_getString(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jobjectArray ref)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_getString(JNIEnv* env, jobject, jlong observerPtr, jint slaveIndex, jlongArray vr, jobjectArray ref)
 {
     if (observerPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: observerPtr is NULL" << std::endl;

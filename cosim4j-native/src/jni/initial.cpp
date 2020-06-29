@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialRealValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jdouble value)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setInitialRealValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jdouble value)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -22,7 +22,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialRealVal
     return true;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialIntegerValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jint value)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setInitialIntegerValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jint value)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -36,7 +36,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialInteger
 }
 
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialBooleanValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jboolean value)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setInitialBooleanValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jboolean value)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
@@ -49,7 +49,7 @@ JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialBoolean
     return true;
 }
 
-JNIEXPORT jboolean JNICALL Java_org_osp_cosim_jni_CosimLibrary_setInitialStringValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jstring value)
+JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_setInitialStringValue(JNIEnv* env, jobject, jlong executionPtr, jint slaveIndex, jlong vr, jstring value)
 {
     if (executionPtr == 0) {
         std::cerr << "[JNI-wrapper] Error: executionPtr is NULL" << std::endl;
