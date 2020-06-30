@@ -8,12 +8,17 @@ class CosimVariableDescription internal constructor(
     variability: CosimVariableVariability? = null
 ) {
 
-    val causality = causality ?: CosimVariableCausality.LOCAL
-    val variability = variability ?: CosimVariableVariability.CONTINUOUS
+    val causality: CosimVariableCausality = causality ?: CosimVariableCausality.LOCAL
+    val variability: CosimVariableVariability = variability ?: CosimVariableVariability.CONTINUOUS
 
-    fun getTypeId() = this.type.code
-    fun getCausalityId() = this.causality.code
-    fun getVariabilityId() = this.variability.code
+    val getTypeId: Int
+        get() = this.type.code
+
+    val getCausalityId: Int
+        get() = this.causality.code
+
+    val getVariabilityId: Int
+        get() = this.variability.code
 
     constructor(
         name: String,
