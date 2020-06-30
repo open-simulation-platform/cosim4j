@@ -11,7 +11,7 @@ wrapper {
 }
 
 def snapshot = true
-def cosim4j_version = 'r3'
+def cosim4j_version = 'r5'
 if (snapshot) cosim4j_version += '-SNAPSHOT'
 
 println "cosim4j version is $cosim4j_version"
