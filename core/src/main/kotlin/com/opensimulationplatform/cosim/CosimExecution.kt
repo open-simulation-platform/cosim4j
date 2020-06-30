@@ -32,13 +32,21 @@ class CosimExecution private constructor(
             ?: throw IllegalStateException("Failed to retrieve status! Last reported error: ${CosimLibrary.getLastError()}")
 
     fun getSlaveByReference(ref: SlaveRef): CosimSlave {
-        return slaves.find { it.slaveRef == ref }
+        return getSlaveByReferenceOrNull(ref)
             ?: throw IllegalArgumentException("No slave with index=$ref found!")
     }
 
+    fun getSlaveByReferenceOrNull(ref: SlaveRef): CosimSlave? {
+        return slaves.find { it.slaveRef == ref }
+    }
+
     fun getSlaveByName(instanceName: String): CosimSlave {
-        return slaves.find { it.instanceName == instanceName }
+        return getSlaveByNameOrNull(instanceName)
             ?: throw IllegalArgumentException("No slave with name=$instanceName found!")
+    }
+
+    fun getSlaveByNameOrNull(instanceName: String): CosimSlave? {
+        return slaves.find { it.instanceName == instanceName }
     }
 
     fun addSlave(fmuPath: File, instanceName: String): CosimSlave {
@@ -244,8 +252,6 @@ class CosimExecution private constructor(
     companion object {
 
         private val LOG: Logger = LoggerFactory.getLogger(CosimExecution::class.java)
-
-        private const val sspFileName = "SystemStructure.ssd"
 
         @JvmStatic
         fun create(stepSize: Double): CosimExecution {
