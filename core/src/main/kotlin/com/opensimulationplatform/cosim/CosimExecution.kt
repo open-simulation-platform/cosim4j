@@ -33,7 +33,7 @@ class CosimExecution private constructor(
 
     fun getSlaveByReference(ref: SlaveRef): CosimSlave {
         return getSlaveByReferenceOrNull(ref)
-            ?: throw IllegalArgumentException("No slave with index=$ref found!")
+            ?: throw NoSuchElementException("No slave with index=$ref found!")
     }
 
     fun getSlaveByReferenceOrNull(ref: SlaveRef): CosimSlave? {
@@ -42,7 +42,7 @@ class CosimExecution private constructor(
 
     fun getSlaveByName(instanceName: String): CosimSlave {
         return getSlaveByNameOrNull(instanceName)
-            ?: throw IllegalArgumentException("No slave with name=$instanceName found!")
+            ?: throw NoSuchElementException("No slave with name=$instanceName found!")
     }
 
     fun getSlaveByNameOrNull(instanceName: String): CosimSlave? {
