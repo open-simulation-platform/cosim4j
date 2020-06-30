@@ -1,8 +1,9 @@
 # cosim4j
 
 [![CI](https://github.com/open-simulation-platform/cosim4j/workflows/CI/badge.svg)](https://github.com/open-simulation-platform/cosim4j/actions)
+[ ![Download](https://api.bintray.com/packages/open-simulation-platform/maven/cosim4j/images/download.svg) ](https://bintray.com/open-simulation-platform/maven/cosim4j/_latestVersion)
 
-High-level, easy to use Java bindings for [libcosim](https://github.com/open-simulation-platform/libcosim), written in Kotlin.
+High-level, easy to use JVM bindings for [libcosim](https://github.com/open-simulation-platform/libcosim), written in Kotlin.
 
 The JNI code is written by hand in clean, easy to maintain C++, no magic involved. 
 
@@ -19,12 +20,12 @@ repositories {
 Add the dependencies
 
 ```gradle
-def cosim_version = "r1"
-implementation "com.opensimulationplatform.cosim4j:core:$cosim_version"
+def cosim4j_version = "..."
+implementation "com.opensimulationplatform.cosim4j:core:$cosim4j_version"
 
 // one of
-runtimeOnly "com.opensimulationplatform.cosim4j:natives-win:$cosim_version"
-runtimeOnly "com.opensimulationplatform.cosim4j:natives-linux:$cosim_version"
+runtimeOnly "com.opensimulationplatform.cosim4j:natives-win:$cosim4j_version"
+runtimeOnly "com.opensimulationplatform.cosim4j:natives-linux:$cosim4j_version"
 ```
 
 
