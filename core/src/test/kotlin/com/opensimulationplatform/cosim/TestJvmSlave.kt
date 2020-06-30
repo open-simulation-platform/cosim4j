@@ -5,10 +5,13 @@ import no.ntnu.ihb.fmi4j.export.fmi2.ScalarVariable
 import no.ntnu.ihb.fmi4j.modeldescription.fmi2.Fmi2Causality
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 
 class TestJvmSlave {
 
     @Test
+    @DisabledOnOs(OS.LINUX)
     fun testJvmSlave() {
 
         CosimExecution.create(1.0 / 100).use { execution ->
