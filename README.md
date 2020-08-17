@@ -13,7 +13,8 @@ Add the open-simulation-platform bintray repository:
 
 ```gradle
 repositories {
-    maven { url  "https://dl.bintray.com/open-simulation-platform/maven"  }
+    maven { url  "https://dl.bintray.com/open-simulation-platform/maven" }
+    maven { url  "https://dl.bintray.com/ntnu-ihb/mvn" } // <- needed to resolve fmi4j module used to create JVM slaves
 }
 ```
 
