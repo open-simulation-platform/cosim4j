@@ -1,3 +1,4 @@
+
 def nativesFolder = project.ext.nativesFolder
 if (nativesFolder.listFiles() != null && nativesFolder.listFiles().length > 0) {
 
@@ -8,21 +9,5 @@ if (nativesFolder.listFiles() != null && nativesFolder.listFiles().length > 0) {
                 from components.java
             }
         }
-
-        if (project.hasProperty("mvnUser") && project.hasProperty("mvnPw")) {
-
-            repositories {
-                maven {
-                    credentials {
-                        username mvnUser
-                        password mvnPw
-                    }
-                    url "sftp://login.stud.ntnu.no:22/web/folk/laht/mvn"
-                }
-            }
-
-        }
-
     }
-
 }

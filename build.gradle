@@ -7,13 +7,10 @@ println "Gradle version is ${gradle.getGradleVersion()}"
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = '6.4'
+    gradleVersion = '6.6'
 }
 
-def snapshot = true
 def cosim4j_version = 'r5'
-if (snapshot) cosim4j_version += '-SNAPSHOT'
-
 println "cosim4j version is $cosim4j_version"
 
 subprojects { sub ->
