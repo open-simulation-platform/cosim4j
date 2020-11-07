@@ -1,7 +1,6 @@
 
 #include <cosim.h>
 #include <cosim/cosim_slave_s.hpp>
-#include <cosim/jvm_slave.hpp>
 #include <cosim/model_description_helper.hpp>
 #include <cosim/slave_infos_helper.hpp>
 
@@ -29,24 +28,6 @@ JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_c
     env->ReleaseStringUTFChars(fmuPath, fmuPath_);
     env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
     return reinterpret_cast<jlong>(slave);
-}
-
-JNIEXPORT jlong JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_createJvmSlave(JNIEnv* env, jobject, jobject jslave, jstring jInstanceName)
-{
-    auto instance = std::make_shared<cosim::jvm_slave>(env, jslave);
-    const auto md = instance->model_description();
-
-    auto slave = std::make_unique<cosim_slave>();
-    slave->modelName = md.name;
-    slave->instance = instance;
-    // slave address not in use yet. Should be something else than a string.
-    slave->address = "local";
-
-    auto cInstanceName = env->GetStringUTFChars(jInstanceName, nullptr);
-    slave->instanceName = cInstanceName;
-    env->ReleaseStringUTFChars(jInstanceName, cInstanceName);
-
-    return reinterpret_cast<jlong>(slave.release());
 }
 
 JNIEXPORT jboolean JNICALL Java_com_opensimulationplatform_cosim_jni_CosimLibrary_destroySlave(JNIEnv*, jobject, jlong slave)
