@@ -7,7 +7,7 @@ println "Gradle version is ${gradle.getGradleVersion()}"
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
-    gradleVersion = '6.6'
+    gradleVersion = '6.7'
 }
 
 def cosim4j_version = 'r5'

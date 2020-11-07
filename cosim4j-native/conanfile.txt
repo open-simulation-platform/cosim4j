@@ -4,9 +4,6 @@ libcosim/0.7.0@osp/v0.7.0
 [generators]
 cmake
 
-[options]
-libcosim:fmuproxy=True
-
 [imports]
 lib, boost_atomic*.dll             -> ./../../natives-win/src/main/resources/native/win
 lib, boost_chrono*.dll             -> ./../../natives-win/src/main/resources/native/win
