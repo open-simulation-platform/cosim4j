@@ -13,12 +13,10 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url  "https://dl.bintray.com/ntnu-ihb/mvn"  }
 }
 
 dependencies {
 
-    api "no.ntnu.ihb.fmi4j:fmi-export:0.31.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     def slf4j_version = '1.7.25'
