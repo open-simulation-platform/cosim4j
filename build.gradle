@@ -20,6 +20,10 @@ subprojects { sub ->
 
     pluginManager.withPlugin('kotlin') {
 
+        dependencies {
+            implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+        }
+
         compileKotlin {
             kotlinOptions {
                 jvmTarget = "1.8"
