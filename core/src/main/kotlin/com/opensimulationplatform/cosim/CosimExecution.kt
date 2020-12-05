@@ -2,7 +2,6 @@ package com.opensimulationplatform.cosim
 
 import com.opensimulationplatform.cosim.jni.CosimLibrary
 import com.opensimulationplatform.cosim.jni.ExecutionPtr
-import no.ntnu.ihb.fmi4j.export.fmi2.Fmi2Slave
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.Closeable
@@ -68,14 +67,6 @@ class CosimExecution private constructor(
         } else {
             throw RuntimeException("Failed to add slave! Last reported error: ${CosimLibrary.getLastError()}")
         }
-    }
-
-    fun addJvmSlave(slave: Fmi2Slave): CosimSlave {
-        val slavePtr = CosimLibrary.createJvmSlave(slave, slave.instanceName)
-        if (slavePtr == 0L) {
-            throw RuntimeException("Failed to create slave! Last reported error: ${CosimLibrary.getLastError()}")
-        }
-        return addSlave(slavePtr)
     }
 
     fun start(): Boolean {

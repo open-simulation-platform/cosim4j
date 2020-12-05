@@ -10,7 +10,7 @@ wrapper {
     gradleVersion = '6.7'
 }
 
-def cosim4j_version = 'r5'
+def cosim4j_version = 'r6'
 println "cosim4j version is $cosim4j_version"
 
 subprojects { sub ->

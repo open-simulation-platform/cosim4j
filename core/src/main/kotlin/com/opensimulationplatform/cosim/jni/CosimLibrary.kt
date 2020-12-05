@@ -4,7 +4,6 @@ import com.opensimulationplatform.cosim.*
 import com.opensimulationplatform.util.isLinux
 import com.opensimulationplatform.util.libPrefix
 import com.opensimulationplatform.util.sharedLibExtension
-import no.ntnu.ihb.fmi4j.export.fmi2.Fmi2Slave
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -95,16 +94,6 @@ object CosimLibrary {
      * @return A pointer to an object which holds the local slave object, or NULL on error.
      */
     external fun createSlave(fmuPath: String, instanceName: String): SlavePtr
-
-    /**
-     * Creates a new local slave.
-     *
-     * @param slave the JVM owned slave
-     * @param instanceName name of the instance
-     *
-     * @return A pointer to an object which holds the local slave object, or NULL on error.
-     */
-    external fun createJvmSlave(slave: Fmi2Slave, instanceName: String): SlavePtr
 
     /**
      *  Destroys a local slave.
