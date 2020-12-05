@@ -10,6 +10,7 @@ jobs:
         fail-fast: false
         matrix:
           os: [windows-latest, ubuntu-latest]
+          jvm-version: [ 8, 11 ]
     timeout-minutes: 8
 
     steps:
@@ -63,10 +64,10 @@ jobs:
 #        cmake .. -DCMAKE_BUILD_TYPE=Release
 #        cmake --build .
 
-    - name: Set up JDK 1.8
+    - name: Set up JDK ${{matrix.jvm-version}}
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
+        java-version: ${{matrix.jvm-version}}
 
     - name: Build with Gradle on Windows
       if: startsWith(runner.os, 'Windows')
