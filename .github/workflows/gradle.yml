@@ -23,47 +23,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
-#    - name: Setup Python 3.x
-#      uses: actions/setup-python@v1
-#      with:
-#        python-version: '3.x'
-#        architecture: 'x64'
-#
-#    - name: Install Conan on Windows
-#      if: startsWith(runner.os, 'Windows')
-#      run: |
-#        pip install conan
-#
-#    - name: Install Conan on Linux
-#      if: startsWith(runner.os, 'Linux')
-#      run: |
-#        sudo pip install conan
-#
-#    - name: Setup conan remotes
-#      run: |
-#        conan remote add conan-center "https://conan.bintray.com" --f
-#        conan remote add bincrafters "https://api.bintray.com/conan/bincrafters/public-conan" --f
-#        conan remote add osp https://osp-conan.azurewebsites.net/artifactory/api/conan/local --f
-#        conan user -p "Open Simulation Platform" -r osp osp
-#
-#    - name: Build natives on Windows
-#      if: startsWith(runner.os, 'Windows')
-#      run: |
-#        cd cse-core4j-native
-#        conan install . -s build_type=Release --install-folder=cmake-build-release --build=missing
-#        cd cmake-build-release
-#        cmake .. -DCMAKE_BUILD_TYPE=Release -A x64
-#        cmake --build . --config Release
-#
-#    - name: Build natives on Linux
-#      if: startsWith(runner.os, 'Linux')
-#      run: |
-#        cd cse-core4j-native
-#        conan install . -s build_type=Release -s compiler.libcxx=libstdc++11 --install-folder=cmake-build-release --build=missing
-#        cd cmake-build-release
-#        cmake .. -DCMAKE_BUILD_TYPE=Release
-#        cmake --build .
-
     - name: Set up JDK ${{matrix.jvm-version}}
       uses: actions/setup-java@v1
       with:
@@ -71,8 +30,8 @@ jobs:
 
     - name: Build with Gradle on Windows
       if: startsWith(runner.os, 'Windows')
-      run: ./gradlew build --info
+      run: ./gradlew build
 
     - name: Build with Gradle on Linux
       if: startsWith(runner.os, 'Linux')
-      run: sudo chmod +x gradlew && ./gradlew build --info
+      run: sudo chmod +x gradlew && ./gradlew build
