@@ -33,5 +33,7 @@ endif()
 
 
 find_package(JNI REQUIRED)
+set(Boost_USE_STATIC_LIBS ON)
 find_package(libcosim REQUIRED)
+set(Boost_USE_STATIC_LIBS OFF)
 add_subdirectory(src)

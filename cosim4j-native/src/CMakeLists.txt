@@ -17,7 +17,7 @@ set(sources
         )
 
 add_library(cosimjni ${sources})
-target_compile_definitions(cosimjni PUBLIC "BOOST_ALL_DYN_LINK=1" "BOOST_ALL_NO_LIB=1" "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
+target_compile_definitions(cosimjni PUBLIC "BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE=1")
 target_include_directories(cosimjni
         PUBLIC
         ../include

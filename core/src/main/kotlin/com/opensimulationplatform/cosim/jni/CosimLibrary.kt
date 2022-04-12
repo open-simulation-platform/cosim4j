@@ -511,7 +511,6 @@ object CosimLibrary {
         setLogLevel(level.code)
     }
 
-
     init {
 
         val platform = if (isLinux) "linux" else "win"
@@ -539,34 +538,12 @@ object CosimLibrary {
 
         fun loadCosim() {
             listOf(
-                "${libPrefix}cosim.$sharedLibExtension",
                 "${libPrefix}cosimjni.$sharedLibExtension"
-            ).forEach { loadLib(it) }
-        }
-
-        fun loadBoost() {
-
-            val postfix = if (isLinux) {
-                "so.1.71.0"
-            } else {
-                "dll"
-            }
-
-            listOf(
-                "${libPrefix}boost_context.$postfix",
-                "${libPrefix}boost_date_time.$postfix",
-                "${libPrefix}boost_system.$postfix",
-                "${libPrefix}boost_filesystem.$postfix",
-                "${libPrefix}boost_fiber.$postfix",
-                "${libPrefix}boost_chrono.$postfix",
-                "${libPrefix}boost_thread.$postfix",
-                "${libPrefix}boost_log.$postfix"
             ).forEach { loadLib(it) }
         }
 
         try {
 
-            loadBoost()
             loadCosim()
 
             setupSimpleConsoleLogging()

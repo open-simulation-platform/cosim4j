@@ -21,21 +21,16 @@
 #include <cosim/ssp/ssp_loader.hpp>
 #include <cosim/time.hpp>
 
-#include <boost/fiber/future.hpp>
-
 #include <algorithm>
 #include <atomic>
 #include <cassert>
 #include <cerrno>
 #include <cstring>
-#include <iostream>
-#include <mutex>
 #include <optional>
-#include <sstream>
 #include <stdexcept>
-#include <string>
 #include <system_error>
 #include <thread>
+#include <future>
 
 namespace
 {
@@ -151,7 +146,7 @@ struct cosim_execution_s
     std::unique_ptr<cosim::execution> cpp_execution;
     cosim::entity_index_maps entity_maps;
     std::thread t;
-    boost::fibers::future<bool> simulate_result;
+    std::promise<bool> simulate_result;
     std::exception_ptr simulate_exception_ptr;
     std::atomic<cosim_execution_state> state;
     int error_code;
@@ -303,8 +298,7 @@ int cosim_slave_get_num_variables(cosim_execution* execution, cosim_slave_index 
     try {
         return static_cast<int>(execution
                                     ->cpp_execution
-                                    ->get_simulator(slave)
-                                    ->model_description()
+                                    ->get_model_description(slave)
                                     .variables
                                     .size());
     } catch (...) {
@@ -384,8 +378,7 @@ int cosim_slave_get_variables(cosim_execution* execution, cosim_slave_index slav
     try {
         const auto vars = execution
                               ->cpp_execution
-                              ->get_simulator(slave)
-                              ->model_description()
+                              ->get_model_description(slave)
                               .variables;
         size_t var = 0;
         for (; var < std::min(numVariables, vars.size()); var++) {
@@ -485,7 +478,7 @@ cosim_slave_index cosim_execution_add_slave(
     cosim_slave* slave)
 {
     try {
-        auto index = execution->cpp_execution->add_slave(cosim::make_background_thread_slave(slave->instance), slave->instanceName);
+        auto index = execution->cpp_execution->add_slave(slave->instance, slave->instanceName);
         execution->entity_maps.simulators[slave->instanceName] = index;
         return index;
     } catch (...) {
@@ -527,7 +520,7 @@ int cosim_execution_simulate_until(cosim_execution* execution, cosim_time_point 
     } else {
         execution->state = COSIM_EXECUTION_RUNNING;
         try {
-            const bool notStopped = execution->cpp_execution->simulate_until(to_time_point(targetTime)).get();
+            const bool notStopped = execution->cpp_execution->simulate_until(to_time_point(targetTime));
             execution->state = COSIM_EXECUTION_STOPPED;
             return notStopped;
         } catch (...) {
@@ -545,11 +538,10 @@ int cosim_execution_start(cosim_execution* execution)
     } else {
         try {
             execution->state = COSIM_EXECUTION_RUNNING;
-            auto task = boost::fibers::packaged_task<bool()>([execution]() {
-                return execution->cpp_execution->simulate_until(std::nullopt).get();
+            auto task = std::thread([execution]() {
+                execution->simulate_result.set_value(execution->cpp_execution->simulate_until(std::nullopt));
             });
-            execution->simulate_result = task.get_future();
-            execution->t = std::thread(std::move(task));
+            execution->t = std::move(task);
             return success;
         } catch (...) {
             handle_current_exception();
@@ -559,27 +551,12 @@ int cosim_execution_start(cosim_execution* execution)
     }
 }
 
-void execution_async_health_check(cosim_execution* execution)
-{
-    if (execution->simulate_result.valid()) {
-        const auto status = execution->simulate_result.wait_for(std::chrono::duration<int64_t>());
-        if (boost::fibers::future_status::ready == status) {
-            if (auto ep = execution->simulate_result.get_exception_ptr()) {
-                execution->simulate_exception_ptr = ep;
-            }
-        }
-    }
-    if (auto ep = execution->simulate_exception_ptr) {
-        std::rethrow_exception(ep);
-    }
-}
-
 int cosim_execution_stop(cosim_execution* execution)
 {
     try {
         execution->cpp_execution->stop_simulation();
         if (execution->t.joinable()) {
-            execution->simulate_result.get();
+            execution->simulate_result.get_future().get();
             execution->t.join();
         }
         execution->state = COSIM_EXECUTION_STOPPED;
@@ -595,13 +572,14 @@ int cosim_execution_stop(cosim_execution* execution)
 int cosim_execution_get_status(cosim_execution* execution, cosim_execution_status* status)
 {
     try {
+        auto rc = execution->cpp_execution->get_real_time_config();
+        auto rm = execution->cpp_execution->get_real_time_metrics();
         status->error_code = execution->error_code;
         status->state = execution->state;
         status->current_time = to_integer_time_point(execution->cpp_execution->current_time());
-        status->real_time_factor = execution->cpp_execution->get_measured_real_time_factor();
-        status->real_time_factor_target = execution->cpp_execution->get_real_time_factor_target();
-        status->is_real_time_simulation = execution->cpp_execution->is_real_time_simulation() ? 1 : 0;
-        execution_async_health_check(execution);
+        status->real_time_factor = rm->rolling_average_real_time_factor;
+        status->real_time_factor_target = rc->real_time_factor_target;
+        status->is_real_time_simulation = rc->real_time_simulation ? 1 : 0;
         return success;
     } catch (...) {
         handle_current_exception();
@@ -616,7 +594,7 @@ int cosim_execution_get_status(cosim_execution* execution, cosim_execution_statu
 int cosim_execution_enable_real_time_simulation(cosim_execution* execution)
 {
     try {
-        execution->cpp_execution->enable_real_time_simulation();
+        execution->cpp_execution->get_real_time_config()->real_time_simulation = true;
         return success;
     } catch (...) {
         handle_current_exception();
@@ -627,7 +605,7 @@ int cosim_execution_enable_real_time_simulation(cosim_execution* execution)
 int cosim_execution_disable_real_time_simulation(cosim_execution* execution)
 {
     try {
-        execution->cpp_execution->disable_real_time_simulation();
+        execution->cpp_execution->get_real_time_config()->real_time_simulation = false;
         return success;
     } catch (...) {
         handle_current_exception();
@@ -638,7 +616,7 @@ int cosim_execution_disable_real_time_simulation(cosim_execution* execution)
 int cosim_execution_set_real_time_factor_target(cosim_execution* execution, double realTimeFactor)
 {
     try {
-        execution->cpp_execution->set_real_time_factor_target(realTimeFactor);
+        execution->cpp_execution->get_real_time_config()->real_time_factor_target = realTimeFactor;
         return success;
     } catch (...) {
         handle_current_exception();
@@ -933,7 +911,7 @@ cosim_observer* cosim_last_value_observer_create()
 cosim_observer* cosim_file_observer_create(const char* logDir)
 {
     auto observer = std::make_unique<cosim_observer>();
-    auto logPath = boost::filesystem::path(logDir);
+    auto logPath = cosim::filesystem::path(logDir);
     observer->cpp_observer = std::make_shared<cosim::file_observer>(logPath);
     return observer.release();
 }
@@ -941,8 +919,8 @@ cosim_observer* cosim_file_observer_create(const char* logDir)
 cosim_observer* cosim_file_observer_create_from_cfg(const char* logDir, const char* cfgPath)
 {
     auto observer = std::make_unique<cosim_observer>();
-    auto boostLogDir = boost::filesystem::path(logDir);
-    auto boostCfgPath = boost::filesystem::path(cfgPath);
+    auto boostLogDir = cosim::filesystem::path(logDir);
+    auto boostCfgPath = cosim::filesystem::path(cfgPath);
     observer->cpp_observer = std::make_shared<cosim::file_observer>(boostLogDir, boostCfgPath);
     return observer.release();
 }

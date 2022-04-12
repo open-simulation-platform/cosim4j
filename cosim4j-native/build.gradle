@@ -23,7 +23,7 @@ task configureNative {
         exec {
             workingDir buildDir
             if (os.isWindows()) {
-                commandLine 'cmd', '/c', 'cmake', '..', '-DCMAKE_BUILD_TYPE=Release', '-G', 'Visual Studio 15 2017 Win64'
+                commandLine 'cmd', '/c', 'cmake', '..', '-DCMAKE_BUILD_TYPE=Release', '-A', 'x64'
             } else if (os.isLinux()) {
                 commandLine 'cmake', '..', '-DCMAKE_BUILD_TYPE=Release'
             }
