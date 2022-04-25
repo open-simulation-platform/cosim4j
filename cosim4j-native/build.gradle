@@ -3,23 +3,11 @@ import org.gradle.internal.os.OperatingSystem
 def os = OperatingSystem.current()
 def buildDir = new File("cmake-build-release")
 
-task configureConan {
-    doLast {
-        def conanFile = new File(buildDir, "conanbuildinfo.cmake")
-        if (!conanFile.exists()) {
-            exec {
-                if (os.isWindows()) {
-                    commandLine 'cmd', '/c', 'run_conan_install.sh'
-                } else if (os.isLinux()) {
-                    commandLine './run_conan_install.sh'
-                }
-            }
-        }
-    }
-}
-
 task configureNative {
     doLast {
+        if (!buildDir.exists()) {
+            buildDir.mkdirs()
+        }
         exec {
             workingDir buildDir
             if (os.isWindows()) {
@@ -29,7 +17,6 @@ task configureNative {
             }
         }
     }
-    dependsOn 'configureConan'
 }
 
 task buildNative {
@@ -43,7 +30,6 @@ task buildNative {
             }
         }
     }
-
     dependsOn 'configureNative'
 }
 
