@@ -1,7 +1,7 @@
 import org.gradle.internal.os.OperatingSystem
 
 def os = OperatingSystem.current()
-def buildDir = new File("cmake-build-release")
+def buildDir = new File(rootDir, "cosim4j-native/cmake-build-release")
 
 task configureNative {
     doLast {
