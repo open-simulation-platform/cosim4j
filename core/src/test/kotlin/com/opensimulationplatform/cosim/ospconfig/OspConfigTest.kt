@@ -10,7 +10,8 @@ class OspConfigTest {
     @Test
     fun TestOspConfig() {
 
-        val path = File(OspConfigTest::class.java.classLoader.getResource("msmi")!!.file)
+        val cl = OspConfigTest::class.java.classLoader
+        val path = File(cl.getResource("msmi")!!.file.replace("%20", " "))
         CosimExecution.createFromOspConfig(path).use {
             Assertions.assertDoesNotThrow {
                 it.getSlaveByName("CraneController")
