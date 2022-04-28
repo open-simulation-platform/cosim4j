@@ -7,15 +7,13 @@ High-level, easy to use JVM bindings for [libcosim](https://github.com/open-simu
 
 The JNI code is written by hand in clean, easy to maintain C++, no magic involved. 
 
+Only windows is supported.
+
 #### Usage with maven
 
-Add the open-simulation-platform bintray repository:
+Usage is limited to mavenLocal:
 
-```gradle
-repositories {
-    maven { url  "https://dl.bintray.com/open-simulation-platform/maven" }
-}
-```
+`./gradlew publishToMavenLocal`
 
 Add the dependencies
 

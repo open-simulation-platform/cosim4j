@@ -1,8 +1,4 @@
 
-plugins {
-    id "com.jfrog.bintray" version "1.8.4" apply(false)
-}
-
 println "Gradle version is ${gradle.getGradleVersion()}"
 
 wrapper {

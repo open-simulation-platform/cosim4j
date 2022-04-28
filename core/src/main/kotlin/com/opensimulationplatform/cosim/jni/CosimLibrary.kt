@@ -2,6 +2,7 @@ package com.opensimulationplatform.cosim.jni
 
 import com.opensimulationplatform.cosim.*
 import com.opensimulationplatform.util.isLinux
+import com.opensimulationplatform.util.isWindows
 import com.opensimulationplatform.util.libPrefix
 import com.opensimulationplatform.util.sharedLibExtension
 import org.slf4j.Logger
@@ -512,6 +513,8 @@ object CosimLibrary {
     }
 
     init {
+
+        require(isWindows) {"Only windows is supported"}
 
         val platform = if (isLinux) "linux" else "win"
         val tempDir = Files.createTempDirectory("cosim4j_").toFile().also {
