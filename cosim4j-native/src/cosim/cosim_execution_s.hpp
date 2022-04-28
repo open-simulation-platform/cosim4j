@@ -22,18 +22,12 @@ struct cosim_execution_s
         return entity_maps.simulators.size();
     }
 
-    cosim::model_description get_model_description(cosim_slave_index slave)
+    [[nodiscard]] cosim::model_description get_model_description(cosim_slave_index slave) const
     {
-        auto simulator = cpp_execution->get_simulator(slave);
-        if (!simulator) {
-            std::ostringstream oss;
-            oss << "Slave with index " << slave << " was not found among loaded slaves.";
-            throw std::invalid_argument(oss.str());
-        }
-        return simulator->model_description();
+        return cpp_execution->get_model_description(slave);
     }
 
-    size_t get_num_variables(cosim_slave_index slave)
+    [[nodiscard]] size_t get_num_variables(cosim_slave_index slave) const
     {
         auto description = get_model_description(slave);
         return description.variables.size();

@@ -11,7 +11,7 @@ import java.io.File
 class SspTest {
 
     private companion object {
-        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
+        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file.replace("%20", " "))
     }
 
 //    @Test

@@ -8,9 +8,9 @@ jobs:
     strategy:
         fail-fast: false
         matrix:
-          os: [windows-latest, ubuntu-latest]
+          os: [windows-latest]
           jvm-version: [ 8, 11 ]
-    timeout-minutes: 4
+    timeout-minutes: 10
 
     steps:
     - uses: actions/checkout@v2

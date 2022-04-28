@@ -10,7 +10,8 @@ class RealTimeExecutionTest {
     @Test
     fun testRealTime() {
 
-        val sspDir = File(SspTest::class.java.classLoader.getResource("ssp/demo")!!.file)
+        val cl = SspTest::class.java.classLoader
+        val sspDir = File(cl.getResource("ssp/demo")!!.file.replace("%20", " "))
         Assertions.assertTrue(sspDir.exists())
         CosimExecution.createFromSsp(sspDir).use {
 

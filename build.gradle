@@ -1,8 +1,4 @@
 
-plugins {
-    id "com.jfrog.bintray" version "1.8.4" apply(false)
-}
-
 println "Gradle version is ${gradle.getGradleVersion()}"
 
 wrapper {
@@ -10,7 +6,7 @@ wrapper {
     gradleVersion = '6.7'
 }
 
-def cosim4j_version = 'r6'
+def cosim4j_version = '0.9.0-v1'
 println "cosim4j version is $cosim4j_version"
 
 subprojects { sub ->

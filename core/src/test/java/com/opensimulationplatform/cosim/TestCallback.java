@@ -11,8 +11,8 @@ public class TestCallback {
     @Test
     void test() throws InterruptedException {
 
-        File testFmu = new File(CosimExecutionTest.class.getClassLoader()
-                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").getFile());
+        File testFmu = new File(TestCallback.class.getClassLoader()
+                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").getFile().replace("%20", " "));
 
         CosimExecution execution = CosimExecution.create(1.0 / 100);
         execution.addSlave(testFmu, "slave");

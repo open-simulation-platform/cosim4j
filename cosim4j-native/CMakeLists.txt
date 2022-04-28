@@ -24,14 +24,23 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 # Dependencies
 # ==============================================================================
 
-if(EXISTS ${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
-    include("${CMAKE_BINARY_DIR}/conanbuildinfo.cmake")
-    conan_basic_setup(NO_OUTPUT_DIRS)
-else()
-    message(FATAL_ERROR "The file conanbuildinfo.cmake doesn't exist, you have to run conan install first!")
-endif()
+include(cmake/conan.cmake)
+conan_cmake_autodetect(settings)
+
+# Force add osp remote
+conan_add_remote(NAME osp URL https://osp.jfrog.io/artifactory/api/conan/conan-local)
+
+# Run conan install with auto-detected settings and -b missing flag
+conan_cmake_run(
+        CONANFILE conanfile.txt
+        BUILD missing
+        SETTINGS ${settings}
+        BASIC_SETUP NO_OUTPUT_DIRS)
 
 
 find_package(JNI REQUIRED)
+set(Boost_USE_STATIC_LIBS ON)
 find_package(libcosim REQUIRED)
+set(Boost_USE_STATIC_LIBS OFF)
+
 add_subdirectory(src)

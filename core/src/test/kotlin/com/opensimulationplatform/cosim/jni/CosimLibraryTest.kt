@@ -8,9 +8,12 @@ import java.io.File
 class CosimLibraryTest {
 
     private companion object {
+        val cl = CosimLibraryTest::class.java.classLoader
         val testFmu = File(
-            CosimLibraryTest::class.java.classLoader
-                .getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file
+            cl.getResource("fmus/2.0/cs/20sim/4.6.4.8004/ControlledTemperature/ControlledTemperature.fmu").file.replace(
+                "%20",
+                " "
+            )
         )
     }
 

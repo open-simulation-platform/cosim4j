@@ -2,6 +2,7 @@ package com.opensimulationplatform.cosim.jni
 
 import com.opensimulationplatform.cosim.*
 import com.opensimulationplatform.util.isLinux
+import com.opensimulationplatform.util.isWindows
 import com.opensimulationplatform.util.libPrefix
 import com.opensimulationplatform.util.sharedLibExtension
 import org.slf4j.Logger
@@ -511,8 +512,9 @@ object CosimLibrary {
         setLogLevel(level.code)
     }
 
-
     init {
+
+        require(isWindows) {"Only windows is supported"}
 
         val platform = if (isLinux) "linux" else "win"
         val tempDir = Files.createTempDirectory("cosim4j_").toFile().also {
@@ -539,34 +541,12 @@ object CosimLibrary {
 
         fun loadCosim() {
             listOf(
-                "${libPrefix}cosim.$sharedLibExtension",
                 "${libPrefix}cosimjni.$sharedLibExtension"
-            ).forEach { loadLib(it) }
-        }
-
-        fun loadBoost() {
-
-            val postfix = if (isLinux) {
-                "so.1.71.0"
-            } else {
-                "dll"
-            }
-
-            listOf(
-                "${libPrefix}boost_context.$postfix",
-                "${libPrefix}boost_date_time.$postfix",
-                "${libPrefix}boost_system.$postfix",
-                "${libPrefix}boost_filesystem.$postfix",
-                "${libPrefix}boost_fiber.$postfix",
-                "${libPrefix}boost_chrono.$postfix",
-                "${libPrefix}boost_thread.$postfix",
-                "${libPrefix}boost_log.$postfix"
             ).forEach { loadLib(it) }
         }
 
         try {
 
-            loadBoost()
             loadCosim()
 
             setupSimpleConsoleLogging()
